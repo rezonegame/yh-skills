@@ -34,14 +34,31 @@
 
 ## � 安装 (Installation)
 
-### 前置要求
-- 已安装 Node.js 环境
-- 能够运行 `npx` 或 `bun` 命令
+## 📦 安装 (Installation)
 
-### 快速安装（推荐）
+### 选项 1: 手动安装（推荐 - 获取全部技能）
+如果你希望一次性获取仓库中的所有技能，或者你的环境不支持 `npx`，建议直接克隆仓库：
+
+1. 克隆仓库到本地：
+   ```bash
+   git clone https://github.com/rezonegame/yh-skills.git
+   ```
+2. 将克隆下来的文件夹路径配置到你的 AI Agent (如 Claude Desktop, Cursor 等) 的技能目录中，或者直接将需要的技能文件夹复制过去。
+
+### 选项 2: 使用 Skills CLI（安装特定技能）
+如果你只想安装其中的某一个技能（例如 `boardgame-design`），可以使用 `npx skills` 命令：
+
 ```bash
-npx skills add rezonegame/yh-skills
+# 安装单个技能 (请将 @ 后面的名称替换为具体技能目录名)
+npx skills add rezonegame/yh-skills@boardgame-design
 ```
+
+### 选项 3: 直接下载
+你也可以直接下载 ZIP 压缩包：
+1. 访问 [Github 仓库页面](https://github.com/rezonegame/yh-skills)
+2. 点击绿色的 **Code** 按钮
+3. 选择 **Download ZIP**
+4. 解压到你的技能目录
 
 ## �🚀 使用说明
 
