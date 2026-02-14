@@ -1,0 +1,217 @@
+{
+  "gameName": "My Board Game",
+  "version": "v0.1.0",
+  "branchName": "main",
+  "lastUpdated": "2025-01-24",
+
+  "gameOverview": {
+    "theme": "游戏主题描述",
+    "playerCount": {"min": 2, "max": 4, "recommended": 3},
+    "duration": {"target": 45, "unit": "minutes"},
+    "age": {"min": 12},
+    "mechanics": [
+      "机制1",
+      "机制2"
+    ]
+  },
+
+  "fitnessGoals": {
+    "clarity": {"current": 0, "target": 8.0, "description": "规则清晰度"},
+    "strategy": {"current": 0, "target": 7.5, "description": "策略深度"},
+    "interaction": {"current": 0, "target": 7.0, "description": "玩家互动"},
+    "balance": {"current": 0, "target": 7.5, "description": "游戏平衡"},
+    "fit": {"current": 0, "target": 8.0, "description": "主题适配度"}
+  },
+
+  "design_tasks": [
+    {
+      "id": "DT-001",
+      "title": "设计核心游戏机制",
+      "description": "定义游戏的核心循环和主要机制",
+      "acceptanceCriteria": [
+        "清晰描述核心循环",
+        "定义所有主要状态",
+        "文档完整且逻辑一致",
+        "与其他组件协调"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "category": "core"
+    },
+    {
+      "id": "DT-002",
+      "title": "设计卡牌系统",
+      "description": "创建卡牌类型、效果和成本结构",
+      "acceptanceCriteria": [
+        "定义卡牌类型",
+        "设计成本曲线",
+        "创建示例卡牌",
+        "验证平衡性"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "category": "component"
+    },
+    {
+      "id": "DT-003",
+      "title": "设计游戏棋盘",
+      "description": "创建棋盘布局和区域定义",
+      "acceptanceCriteria": [
+        "定义棋盘结构",
+        "标注所有区域",
+        "说明组件交互",
+        "完成视觉设计草图"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "category": "component"
+    },
+    {
+      "id": "DT-004",
+      "title": "编写规则书初稿",
+      "description": "创建完整的玩家规则文档",
+      "acceptanceCriteria": [
+        "包含游戏设置",
+        "解释回合结构",
+        "说明所有行动",
+        "包含胜利条件",
+        "添加示例和图解"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "category": "documentation"
+    }
+  ],
+
+  "playtest_tasks": [
+    {
+      "id": "PT-001",
+      "title": "首次 solo 测试",
+      "description": "进行首次 solo playtest 验证基本流程",
+      "acceptanceCriteria": [
+        "完成一整局游戏",
+        "记录所有问题",
+        "验证所有机制可用",
+        "计算初始适应度分数",
+        "创建测试记录文档"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "category": "validation"
+    },
+    {
+      "id": "PT-002",
+      "title": "2人游戏测试",
+      "description": "进行2人游戏测试会话",
+      "acceptanceCriteria": [
+        "完成至少2局",
+        "记录玩家策略",
+        "测量游戏时长",
+        "记录所有问题",
+        "更新适应度分数"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "category": "session"
+    },
+    {
+      "id": "PT-003",
+      "title": "3-4人游戏测试",
+      "description": "进行3-4人游戏测试会话",
+      "acceptanceCriteria": [
+        "完成至少3局",
+        "测试不同人数配置",
+        "分析互动频率",
+        "记录平衡性问题",
+        "更新适应度分数"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "category": "session"
+    },
+    {
+      "id": "PT-004",
+      "title": "新玩家引导测试",
+      "description": "测试新玩家学习曲线",
+      "acceptanceCriteria": [
+        "邀请未玩过的玩家",
+        "记录理解时间",
+        "标记困惑点",
+        "评估规则清晰度",
+        "提出改进建议"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "category": "ux"
+    }
+  ],
+
+  "balance_tasks": [
+    {
+      "id": "BT-001",
+      "title": "分析卡牌平衡性",
+      "description": "分析所有卡牌的强度和使用率",
+      "acceptanceCriteria": [
+        "统计每张卡牌使用率",
+        "识别主导/弱势卡牌",
+        "计算卡牌胜率贡献",
+        "提出平衡调整方案",
+        "更新卡牌设计"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "category": "component"
+    },
+    {
+      "id": "BT-002",
+      "title": "分析策略多样性",
+      "description": "分析是否存在主导策略",
+      "acceptanceCriteria": [
+        "统计获胜策略分布",
+        "识别单一最优解",
+        "评估策略间平衡",
+        "计算策略多样性指数",
+        "提出增强多样性的建议"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "category": "mechanics"
+    },
+    {
+      "id": "BT-003",
+      "title": "分析游戏时长平衡",
+      "description": "验证游戏时长是否符合目标",
+      "acceptanceCriteria": [
+        "统计多局时长数据",
+        "计算平均时长",
+        "识别拖慢游戏的因素",
+        "提出加速方案",
+        "更新设计调整"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "category": "flow"
+    }
+  ],
+
+  "metadata": {
+    "totalTasks": 11,
+    "completedTasks": 0,
+    "totalPlaytests": 0,
+    "currentIteration": 0,
+    "designStarted": "2025-01-24",
+    "lastPlaytest": null,
+    "targetCompletion": null
+  }
+}
