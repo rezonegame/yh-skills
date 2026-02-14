@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Feb%202026-green)
 
 ## 📅 更新日志 (Changelog)
-- **v1.0.0** (2026-02-15): 初始版本发布。集成桌游设计、学术写作、内容创作及开发辅助等多领域技能。
+- **v1.0.0** (2025-12-15): 初始版本发布。集成桌游设计、学术写作、内容创作及开发辅助等多领域技能。
 
 这是一个包含多种 AI Agent 技能（Skills）的集合，旨在增强 AI 在特定领域的专业能力。这些技能涵盖了从桌游设计到学术研究、内容创作以及后端开发等多个方面。
 
