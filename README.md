@@ -32,7 +32,18 @@
 - **backend-patterns**: 后端开发模式。提供 Node.js, Express, Next.js 的架构模式、API 设计和数据库优化最佳实践。
 - **ducksearch**: 命令行网页搜索工具。基于 DuckDuckGo，支持搜索网络信息、抓取网页内容及作为 MCP 服务器使用。
 
-## 🚀 使用说明
+## � 安装 (Installation)
+
+### 前置要求
+- 已安装 Node.js 环境
+- 能够运行 `npx` 或 `bun` 命令
+
+### 快速安装（推荐）
+```bash
+npx skills add rezonegame/yh-skills
+```
+
+## �🚀 使用说明
 
 这些技能通常以文件夹形式存在，每个文件夹内包含一个 `SKILL.md` 核心描述文件以及可能的辅助脚本或资源。
 
