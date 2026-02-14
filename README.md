@@ -32,8 +32,6 @@
 - **backend-patterns**: 后端开发模式。提供 Node.js, Express, Next.js 的架构模式、API 设计和数据库优化最佳实践。
 - **ducksearch**: 命令行网页搜索工具。基于 DuckDuckGo，支持搜索网络信息、抓取网页内容及作为 MCP 服务器使用。
 
-## � 安装 (Installation)
-
 ## 📦 安装 (Installation)
 
 ### 选项 1: 手动安装（推荐 - 获取全部技能）
