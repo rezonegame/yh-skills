@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Feb%202026-green)
 
 ## 📅 更新日志 (Changelog)
+- **v1.1.0** (2026-02-19): 新增 MeepleLM 虚拟玩家测试技能。
 - **v1.0.0** (2025-12-15): 初始版本发布。集成桌游设计、学术写作、内容创作及开发辅助等多领域技能。
 
 这是一个包含多种 AI Agent 技能（Skills）的集合，旨在增强 AI 在特定领域的专业能力。这些技能涵盖了从桌游设计到学术研究、内容创作以及后端开发等多个方面。
@@ -19,6 +20,7 @@
 - **boardgame-components**: 通用配件设计。包括标记 (Tokens)、指示物、玩家辅助卡、规则书和记分板的设计规范。
 - **boardgame-tiles**: 方块 (Tiles) 设计技能。专注于六边形、方形等方块的边缘连接系统、旋转兼容性和模切考虑。
 - **boardgame-ralph-loop**: 基于 Ralph Loop 方法论的自主迭代设计技能。提供自动化的测试和设计改进循环。
+- **meeplelm**: MeepleLM 虚拟玩家测试技能。基于 MeepleLM 框架，使用 5 种玩家人设和 MDA 推理链模拟桌游玩家的主观体验评测，生成类似 BGG 的评论。
 
 ### 📝 研究与写作 (Research & Writing)
 一套用于辅助高水平学术研究和专业写作的工具。
