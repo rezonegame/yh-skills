@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Feb%202026-green)
 
 ## 📅 更新日志 (Changelog)
+- **v1.2.0** (2026-02-25): 新增 `humanizer-zh` 文本去 AI 痕迹与深度润色技能。
 - **v1.1.1** (2026-02-19): 移除 backend-patterns 技能。
 - **v1.1.0** (2026-02-19): 新增 MeepleLM 虚拟玩家测试技能。
 - **v1.0.0** (2025-12-15): 初始版本发布。集成桌游设计、学术写作、内容创作及开发辅助等多领域技能。
@@ -34,6 +35,7 @@
 - **content-strategist**: SEO 内容策略专家。创建经过搜索引擎优化的内容，涵盖关键词整合、元标签编写和结构优化。
 - **doc-coauthoring**: 文档共创工作流。引导用户完成"背景收集 -> 结构细化 -> 读者测试"的文档编写流程。
 - **multi-agent-debate**: 多视角角色讨论框架。模拟 15 种不同人设（专家/普通人）进行三轮深度讨论，支持自动调研和总结报告生成。
+- **humanizer-zh**: 去除中文文本中的 AI 生成痕迹。剔除虚夸词汇与模式，注入真实且具有深度的“人味”，非常适用于书评与长评文章。
 
 ### 💻 开发与技术 (Development & Tech)
 用于辅助软件开发和技术任务的技能。
