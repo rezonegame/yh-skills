@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Feb%202026-green)
 
 ## 📅 更新日志 (Changelog)
+- **v1.3.0** (2026-03-03): 新增 `last30days` 跨平台趋势搜索与分析技能。
 - **v1.2.0** (2026-02-25): 新增 `humanizer-zh` 文本去 AI 痕迹与深度润色技能。
 - **v1.1.1** (2026-02-19): 移除 backend-patterns 技能。
 - **v1.1.0** (2026-02-19): 新增 MeepleLM 虚拟玩家测试技能。
@@ -41,6 +42,7 @@
 用于辅助软件开发和技术任务的技能。
 
 - **ducksearch**: 命令行网页搜索工具。基于 DuckDuckGo，支持搜索网络信息、抓取网页内容及作为 MCP 服务器使用。
+- **last30days**: 跨平台趋势搜索与分析技能。支持对 Reddit, X, YouTube, Hacker News, Polymarket 及 Web 进行深度搜索，分析过去 30 天内的热门讨论、推荐和新闻。
 
 ## 📦 安装 (Installation)
 
