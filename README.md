@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/version-1.5.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Apr%202026-green)
 
 ## 📅 更新日志 (Changelog)
-- **v1.5.0** (2026-04-15): 整合整理，新增 `geo-content-optimizer`, `khazix-writer`, `yh-slides`, `gamified-course-designer` 等多项核心技能。
+- **v1.5.0** (2026-04-15): 整合整理，新增 `geo-content-optimizer`, `gamified-course-designer` 等多项核心技能。
 - **v1.4.0** (2026-03-12): 新增 `multi-agent-debate` 多视角角色讨论框架。
 - **v1.3.0** (2026-03-03): 新增 `last30days` 跨平台趋势搜索与分析技能。
 - **v1.2.0** (2026-02-25): 新增 `humanizer-zh` 文本去 AI 痕迹与深度润色技能。
