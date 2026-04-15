@@ -32,7 +32,6 @@
 ### 📝 内容创作与研究 (Content Creation & Research)
 用于辅助高水平学术研究、公众号写作及深度内容优化的工具。
 
-- **khazix-writer**: 数字生命卡兹克文风写作。专注于 AI 行业深度内容创作，注入好奇心与活人感，涵盖调查实验、产品体验等原型。
 - **humanizer-zh**: 文本去 AI 痕迹与深度润色。剔除虚夸词汇，注入真实深度“人味”，非常适用于书评与长评。
 - **geo-content-optimizer**: GEO 内容架构师。针对 RAG 系统（Perplexity/SearchGPT）优化，提升事实密度与语义结构。
 - **merge-drafts**: 多稿合并专家。将多份草稿合并为一份统一、完整、直接交付的高质量文章。
@@ -45,19 +44,12 @@
 - **doc-coauthoring**: 文档共创工作流。引导用户完成从背景收集到读者测试的完整编写流程。
 - **multi-agent-debate**: 多视角角色讨论框架。模拟 15 种人设进行三轮深度讨论，支持自动调研。
 
-### 🎨 视觉与演示 (Visuals & Presentations)
-专注于视觉设计、演示文稿生成与多媒体排版。
-
-- **yh-slides**: 演示文稿端到端制作。支持 PPTX 和 HTML 双输出，内置多种视觉风格与动画特效。
-- **qiaomu-mondo-poster-design**: 乔木 Mondo 大师海报设计。一句话生成大师级海报、书封、专辑封面及极简插画。
-
 ### 💻 开发与技术 (Development & Tech)
 用于辅助软件开发、技术管理与信息检索的任务。
 
 - **ducksearch**: 命令行网页搜索工具。基于 DuckDuckGo，支持抓取网页内容及作为 MCP 服务器。
 - **last30days**: 跨平台趋势搜索。深度分析 Reddit, X, YouTube 等平台过去 30 天的热门讨论。
 - **obsidian-plugin-release**: Obsidian 插件自动化发布。支持版本管理、GitHub Release 及 BRAT 插件同步。
-- **skill-manager**: 技能包管理器。从 30,000+ 社区技能中搜索、安装并管理 AI 技能包。
 
 ## 📦 安装 (Installation)
 
