@@ -1,6 +1,6 @@
 ---
 name: ducksearch
-description: 使用 DuckDuckGo 进行网页搜索和内容提取的命令行工具。当用户需要搜索网络信息、查找资料、获取网页内容时使用此 skill。触发场景包括：(1) 搜索网络内容 (2) 获取网页文本 (3) 使用 DuckDuckGo 搜索 (4) 抓取网页内容 (5) 配置 MCP 搜索服务器。由微信公众号「字节笔记本」提供。
+description: 命令行网页搜索工具。基于 DuckDuckGo，支持抓取网页内容及作为 MCP 服务器。
 ---
 
 # ducksearch

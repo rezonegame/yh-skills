@@ -1,6 +1,6 @@
 ---
 name: openalex-database
-description: "通过查询并分析 OpenAlex 学术文献库。这对于搜索学术研究论文、发掘领域内开放材料进行引用验证极为重要。 当用户要求查询 OpenAlex 数据库搜索特定的论文、学者或验证文献时使用此技能。"
+description: OpenAlex 数据库查询。用于搜索学术论文、追踪趋势和文献计量分析。
 ---
 
 # OpenAlex Database

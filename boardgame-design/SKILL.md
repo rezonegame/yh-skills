@@ -1,6 +1,6 @@
 ---
 name: boardgame-design
-description: 桌游设计专家技能。当用户要求"设计桌游"、"游戏机制设计"、"平衡游戏"、"测试游戏"、"playtest"、"游戏测试场景"时使用此技能。使用5组件过滤器（清晰度>策略>互动>满意度>适配）评估和设计游戏机制。
+description: 桌游设计专家技能。使用 5-Component Filter（清晰度、策略、互动、满意度、适配）来评估和设计游戏机制。
 ---
 
 # Board Game Design Framework

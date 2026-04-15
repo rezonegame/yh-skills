@@ -1,6 +1,6 @@
 ---
 name: scientific-writing
-description: "具有强制 IMRAD 逻辑段落检查的学术论文写作技能。当用户需要撰写科学论文、研究报告、学术稿件，或要求\"写论文\"、\"学术写作\"、\"IMRAD格式\"、\"投稿\"时使用此技能，提供学术语言编排指南。"
+description: 科学写作核心技能。遵循 IMRAD 结构，确保符合学术出版标准。
 ---
 
 # Scientific Writing

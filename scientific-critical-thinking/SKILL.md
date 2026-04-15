@@ -1,6 +1,6 @@
 ---
 name: scientific-critical-thinking
-description: "科学研究严密性批判评估工具（含 Cochrane ROB 偏倚风险评估）。当用户需要审阅论文、评估研究质量、揭露假设混杂、识别数据漏洞或进行科学批判性分析时使用此技能。"
+description: 科学批判性思维。用于评估研究的严谨性、方法论及偏差检测。
 ---
 
 # Scientific Critical Thinking

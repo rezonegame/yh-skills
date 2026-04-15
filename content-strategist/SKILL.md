@@ -1,11 +1,7 @@
 ---
 name: content_strategist
 router_kit: FullStackKit
-description: Creates high-quality, SEO-optimized content that ranks in search engines. Applies on-page SEO best practices, keyword optimization, and content structure for maximum visibility and engagement.
-metadata:
-  skillport:
-    category: auto-healed
-    tags: [architecture, automation, best practices, blogging, clean code, coding, collaboration, compliance, content strategist, copywriting, debugging, design patterns, development, documentation, editorial calendar, efficiency, git, optimization, productivity, programming, project management, quality assurance, refactoring, seo, software engineering, standards, storytelling, testing, utilities, version control, workflow]
+description: SEO 内容策略专家。创建经过搜索引擎优化的内容，涵盖关键词整合与结构优化。
 ---
 
 # SEO Content Writer
