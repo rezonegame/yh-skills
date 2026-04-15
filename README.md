@@ -18,38 +18,44 @@
 ### 🎲 桌游与游戏化 (Board Games & Gamification)
 这一系列技能专注于桌游各环节设计、机制研究及游戏化教育。
 
-- **boardgame-design**: 桌游设计专家技能。使用 5-Component Filter（清晰度、策略、互动、满意度、适配）来评估和设计游戏机制。
-- **boardgame-boards**: 游戏板和地图设计指南。涵盖布局系统、折叠模式、信息密度和路径清晰度。
-- **boardgame-boxes**: 桌游包装盒设计。提供尺寸选择、结构设计、封面艺术布局和生产规格指导。
-- **boardgame-cards**: 卡牌设计指南。涵盖卡牌尺寸、正面布局层级、图标系统、背面对齐和整版排版。
-- **boardgame-components**: 通用配件设计。包括标记 (Tokens)、指示物、玩家辅助卡、规则书和记分板的设计规范。
-- **boardgame-tiles**: 方块 (Tiles) 设计技能。专注于六边形、方形等方块的边缘连接系统、旋转兼容性和模切考虑。
-- **boardgame-ralph-loop**: 基于 Ralph Loop 方法论的自主迭代设计技能。提供自动化的测试和设计改进循环。
-- **boardgame-writer**: 智研家桌游公众号长文写作。支持 7 种作者人设（咕咚来了、苏微等），提供深度桌游评测与推荐。
-- **meeplelm**: MeepleLM 虚拟玩家测试技能。基于 MeepleLM 框架，使用 5 种玩家人设和 MDA 推理链模拟桌游玩家评测。
-- **gamified-course-designer**: 游戏化课程设计师。基于布卢姆分类法自动生成教学与游戏化方案，提升课程趣味性。
+| 技能名称 | 核心说明与功能 | 适用场景 |
+| :--- | :--- | :--- |
+| `boardgame-design` | **桌游设计专家**。使用 5-Component Filter（清晰度、策略、互动、满意度、适配）评估机制。 | 核心机制设计与平衡评估 |
+| `boardgame-boards` | **地图与板图指南**。涵盖布局系统、折叠模式、信息密度和路径清晰度。 | 游戏地图、中央版图布局 |
+| `boardgame-boxes` | **包装盒设计规范**。提供尺寸选择、结构设计、封面艺术布局和生产规格。 | 实物包装、封面视觉设计 |
+| `boardgame-cards` | **卡牌设计专家**。涵盖尺寸规范、层级布局、图标系统、背面对齐和排版。 | 游戏卡牌、数值展示 |
+| `boardgame-components` | **通用配件设计**。包括标记（Tokens）、指示物、玩家辅助、规则书和记分板。 | 通用 UI/UX 配件设计 |
+| `boardgame-tiles` | **版块方形/六边形设计**。专注于边缘连接系统、旋转兼容性和模切考虑。 | 版图拼接、地图块设计 |
+| `boardgame-ralph-loop` | **自主迭代系统**。基于 Ralph Loop 方法论，提供自动化的测试和设计改进循环。 | 机制自动化压测与迭代 |
+| `boardgame-writer` | **智研家桌游文案**。支持 7 种作者人设，提供深度、专业且具有传播力的评测。 | 公众号、知乎等长文推荐 |
+| `meeplelm` | **虚拟玩家评测**。基于 MDA 推理链，模拟不同人设玩家的主观体验，生成深度评论。 | 虚拟 Playtest、评价预测 |
+| `gamified-course-designer` | **游戏化课程设计**。基于布卢姆分类法，自动将教学内容转化为有趣的方案。 | 教育产品、课程趣味化升级 |
 
 ### 📝 内容创作与研究 (Content Creation & Research)
-用于辅助高水平学术研究、公众号写作及深度内容优化的工具。
+用于辅助高水平学术研究、专业内容创作及深度信息优化的核心工具。
 
-- **humanizer-zh**: 文本去 AI 痕迹与深度润色。剔除虚夸词汇，注入真实深度“人味”，非常适用于书评与长评。
-- **geo-content-optimizer**: GEO 内容架构师。针对 RAG 系统（Perplexity/SearchGPT）优化，提升事实密度与语义结构。
-- **merge-drafts**: 多稿合并专家。将多份草稿合并为一份统一、完整、直接交付的高质量文章。
-- **scientific-writing**: 科学写作核心技能。遵循 IMRAD 结构，确保符合学术出版标准。
-- **scientific-critical-thinking**: 科学批判性思维。用于评估研究的严谨性、方法论及偏差检测。
-- **literature-review**: 系统性文献综述技能。支持跨数据库检索、综合和引用验证。
-- **openalex-database**: OpenAlex 数据库查询。用于搜索学术论文、追踪趋势和文献计量分析。
-- **content-research-writer**: 内容研究与协作写作。辅助打捞事实、优化 Hook 并提供分段反馈。
-- **content-strategist**: SEO 内容策略专家。创建经过搜索引擎优化的内容，涵盖关键词整合与结构优化。
-- **doc-coauthoring**: 文档共创工作流。引导用户完成从背景收集到读者测试的完整编写流程。
-- **multi-agent-debate**: 多视角角色讨论框架。模拟 15 种人设进行三轮深度讨论，支持自动调研。
+| 技能名称 | 核心说明与功能 | 适用场景 |
+| :--- | :--- | :--- |
+| `humanizer-zh` | **文本去 AI 化**。剔除 AI 虚夸词汇，注入具有深度的真实“人味”，提升可读性。 | 书评、长评、深度润色 |
+| `geo-content-optimizer` | **GEO 内容架构师**。针对 RAG 系统优化，提升事实密度与语义结构。 | Perplexity/SearchGPT 优化 |
+| `merge-drafts` | **多稿合并专家**。将多份立场不同或细节分散的草稿合并为一份高质量正文。 | 深度文章整合、总结重组 |
+| `scientific-writing` | **科学写作核心**。遵循 IMRAD 结构，确保逻辑严密且符合学术发表标准。 | 论文撰写、学术报告、综述 |
+| `scientific-critical-thinking` | **科学批判思维**。评估研究的严谨性、方法论缺陷、实验设计及偏差检测。 | 论文评审、研究可行性分析 |
+| `literature-review` | **系统综述检索**。集成多数据库检索，支持文献筛选、综合分析与引用验证。 | 文献综述、前沿动态追踪 |
+| `openalex-database` | **OpenAlex 检索**。高效查询学术论文原始数据，分析研究趋势与文献计量。 | 深度学术调研、专家追踪 |
+| `content-research-writer` | **深度研究助手**。打捞事实、优化 Hook 开头并提供分段反馈与协作。 | 深度报道、调研型文章 |
+| `content-strategist` | **SEO 策略专家**。基于搜索意图优化内容结构、关键词整合及元标签。 | 营销着陆页、SEO 软文 |
+| `doc-coauthoring` | **文档共创流**。引导用户完成从背景收集、结构细化到读者测试的编写。 | 提案书、需求文档、白皮书 |
+| `multi-agent-debate` | **多视角辩论**。模拟 15 种专家/普通人人设进行三轮深度讨论，自动生成简报。 | 复杂决策、多角观点碰撞 |
 
 ### 💻 开发与技术 (Development & Tech)
-用于辅助软件开发、技术管理与信息检索的任务。
+专注于开发流程优化、自动化工具链与高频信息检索。
 
-- **ducksearch**: 命令行网页搜索工具。基于 DuckDuckGo，支持抓取网页内容及作为 MCP 服务器。
-- **last30days**: 跨平台趋势搜索。深度分析 Reddit, X, YouTube 等平台过去 30 天的热门讨论。
-- **obsidian-plugin-release**: Obsidian 插件自动化发布。支持版本管理、GitHub Release 及 BRAT 插件同步。
+| 技能名称 | 核心说明与功能 | 适用场景 |
+| :--- | :--- | :--- |
+| `ducksearch` | **命令行搜索工具**。基于 DuckDuckGo 抓取纯净网页内容，支持 MCP 服务器。 | 快速检索、程序自动化取数 |
+| `last30days` | **跨平台热点搜索**。深度抓取 Reddit, X, YouTube 等 17+ 平台的月度热门话题。 | 行业趋势分析、舆情追踪 |
+| `obsidian-plugin-release` | **插件发布自动化**。管理版本升级、GitHub Release 及 BRAT 插件地址同步。 | Obsidian 插件开发者工具 |
 
 ## 📦 安装 (Installation)
 
