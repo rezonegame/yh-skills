@@ -1,6 +1,6 @@
 ---
 name: content-research-writer
-description: 内容研究与协作写作。辅助打捞事实、优化 Hook 并提供分段反馈。
+description: "通过研究、添加引用、优化诱饵结构、迭代大纲并提供实时反馈，辅助创作高质量内容，实现协作文案工作流。 当用户要求研究、起草、优化结构或撰写长篇高质量文案时使用此技能。"
 ---
 
 # Content Research Writer

@@ -1,6 +1,6 @@
 ---
 name: meeplelm
-description: MeepleLM 虚拟玩家测试技能。基于 MeepleLM 框架，使用 5 种玩家人设和 MDA 推理链模拟桌游玩家评测。
+description: "桌游虚拟评测技能。当用户要求\"虚拟playtest\"、\"模拟玩家评测\"、\"MeepleLM\"、\"桌游AI评测\"、\"玩家人设模拟\"、\"MDA推理\"、\"生成桌游评测\"、\"virtual playtester\"、\"simulate player review\"、\"board game critique\"、\"persona simulation\"时使用此技能。基于 MeepleLM 框架（arXiv:2601.07251），模拟5种不同玩家人设，使用 MDA（机制-动态-美学）推理链进行专家级桌游评估。"
 ---
 
 # MeepleLM：虚拟玩家评测系统

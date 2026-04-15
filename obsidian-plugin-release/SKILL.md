@@ -1,6 +1,6 @@
 ---
 name: obsidian-plugin-release
-description: Obsidian 插件自动化发布。支持版本管理、GitHub Release 及 BRAT 插件同步。
+description: "Obsidian 插件发布与版本管理技能。当用户要求\"发布Obsidian插件\"、\"发布插件新版本\"、\"更新插件到GitHub\"、\"创建GitHub Release\"、\"同步插件仓库\"、\"BRAT发布\"、\"插件版本升级\"、\"publish obsidian plugin\"、\"release new version\"、\"create GitHub release\"、\"push plugin to GitHub\"、\"update plugin version\"，或提及 BRAT 安装、Obsidian 插件部署、插件版本升级时使用此技能。"
 ---
 
 # Obsidian 插件发布流程

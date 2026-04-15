@@ -1,6 +1,6 @@
 ---
 name: boardgame-components
-description: 通用配件设计。包括标记 (Tokens)、指示物、玩家辅助卡、规则书和记分板的设计规范。
+description: 桌游配件设计技能。当用户要求"设计游戏标记"、"规则书排版"、"玩家辅助卡设计"、"记分板设计"、"游戏配件制作"时使用此技能。提供标记、指示物、玩家辅助、规则书、记分板和参考卡的设计指导，涵盖尺寸标准、图标系统和生产规格。
 ---
 
 # Board Game Components Design

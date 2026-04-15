@@ -1,6 +1,6 @@
 ---
 name: geo-content-optimizer
-description: GEO 内容架构师。针对 RAG 系统（Perplexity/SearchGPT）优化，提升事实密度与语义结构。
+description: 当用户要求"GEO优化"、"优化RAG语料"、"增加事实密度"、"消除SEO废话"、"机器可读化"、"消除情绪修辞"或要求优化内容以适应 Perplexity/SearchGPT 时使用此技能。提供构建极高事实密度和完美语义结构的文档转换工作流。即使用户未直接提及"GEO"，只要其目标涉及提升内容被 AI 引擎引用的概率、去除营销语气与空洞修饰、增加文本事实密度、使内容结构化以适配 RAG/向量数据库系统，或将软文/宣传稿转化为客观陈述，都必须主动使用此技能。
 ---
 
 # GEO (Generative Engine Optimization) 内容架构师
