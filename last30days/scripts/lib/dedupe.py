@@ -46,7 +46,11 @@ def jaccard_similarity(set1: Set[str], set2: Set[str]) -> float:
 
 
 AnyItem = Union[schema.RedditItem, schema.XItem, schema.YouTubeItem,
-                schema.HackerNewsItem, schema.PolymarketItem, schema.WebSearchItem]
+                schema.HackerNewsItem, schema.PolymarketItem, schema.WebSearchItem,
+                schema.ArxivItem, schema.PatentItem, schema.BookItem,
+                schema.TikTokItem, schema.InstagramItem, schema.BlueskyItem, schema.TruthSocialItem,
+                schema.BilibiliItem, schema.ZhihuItem, schema.WeiboItem,
+                schema.DouyinItem, schema.BaiduItem]
 
 
 def get_item_text(item: AnyItem) -> str:
@@ -59,8 +63,32 @@ def get_item_text(item: AnyItem) -> str:
         return f"{item.title} {item.channel_name}"
     elif isinstance(item, schema.PolymarketItem):
         return f"{item.title} {item.question}"
+    elif isinstance(item, schema.ArxivItem):
+        return item.title
+    elif isinstance(item, schema.PatentItem):
+        return item.title
+    elif isinstance(item, schema.BookItem):
+        return f"{item.title} {' '.join(item.authors)}"
     elif isinstance(item, schema.WebSearchItem):
         return item.title
+    elif isinstance(item, schema.TikTokItem):
+        return item.caption
+    elif isinstance(item, schema.InstagramItem):
+        return item.caption
+    elif isinstance(item, schema.BlueskyItem):
+        return item.text
+    elif isinstance(item, schema.TruthSocialItem):
+        return item.text
+    elif isinstance(item, schema.BilibiliItem):
+        return item.title
+    elif isinstance(item, schema.ZhihuItem):
+        return f"{item.title} {item.excerpt}"
+    elif isinstance(item, schema.WeiboItem):
+        return item.text
+    elif isinstance(item, schema.DouyinItem):
+        return item.text
+    elif isinstance(item, schema.BaiduItem):
+        return f"{item.title} {item.snippet}"
     else:
         return item.text
 
@@ -82,6 +110,30 @@ def _get_cross_source_text(item: AnyItem) -> str:
             title = title[7:].strip()
         return title
     if isinstance(item, schema.PolymarketItem):
+        return item.title
+    if isinstance(item, schema.ArxivItem):
+        return item.title
+    if isinstance(item, schema.PatentItem):
+        return item.title
+    if isinstance(item, schema.BookItem):
+        return item.title
+    if isinstance(item, schema.TikTokItem):
+        return item.caption[:100]
+    if isinstance(item, schema.InstagramItem):
+        return item.caption[:100]
+    if isinstance(item, schema.BlueskyItem):
+        return item.text[:100]
+    if isinstance(item, schema.TruthSocialItem):
+        return item.text[:100]
+    if isinstance(item, schema.BilibiliItem):
+        return item.title
+    if isinstance(item, schema.ZhihuItem):
+        return item.title
+    if isinstance(item, schema.WeiboItem):
+        return item.text[:100]
+    if isinstance(item, schema.DouyinItem):
+        return item.text[:100]
+    if isinstance(item, schema.BaiduItem):
         return item.title
     return get_item_text(item)
 
@@ -207,6 +259,102 @@ def dedupe_polymarket(
     threshold: float = 0.7,
 ) -> List[schema.PolymarketItem]:
     """Dedupe Polymarket items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_arxiv(
+    items: List[schema.ArxivItem],
+    threshold: float = 0.7,
+) -> List[schema.ArxivItem]:
+    """Dedupe arXiv items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_patents(
+    items: List[schema.PatentItem],
+    threshold: float = 0.7,
+) -> List[schema.PatentItem]:
+    """Dedupe patent items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_books(
+    items: List[schema.BookItem],
+    threshold: float = 0.7,
+) -> List[schema.BookItem]:
+    """Dedupe book items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_tiktok(
+    items: List[schema.TikTokItem],
+    threshold: float = 0.7,
+) -> List[schema.TikTokItem]:
+    """Dedupe TikTok items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_instagram(
+    items: List[schema.InstagramItem],
+    threshold: float = 0.7,
+) -> List[schema.InstagramItem]:
+    """Dedupe Instagram items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_bluesky(
+    items: List[schema.BlueskyItem],
+    threshold: float = 0.7,
+) -> List[schema.BlueskyItem]:
+    """Dedupe Bluesky items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_truthsocial(
+    items: List[schema.TruthSocialItem],
+    threshold: float = 0.7,
+) -> List[schema.TruthSocialItem]:
+    """Dedupe Truth Social items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_bilibili(
+    items: List[schema.BilibiliItem],
+    threshold: float = 0.7,
+) -> List[schema.BilibiliItem]:
+    """Dedupe Bilibili items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_zhihu(
+    items: List[schema.ZhihuItem],
+    threshold: float = 0.7,
+) -> List[schema.ZhihuItem]:
+    """Dedupe Zhihu items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_weibo(
+    items: List[schema.WeiboItem],
+    threshold: float = 0.7,
+) -> List[schema.WeiboItem]:
+    """Dedupe Weibo items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_douyin(
+    items: List[schema.DouyinItem],
+    threshold: float = 0.7,
+) -> List[schema.DouyinItem]:
+    """Dedupe Douyin items."""
+    return dedupe_items(items, threshold)
+
+
+def dedupe_baidu(
+    items: List[schema.BaiduItem],
+    threshold: float = 0.7,
+) -> List[schema.BaiduItem]:
+    """Dedupe Baidu items."""
     return dedupe_items(items, threshold)
 
 

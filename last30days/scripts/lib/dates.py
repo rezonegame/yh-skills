@@ -90,6 +90,26 @@ def get_date_confidence(date_str: Optional[str], from_date: str, to_date: str) -
         return 'low'
 
 
+def is_date_in_range(date_str: str, from_date: str, to_date: str) -> bool:
+    """Check if a date is within the specified range.
+
+    Args:
+        date_str: The date to check (YYYY-MM-DD)
+        from_date: Start of valid range (YYYY-MM-DD)
+        to_date: End of valid range (YYYY-MM-DD)
+
+    Returns:
+        True if date is within range, False otherwise
+    """
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d").date()
+        start = datetime.strptime(from_date, "%Y-%m-%d").date()
+        end = datetime.strptime(to_date, "%Y-%m-%d").date()
+        return start <= dt <= end
+    except ValueError:
+        return False
+
+
 def days_ago(date_str: Optional[str]) -> Optional[int]:
     """Calculate how many days ago a date is.
 

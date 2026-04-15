@@ -1,7 +1,6 @@
 ---
 name: scientific-writing
-description: "Core skill for the deep research and writing tool. Write scientific manuscripts in full paragraphs (never bullet points). Use two-stage process: (1) create section outlines with key points using research-lookup, (2) convert to flowing prose. IMRAD structure, citations (APA/AMA/Vancouver), figures/tables, reporting guidelines (CONSORT/STROBE/PRISMA), for research papers and journal submissions."
-allowed-tools: [Read, Write, Edit, Bash]
+description: "具有强制 IMRAD 逻辑段落检查的学术论文写作技能。当用户需要撰写科学论文、研究报告、学术稿件，或要求\"写论文\"、\"学术写作\"、\"IMRAD格式\"、\"投稿\"时使用此技能，提供学术语言编排指南。"
 ---
 
 # Scientific Writing

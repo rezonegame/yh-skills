@@ -1,6 +1,6 @@
 ---
 name: content-research-writer
-description: Assists in writing high-quality content by conducting research, adding citations, improving hooks, iterating on outlines, and providing real-time feedback on each section. Transforms your writing process from solo effort to collaborative partnership.
+description: "通过研究、添加引用、优化诱饵结构、迭代大纲并提供实时反馈，辅助创作高质量内容，实现协作文案工作流。 当用户要求研究、起草、优化结构或撰写长篇高质量文案时使用此技能。"
 ---
 
 # Content Research Writer

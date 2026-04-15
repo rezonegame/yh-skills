@@ -38,9 +38,9 @@ _child_pids: set = set()
 _child_pids_lock = threading.Lock()
 
 TIMEOUT_PROFILES = {
-    "quick":   {"global": 90,  "future": 30, "reddit_future": 60,  "youtube_future": 60,  "hackernews_future": 30,  "polymarket_future": 15,  "http": 15, "enrich_per": 8,  "enrich_total": 30, "enrich_max_items": 10},
-    "default": {"global": 180, "future": 60, "reddit_future": 90,  "youtube_future": 90,  "hackernews_future": 60,  "polymarket_future": 30,  "http": 30, "enrich_per": 15, "enrich_total": 45, "enrich_max_items": 15},
-    "deep":    {"global": 300, "future": 90, "reddit_future": 120, "youtube_future": 120, "hackernews_future": 90,  "polymarket_future": 45,  "http": 30, "enrich_per": 15, "enrich_total": 60, "enrich_max_items": 25},
+    "quick":   {"global": 90,  "future": 30, "reddit_future": 60,  "youtube_future": 60,  "hackernews_future": 30,  "polymarket_future": 15,  "arxiv_future": 30,  "patent_future": 30,  "book_future": 30,  "http": 15, "enrich_per": 8,  "enrich_total": 30, "enrich_max_items": 10},
+    "default": {"global": 180, "future": 60, "reddit_future": 90,  "youtube_future": 90,  "hackernews_future": 60,  "polymarket_future": 30,  "arxiv_future": 30,  "patent_future": 30,  "book_future": 30,  "http": 30, "enrich_per": 15, "enrich_total": 45, "enrich_max_items": 15},
+    "deep":    {"global": 300, "future": 90, "reddit_future": 120, "youtube_future": 120, "hackernews_future": 90,  "polymarket_future": 45,  "arxiv_future": 45,  "patent_future": 45,  "book_future": 45,  "http": 30, "enrich_per": 15, "enrich_total": 60, "enrich_max_items": 25},
 }
 
 
@@ -95,12 +95,15 @@ def _install_global_timeout(timeout_seconds: int):
         timer.start()
 
 from lib import (
+    arxiv,
     bird_x,
+    books,
     dates,
     dedupe,
     gemini_reddit,
     hackernews,
     native_reddit,
+    patents,
     polymarket,
     entity_extract,
     env,
@@ -116,6 +119,14 @@ from lib import (
     websearch,
     xai_x,
     youtube_yt,
+    # Chinese platforms
+    bilibili,
+    zhihu,
+    weibo,
+    douyin,
+    baidu,
+    # Translation support
+    translate,
 )
 
 
@@ -408,6 +419,239 @@ def _search_polymarket(
     return pm_items, pm_error
 
 
+def _search_arxiv(
+    topic: str,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search arXiv via public Atom API (runs in thread).
+
+    Returns:
+        Tuple of (arxiv_items, arxiv_error)
+    """
+    arxiv_error = None
+
+    try:
+        response = arxiv.search_arxiv(
+            topic, from_date, to_date, depth=depth,
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    arxiv_items = arxiv.parse_arxiv_response(response, topic=topic)
+
+    if response.get("error"):
+        arxiv_error = response["error"]
+
+    return arxiv_items, arxiv_error
+
+
+def _search_patents(
+    topic: str,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search patents via PatentsView API (runs in thread).
+
+    Returns:
+        Tuple of (patent_items, patent_error)
+    """
+    patent_error = None
+
+    try:
+        response = patents.search_patents(
+            topic, from_date, to_date, depth=depth,
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    patent_items = patents.parse_patents_response(response, topic=topic)
+
+    if response.get("error"):
+        patent_error = response["error"]
+
+    return patent_items, patent_error
+
+
+def _search_books(
+    topic: str,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search Google Books via public API (runs in thread).
+
+    Returns:
+        Tuple of (book_items, book_error)
+    """
+    book_error = None
+
+    try:
+        response = books.search_books(
+            topic, from_date, to_date, depth=depth,
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    book_items = books.parse_books_response(response, topic=topic)
+
+    if response.get("error"):
+        book_error = response["error"]
+
+    return book_items, book_error
+
+
+def _search_bilibili(
+    topic: str,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search Bilibili via public API (runs in thread).
+
+    Returns:
+        Tuple of (bilibili_items, bilibili_error)
+    """
+    bilibili_error = None
+
+    try:
+        response = bilibili.search_bilibili(
+            topic, from_date, to_date, depth=depth,
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    bilibili_items = bilibili.parse_bilibili_response(response)
+
+    if response.get("error"):
+        bilibili_error = response["error"]
+
+    return bilibili_items, bilibili_error
+
+
+def _search_zhihu(
+    topic: str,
+    config: dict,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search Zhihu via public API (runs in thread).
+
+    Returns:
+        Tuple of (zhihu_items, zhihu_error)
+    """
+    zhihu_error = None
+
+    try:
+        response = zhihu.search_zhihu(
+            topic, from_date, to_date, depth=depth,
+            cookie=config.get("ZHIHU_COOKIE"),
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    zhihu_items = zhihu.parse_zhihu_response(response)
+
+    if response.get("error"):
+        zhihu_error = response["error"]
+
+    return zhihu_items, zhihu_error
+
+
+def _search_weibo(
+    topic: str,
+    config: dict,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search Weibo via public API (runs in thread).
+
+    Returns:
+        Tuple of (weibo_items, weibo_error)
+    """
+    weibo_error = None
+
+    try:
+        response = weibo.search_weibo(
+            topic, from_date, to_date, depth=depth,
+            access_token=config.get("WEIBO_ACCESS_TOKEN"),
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    weibo_items = weibo.parse_weibo_response(response)
+
+    if response.get("error"):
+        weibo_error = response["error"]
+
+    return weibo_items, weibo_error
+
+
+def _search_douyin(
+    topic: str,
+    config: dict,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search Douyin via TikHub API or public API (runs in thread).
+
+    Returns:
+        Tuple of (douyin_items, douyin_error)
+    """
+    douyin_error = None
+
+    try:
+        response = douyin.search_douyin(
+            topic, from_date, to_date, depth=depth,
+            api_key=config.get("TIKHUB_API_KEY"),
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    douyin_items = douyin.parse_douyin_response(response)
+
+    if response.get("error"):
+        douyin_error = response["error"]
+
+    return douyin_items, douyin_error
+
+
+def _search_baidu(
+    topic: str,
+    config: dict,
+    from_date: str,
+    to_date: str,
+    depth: str,
+) -> tuple:
+    """Search Baidu via public API (runs in thread).
+
+    Returns:
+        Tuple of (baidu_items, baidu_error)
+    """
+    baidu_error = None
+
+    try:
+        response = baidu.search_baidu(
+            topic, from_date, to_date, depth=depth,
+            api_key=config.get("BAIDU_API_KEY"),
+            secret_key=config.get("BAIDU_SECRET_KEY"),
+        )
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+    baidu_items = baidu.parse_baidu_response(response)
+
+    if response.get("error"):
+        baidu_error = response["error"]
+
+    return baidu_items, baidu_error
+
+
 def _search_web(
     topic: str,
     config: dict,
@@ -645,13 +889,18 @@ def run_research(
     timeouts: dict = None,
     resolved_handle: str = None,
     reddit_source: str = "openai",
+    use_chinese_platforms: bool = True,
 ) -> tuple:
     """Run the research pipeline.
 
     Returns:
-        Tuple of (reddit_items, x_items, youtube_items, web_items, web_needed,
+        Tuple of (reddit_items, x_items, youtube_items, hackernews_items, polymarket_items,
+                  arxiv_items, patent_items, book_items, web_items, web_needed,
+                  bilibili_items, zhihu_items, weibo_items, douyin_items, baidu_items,
                   raw_openai, raw_xai, raw_reddit_enriched,
-                  reddit_error, x_error, youtube_error, web_error)
+                  reddit_error, x_error, youtube_error, hackernews_error, polymarket_error,
+                  arxiv_error, patent_error, book_error, web_error,
+                  bilibili_error, zhihu_error, weibo_error, douyin_error, baidu_error)
 
     Note: web_needed is True when web search should be performed by the assistant
     (i.e., no native web search API keys are configured). When native web search
@@ -661,12 +910,45 @@ def run_research(
         timeouts = TIMEOUT_PROFILES[depth]
     future_timeout = timeouts["future"]
 
+    # Detect if topic is in Chinese and prepare search topics
+    is_chinese = translate.detect_chinese(topic)
+
+    # Prepare search topics for different platform groups
+    if is_chinese:
+        # For Chinese input:
+        # - Chinese platforms use original Chinese topic
+        # - Overseas platforms use translated topics (en, ru, fr, de, ar)
+        chinese_topic = topic
+        overseas_topics = translate.get_search_topics(topic)
+        # Filter out the original Chinese topic from overseas topics
+        overseas_topics = [t for t in overseas_topics if t["lang"] != "original" and t["topic"] != topic]
+        # If no translations available, use English as default
+        if not overseas_topics:
+            overseas_topics = [{"lang": "en", "topic": translate.translate_topic(topic, "en")}]
+        sys.stderr.write(f"[Multi-language] Chinese platforms: '{chinese_topic}' | Overseas platforms: {len(overseas_topics)} languages\n")
+        sys.stderr.flush()
+    else:
+        # For non-Chinese input, use original topic for all platforms
+        chinese_topic = topic
+        overseas_topics = [{"lang": "original", "topic": topic}]
+
+    # Primary topic for display purposes
+    primary_topic = overseas_topics[0]["topic"]
+
     reddit_items = []
     x_items = []
     youtube_items = []
     hackernews_items = []
     polymarket_items = []
+    arxiv_items = []
+    patent_items = []
+    book_items = []
     web_items = []
+    bilibili_items = []
+    zhihu_items = []
+    weibo_items = []
+    douyin_items = []
+    baidu_items = []
     raw_openai = None
     raw_xai = None
     raw_reddit_enriched = []
@@ -675,7 +957,15 @@ def run_research(
     youtube_error = None
     hackernews_error = None
     polymarket_error = None
+    arxiv_error = None
+    patent_error = None
+    book_error = None
     web_error = None
+    bilibili_error = None
+    zhihu_error = None
+    weibo_error = None
+    douyin_error = None
+    baidu_error = None
 
     # Determine web search mode
     do_web = sources in ("all", "web", "reddit-web", "x-web")
@@ -717,168 +1007,470 @@ def run_research(
                     progress.show_error(f"YouTube error: {e}")
             if progress:
                 progress.end_youtube(len(youtube_items))
-        return reddit_items, x_items, youtube_items, hackernews_items, polymarket_items, web_items, web_needed, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error, youtube_error, hackernews_error, polymarket_error, web_error
+        return reddit_items, x_items, youtube_items, hackernews_items, polymarket_items, arxiv_items, patent_items, book_items, web_items, web_needed, bilibili_items, zhihu_items, weibo_items, douyin_items, baidu_items, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error, youtube_error, hackernews_error, polymarket_error, arxiv_error, patent_error, book_error, web_error, bilibili_error, zhihu_error, weibo_error, douyin_error, baidu_error
 
     # Determine which searches to run
     do_reddit = sources in ("both", "reddit", "all", "reddit-web")
     do_x = sources in ("both", "x", "all", "x-web")
     do_hackernews = True  # HN is always available (no API key)
     do_polymarket = True  # Polymarket is always available (no API key)
+    do_arxiv = True       # arXiv is always available (no API key)
+    do_patents = True     # PatentsView is always available (no API key)
+    do_books = True       # Google Books basic is always available (no API key)
+    do_chinese = use_chinese_platforms  # Chinese platforms are always available (public APIs)
 
-    # Run Reddit, X, YouTube, HN, Polymarket, and Web searches in parallel
-    reddit_future = None
-    x_future = None
-    youtube_future = None
-    hackernews_future = None
-    polymarket_future = None
-    web_future = None
-    max_workers = 2 + (1 if run_youtube else 0) + (1 if do_hackernews else 0) + (1 if do_polymarket else 0) + (1 if web_backend else 0)
+    # Run Reddit, X, YouTube, HN, Polymarket, arXiv, Patents, Books, Web, and Chinese platforms in parallel
+    reddit_futures = []
+    x_futures = []
+    youtube_futures = []
+    hackernews_futures = []
+    polymarket_futures = []
+    arxiv_futures = []
+    patent_futures = []
+    book_futures = []
+    web_futures = []
+    bilibili_future = None
+    zhihu_future = None
+    weibo_future = None
+    douyin_future = None
+    baidu_future = None
+
+    # Calculate max workers: multiply by number of overseas topics for parallel multi-language search
+    num_overseas_topics = len(overseas_topics)
+    max_workers = (
+        (2 if do_reddit else 0) * num_overseas_topics +
+        (1 if do_x else 0) * num_overseas_topics +
+        (1 if run_youtube else 0) * num_overseas_topics +
+        (1 if do_hackernews else 0) * num_overseas_topics +
+        (1 if do_polymarket else 0) * num_overseas_topics +
+        (1 if do_arxiv else 0) * num_overseas_topics +
+        (1 if do_patents else 0) * num_overseas_topics +
+        (1 if do_books else 0) * num_overseas_topics +
+        (1 if web_backend else 0) * num_overseas_topics +
+        (5 if do_chinese else 0)
+    )
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit searches
+        # Submit overseas platform searches for each language topic
         if do_reddit:
             if progress:
                 progress.start_reddit()
-            reddit_future = executor.submit(
-                _search_reddit, topic, config, selected_models,
-                from_date, to_date, depth, mock, reddit_source
-            )
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                lang = topic_info["lang"]
+                sys.stderr.write(f"[Reddit-{lang}] Searching: {search_topic}\n")
+                sys.stderr.flush()
+                reddit_futures.append(executor.submit(
+                    _search_reddit, search_topic, config, selected_models,
+                    from_date, to_date, depth, mock, reddit_source
+                ))
 
         if do_x:
             if progress:
                 progress.start_x()
-            x_future = executor.submit(
-                _search_x, topic, config, selected_models,
-                from_date, to_date, depth, mock, x_source
-            )
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                lang = topic_info["lang"]
+                sys.stderr.write(f"[X-{lang}] Searching: {search_topic}\n")
+                sys.stderr.flush()
+                x_futures.append(executor.submit(
+                    _search_x, search_topic, config, selected_models,
+                    from_date, to_date, depth, mock, x_source
+                ))
 
         if run_youtube:
             if progress:
                 progress.start_youtube()
-            youtube_future = executor.submit(
-                _search_youtube, topic, from_date, to_date, depth
-            )
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                lang = topic_info["lang"]
+                sys.stderr.write(f"[YouTube-{lang}] Searching: {search_topic}\n")
+                sys.stderr.flush()
+                youtube_futures.append(executor.submit(
+                    _search_youtube, search_topic, from_date, to_date, depth
+                ))
 
         if do_hackernews:
             if progress:
                 progress.start_hackernews()
-            hackernews_future = executor.submit(
-                _search_hackernews, topic, from_date, to_date, depth
-            )
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                lang = topic_info["lang"]
+                hackernews_futures.append(executor.submit(
+                    _search_hackernews, search_topic, from_date, to_date, depth
+                ))
 
         if do_polymarket:
             if progress:
                 progress.start_polymarket()
-            polymarket_future = executor.submit(
-                _search_polymarket, topic, from_date, to_date, depth
-            )
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                polymarket_futures.append(executor.submit(
+                    _search_polymarket, search_topic, from_date, to_date, depth
+                ))
+
+        if do_arxiv:
+            if progress:
+                progress.start_arxiv()
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                arxiv_futures.append(executor.submit(
+                    _search_arxiv, search_topic, from_date, to_date, depth
+                ))
+
+        if do_patents:
+            if progress:
+                progress.start_patents()
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                patent_futures.append(executor.submit(
+                    _search_patents, search_topic, from_date, to_date, depth
+                ))
+
+        if do_books:
+            if progress:
+                progress.start_books()
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                book_futures.append(executor.submit(
+                    _search_books, search_topic, from_date, to_date, depth
+                ))
 
         if web_backend:
             sys.stderr.write(f"[web] Searching via {web_backend}\n")
             sys.stderr.flush()
-            web_future = executor.submit(
-                _search_web, topic, config, from_date, to_date, depth
+            for topic_info in overseas_topics:
+                search_topic = topic_info["topic"]
+                web_futures.append(executor.submit(
+                    _search_web, search_topic, config, from_date, to_date, depth
+                ))
+
+        # Chinese platform searches (always available with public APIs)
+        if do_chinese:
+            # Use original Chinese topic for Chinese platforms
+            chinese_topic = topic if is_chinese else primary_topic
+
+            sys.stderr.write(f"[Bilibili] Searching: {chinese_topic}\n")
+            sys.stderr.flush()
+            bilibili_future = executor.submit(
+                _search_bilibili, chinese_topic, from_date, to_date, depth
             )
 
-        # Collect results (with timeouts to prevent indefinite blocking)
-        if reddit_future:
-            reddit_timeout = timeouts.get("reddit_future", future_timeout)
-            try:
-                reddit_items, raw_openai, reddit_error = reddit_future.result(timeout=reddit_timeout)
-                if reddit_error and progress:
-                    progress.show_error(f"Reddit error: {reddit_error}")
-            except TimeoutError:
-                reddit_error = f"Reddit search timed out after {reddit_timeout}s"
-                if progress:
-                    progress.show_error(reddit_error)
-            except Exception as e:
-                reddit_error = f"{type(e).__name__}: {e}"
-                if progress:
-                    progress.show_error(f"Reddit error: {e}")
+            sys.stderr.write(f"[Zhihu] Searching: {chinese_topic}\n")
+            sys.stderr.flush()
+            zhihu_future = executor.submit(
+                _search_zhihu, chinese_topic, config, from_date, to_date, depth
+            )
+
+            sys.stderr.write(f"[Weibo] Searching: {chinese_topic}\n")
+            sys.stderr.flush()
+            weibo_future = executor.submit(
+                _search_weibo, chinese_topic, config, from_date, to_date, depth
+            )
+
+            sys.stderr.write(f"[Douyin] Searching: {chinese_topic}\n")
+            sys.stderr.flush()
+            douyin_future = executor.submit(
+                _search_douyin, chinese_topic, config, from_date, to_date, depth
+            )
+
+            sys.stderr.write(f"[Baidu] Searching: {chinese_topic}\n")
+            sys.stderr.flush()
+            baidu_future = executor.submit(
+                _search_baidu, chinese_topic, config, from_date, to_date, depth
+            )
+
+        # --- Collect results ---
+
+        # Reddit (special: 3-tuple return: items, raw_response, error)
+        if reddit_futures:
+            for f in reddit_futures:
+                try:
+                    items, raw_resp, err = f.result(timeout=future_timeout)
+                    reddit_items.extend(items)
+                    raw_openai = raw_resp or raw_openai
+                    if err:
+                        reddit_error = err
+                except TimeoutError:
+                    reddit_error = f"Reddit timed out after {future_timeout}s"
+                except Exception as e:
+                    reddit_error = f"Reddit {e}"
+            # Deduplicate Reddit results by URL
+            seen = set()
+            reddit_items = [
+                item for item in reddit_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if reddit_error and progress:
+                progress.show_error(f"Reddit error: {reddit_error}")
             if progress:
                 progress.end_reddit(len(reddit_items))
 
-        if x_future:
-            try:
-                x_items, raw_xai, x_error = x_future.result(timeout=future_timeout)
-                if x_error and progress:
-                    progress.show_error(f"X error: {x_error}")
-            except TimeoutError:
-                x_error = f"X search timed out after {future_timeout}s"
-                if progress:
-                    progress.show_error(x_error)
-            except Exception as e:
-                x_error = f"{type(e).__name__}: {e}"
-                if progress:
-                    progress.show_error(f"X error: {e}")
+        # X (special: 3-tuple return: items, raw_response, error)
+        if x_futures:
+            for f in x_futures:
+                try:
+                    items, raw_resp, err = f.result(timeout=future_timeout)
+                    x_items.extend(items)
+                    raw_xai = raw_resp or raw_xai
+                    if err:
+                        x_error = err
+                except TimeoutError:
+                    x_error = f"X timed out after {future_timeout}s"
+                except Exception as e:
+                    x_error = f"X {e}"
+            # Deduplicate X results by URL
+            seen = set()
+            x_items = [
+                item for item in x_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if x_error and progress:
+                progress.show_error(f"X error: {x_error}")
             if progress:
                 progress.end_x(len(x_items))
 
-        if youtube_future:
-            yt_timeout = timeouts.get("youtube_future", future_timeout)
-            try:
-                youtube_items, youtube_error = youtube_future.result(timeout=yt_timeout)
-                if youtube_error and progress:
-                    progress.show_error(f"YouTube error: {youtube_error}")
-            except TimeoutError:
-                youtube_error = f"YouTube search timed out after {yt_timeout}s"
-                if progress:
-                    progress.show_error(youtube_error)
-            except Exception as e:
-                youtube_error = f"{type(e).__name__}: {e}"
-                if progress:
-                    progress.show_error(f"YouTube error: {e}")
+        # YouTube (2-tuple: items, error)
+        if youtube_futures:
+            all_items = []
+            for f in youtube_futures:
+                try:
+                    items, err = f.result(timeout=future_timeout)
+                    all_items.extend(items or [])
+                    if err and not youtube_error:
+                        youtube_error = err
+                except TimeoutError:
+                    youtube_error = f"YouTube timed out after {future_timeout}s"
+                except Exception as e:
+                    youtube_error = f"YouTube {e}"
+            seen = set()
+            youtube_items = [
+                item for item in all_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if youtube_error and progress:
+                progress.show_error(f"YouTube error: {youtube_error}")
             if progress:
                 progress.end_youtube(len(youtube_items))
 
-        if hackernews_future:
-            hn_timeout = timeouts.get("hackernews_future", future_timeout)
-            try:
-                hackernews_items, hackernews_error = hackernews_future.result(timeout=hn_timeout)
-                if hackernews_error and progress:
-                    progress.show_error(f"HN error: {hackernews_error}")
-            except TimeoutError:
-                hackernews_error = f"HN search timed out after {hn_timeout}s"
-                if progress:
-                    progress.show_error(hackernews_error)
-            except Exception as e:
-                hackernews_error = f"{type(e).__name__}: {e}"
-                if progress:
-                    progress.show_error(f"HN error: {e}")
+        # HackerNews (2-tuple: items, error)
+        if hackernews_futures:
+            all_items = []
+            for f in hackernews_futures:
+                try:
+                    items, err = f.result(timeout=future_timeout)
+                    all_items.extend(items or [])
+                    if err and not hackernews_error:
+                        hackernews_error = err
+                except TimeoutError:
+                    hackernews_error = f"HN timed out after {future_timeout}s"
+                except Exception as e:
+                    hackernews_error = f"HN {e}"
+            seen = set()
+            hackernews_items = [
+                item for item in all_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if hackernews_error and progress:
+                progress.show_error(f"HN error: {hackernews_error}")
             if progress:
                 progress.end_hackernews(len(hackernews_items))
 
-        if polymarket_future:
-            pm_timeout = timeouts.get("polymarket_future", future_timeout)
-            try:
-                polymarket_items, polymarket_error = polymarket_future.result(timeout=pm_timeout)
-                if polymarket_error and progress:
-                    progress.show_error(f"Polymarket error: {polymarket_error}")
-            except TimeoutError:
-                polymarket_error = f"Polymarket search timed out after {pm_timeout}s"
-                if progress:
-                    progress.show_error(polymarket_error)
-            except Exception as e:
-                polymarket_error = f"{type(e).__name__}: {e}"
-                if progress:
-                    progress.show_error(f"Polymarket error: {e}")
+        # Polymarket (2-tuple: items, error)
+        if polymarket_futures:
+            all_items = []
+            for f in polymarket_futures:
+                try:
+                    items, err = f.result(timeout=future_timeout)
+                    all_items.extend(items or [])
+                    if err and not polymarket_error:
+                        polymarket_error = err
+                except TimeoutError:
+                    polymarket_error = f"Polymarket timed out after {future_timeout}s"
+                except Exception as e:
+                    polymarket_error = f"Polymarket {e}"
+            seen = set()
+            polymarket_items = [
+                item for item in all_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if polymarket_error and progress:
+                progress.show_error(f"Polymarket error: {polymarket_error}")
             if progress:
                 progress.end_polymarket(len(polymarket_items))
 
-        if web_future:
-            try:
-                web_items, web_error = web_future.result(timeout=future_timeout)
-                if web_error and progress:
-                    progress.show_error(f"Web error: {web_error}")
-            except TimeoutError:
-                web_error = f"Web search timed out after {future_timeout}s"
-                if progress:
-                    progress.show_error(web_error)
-            except Exception as e:
-                web_error = f"{type(e).__name__}: {e}"
-                if progress:
-                    progress.show_error(f"Web error: {e}")
+        # arXiv (2-tuple: items, error)
+        if arxiv_futures:
+            all_items = []
+            for f in arxiv_futures:
+                try:
+                    items, err = f.result(timeout=future_timeout)
+                    all_items.extend(items or [])
+                    if err and not arxiv_error:
+                        arxiv_error = err
+                except TimeoutError:
+                    arxiv_error = f"arXiv timed out after {future_timeout}s"
+                except Exception as e:
+                    arxiv_error = f"arXiv {e}"
+            seen = set()
+            arxiv_items = [
+                item for item in all_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if arxiv_error and progress:
+                progress.show_error(f"arXiv error: {arxiv_error}")
+            if progress:
+                progress.end_arxiv(len(arxiv_items))
+
+        # Patents (2-tuple: items, error)
+        if patent_futures:
+            all_items = []
+            for f in patent_futures:
+                try:
+                    items, err = f.result(timeout=future_timeout)
+                    all_items.extend(items or [])
+                    if err and not patent_error:
+                        patent_error = err
+                except TimeoutError:
+                    patent_error = f"Patents timed out after {future_timeout}s"
+                except Exception as e:
+                    patent_error = f"Patents {e}"
+            seen = set()
+            patent_items = [
+                item for item in all_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if patent_error and progress:
+                progress.show_error(f"Patents error: {patent_error}")
+            if progress:
+                progress.end_patents(len(patent_items))
+
+        # Books (2-tuple: items, error)
+        if book_futures:
+            all_items = []
+            for f in book_futures:
+                try:
+                    items, err = f.result(timeout=future_timeout)
+                    all_items.extend(items or [])
+                    if err and not book_error:
+                        book_error = err
+                except TimeoutError:
+                    book_error = f"Books timed out after {future_timeout}s"
+                except Exception as e:
+                    book_error = f"Books {e}"
+            seen = set()
+            book_items = [
+                item for item in all_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if book_error and progress:
+                progress.show_error(f"Books error: {book_error}")
+            if progress:
+                progress.end_books(len(book_items))
+
+        # Web (2-tuple: items, error)
+        if web_futures:
+            all_items = []
+            for f in web_futures:
+                try:
+                    items, err = f.result(timeout=future_timeout)
+                    all_items.extend(items or [])
+                    if err and not web_error:
+                        web_error = err
+                except TimeoutError:
+                    web_error = f"Web timed out after {future_timeout}s"
+                except Exception as e:
+                    web_error = f"Web {e}"
+            seen = set()
+            web_items = [
+                item for item in all_items
+                if not (item.get("url", "") in seen or seen.add(item.get("url", "")))
+            ]
+            if web_error and progress:
+                progress.show_error(f"Web error: {web_error}")
             sys.stderr.write(f"[web] {len(web_items)} results\n")
+            sys.stderr.flush()
+
+        # --- Chinese platform results (single futures, 2-tuple: items, error) ---
+
+        if bilibili_future:
+            try:
+                bilibili_items, bilibili_error = bilibili_future.result(timeout=future_timeout)
+                if bilibili_error and progress:
+                    progress.show_error(f"Bilibili error: {bilibili_error}")
+            except TimeoutError:
+                bilibili_error = f"Bilibili search timed out after {future_timeout}s"
+                if progress:
+                    progress.show_error(bilibili_error)
+            except Exception as e:
+                bilibili_error = f"{type(e).__name__}: {e}"
+                if progress:
+                    progress.show_error(f"Bilibili error: {e}")
+            sys.stderr.write(f"[Bilibili] {len(bilibili_items)} results\n")
+            sys.stderr.flush()
+
+        if zhihu_future:
+            try:
+                zhihu_items, zhihu_error = zhihu_future.result(timeout=future_timeout)
+                if zhihu_error and progress:
+                    progress.show_error(f"Zhihu error: {zhihu_error}")
+            except TimeoutError:
+                zhihu_error = f"Zhihu search timed out after {future_timeout}s"
+                if progress:
+                    progress.show_error(zhihu_error)
+            except Exception as e:
+                zhihu_error = f"{type(e).__name__}: {e}"
+                if progress:
+                    progress.show_error(f"Zhihu error: {e}")
+            sys.stderr.write(f"[Zhihu] {len(zhihu_items)} results\n")
+            sys.stderr.flush()
+
+        if weibo_future:
+            try:
+                weibo_items, weibo_error = weibo_future.result(timeout=future_timeout)
+                if weibo_error and progress:
+                    progress.show_error(f"Weibo error: {weibo_error}")
+            except TimeoutError:
+                weibo_error = f"Weibo search timed out after {future_timeout}s"
+                if progress:
+                    progress.show_error(weibo_error)
+            except Exception as e:
+                weibo_error = f"{type(e).__name__}: {e}"
+                if progress:
+                    progress.show_error(f"Weibo error: {e}")
+            sys.stderr.write(f"[Weibo] {len(weibo_items)} results\n")
+            sys.stderr.flush()
+
+        if douyin_future:
+            try:
+                douyin_items, douyin_error = douyin_future.result(timeout=future_timeout)
+                if douyin_error and progress:
+                    progress.show_error(f"Douyin error: {douyin_error}")
+            except TimeoutError:
+                douyin_error = f"Douyin search timed out after {future_timeout}s"
+                if progress:
+                    progress.show_error(douyin_error)
+            except Exception as e:
+                douyin_error = f"{type(e).__name__}: {e}"
+                if progress:
+                    progress.show_error(f"Douyin error: {e}")
+            sys.stderr.write(f"[Douyin] {len(douyin_items)} results\n")
+            sys.stderr.flush()
+
+        if baidu_future:
+            try:
+                baidu_items, baidu_error = baidu_future.result(timeout=future_timeout)
+                if baidu_error and progress:
+                    progress.show_error(f"Baidu error: {baidu_error}")
+            except TimeoutError:
+                baidu_error = f"Baidu search timed out after {future_timeout}s"
+                if progress:
+                    progress.show_error(baidu_error)
+            except Exception as e:
+                baidu_error = f"{type(e).__name__}: {e}"
+                if progress:
+                    progress.show_error(f"Baidu error: {e}")
+            sys.stderr.write(f"[Baidu] {len(baidu_items)} results\n")
             sys.stderr.flush()
 
     # Enrich Reddit items with real data (parallel, capped)
@@ -973,7 +1565,7 @@ def run_research(
         if sup_x:
             x_items.extend(sup_x)
 
-    return reddit_items, x_items, youtube_items, hackernews_items, polymarket_items, web_items, web_needed, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error, youtube_error, hackernews_error, polymarket_error, web_error
+    return reddit_items, x_items, youtube_items, hackernews_items, polymarket_items, arxiv_items, patent_items, book_items, web_items, web_needed, bilibili_items, zhihu_items, weibo_items, douyin_items, baidu_items, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error, youtube_error, hackernews_error, polymarket_error, arxiv_error, patent_error, book_error, web_error, bilibili_error, zhihu_error, weibo_error, douyin_error, baidu_error
 
 
 def main():
@@ -1215,7 +1807,7 @@ def main():
         mode = sources
 
     # Run research
-    reddit_items, x_items, youtube_items, hackernews_items, polymarket_items, web_items, web_needed, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error, youtube_error, hackernews_error, polymarket_error, web_error = run_research(
+    reddit_items, x_items, youtube_items, hackernews_items, polymarket_items, arxiv_items, patent_items, book_items, web_items, web_needed, bilibili_items, zhihu_items, weibo_items, douyin_items, baidu_items, raw_openai, raw_xai, raw_reddit_enriched, reddit_error, x_error, youtube_error, hackernews_error, polymarket_error, arxiv_error, patent_error, book_error, web_error, bilibili_error, zhihu_error, weibo_error, douyin_error, baidu_error = run_research(
         args.topic,
         sources,
         config,
@@ -1230,6 +1822,7 @@ def main():
         timeouts=timeouts,
         resolved_handle=args.x_handle,
         reddit_source=reddit_source,
+        use_chinese_platforms=True,
     )
 
     # Processing phase
@@ -1241,7 +1834,16 @@ def main():
     normalized_youtube = normalize.normalize_youtube_items(youtube_items, from_date, to_date) if youtube_items else []
     normalized_hn = normalize.normalize_hackernews_items(hackernews_items, from_date, to_date) if hackernews_items else []
     normalized_pm = normalize.normalize_polymarket_items(polymarket_items, from_date, to_date) if polymarket_items else []
+    normalized_arxiv = normalize.normalize_arxiv_items(arxiv_items, from_date, to_date) if arxiv_items else []
+    normalized_patents = normalize.normalize_patent_items(patent_items, from_date, to_date) if patent_items else []
+    normalized_books = normalize.normalize_book_items(book_items, from_date, to_date) if book_items else []
     normalized_web = websearch.normalize_websearch_items(web_items, from_date, to_date) if web_items else []
+    # Chinese platforms
+    normalized_bilibili = normalize.normalize_bilibili_items(bilibili_items, from_date, to_date) if bilibili_items else []
+    normalized_zhihu = normalize.normalize_zhihu_items(zhihu_items, from_date, to_date) if zhihu_items else []
+    normalized_weibo = normalize.normalize_weibo_items(weibo_items, from_date, to_date) if weibo_items else []
+    normalized_douyin = normalize.normalize_douyin_items(douyin_items, from_date, to_date) if douyin_items else []
+    normalized_baidu = normalize.normalize_baidu_items(baidu_items, from_date, to_date) if baidu_items else []
 
     # Hard date filter: exclude items with verified dates outside the range
     # This is the safety net - even if prompts let old content through, this filters it
@@ -1254,6 +1856,12 @@ def main():
     filtered_hn = normalize.filter_by_date_range(normalized_hn, from_date, to_date) if normalized_hn else []
     # Polymarket: skip hard date filter - markets are active/traded, updatedAt is fine
     filtered_pm = normalized_pm
+    # arXiv: already date-filtered in search_arxiv
+    filtered_arxiv = normalized_arxiv
+    # Patents: already date-filtered in search_patents
+    filtered_patents = normalized_patents
+    # Books: skip hard date filter - year-only dates are imprecise
+    filtered_books = normalized_books
     filtered_web = normalize.filter_by_date_range(normalized_web, from_date, to_date) if normalized_web else []
 
     # Score items
@@ -1262,7 +1870,16 @@ def main():
     scored_youtube = score.score_youtube_items(filtered_youtube) if filtered_youtube else []
     scored_hn = score.score_hackernews_items(filtered_hn) if filtered_hn else []
     scored_pm = score.score_polymarket_items(filtered_pm) if filtered_pm else []
+    scored_arxiv = score.score_arxiv_items(filtered_arxiv) if filtered_arxiv else []
+    scored_patents = score.score_patent_items(filtered_patents) if filtered_patents else []
+    scored_books = score.score_book_items(filtered_books) if filtered_books else []
     scored_web = score.score_websearch_items(filtered_web) if filtered_web else []
+    # Chinese platforms
+    scored_bilibili = score.score_bilibili_items(normalized_bilibili) if normalized_bilibili else []
+    scored_zhihu = score.score_zhihu_items(normalized_zhihu) if normalized_zhihu else []
+    scored_weibo = score.score_weibo_items(normalized_weibo) if normalized_weibo else []
+    scored_douyin = score.score_douyin_items(normalized_douyin) if normalized_douyin else []
+    scored_baidu = score.score_baidu_items(normalized_baidu) if normalized_baidu else []
 
     # Sort items
     sorted_reddit = score.sort_items(scored_reddit)
@@ -1270,7 +1887,16 @@ def main():
     sorted_youtube = score.sort_items(scored_youtube) if scored_youtube else []
     sorted_hn = score.sort_items(scored_hn) if scored_hn else []
     sorted_pm = score.sort_items(scored_pm) if scored_pm else []
+    sorted_arxiv = score.sort_items(scored_arxiv) if scored_arxiv else []
+    sorted_patents = score.sort_items(scored_patents) if scored_patents else []
+    sorted_books = score.sort_items(scored_books) if scored_books else []
     sorted_web = score.sort_items(scored_web) if scored_web else []
+    # Chinese platforms
+    sorted_bilibili = score.sort_items(scored_bilibili) if scored_bilibili else []
+    sorted_zhihu = score.sort_items(scored_zhihu) if scored_zhihu else []
+    sorted_weibo = score.sort_items(scored_weibo) if scored_weibo else []
+    sorted_douyin = score.sort_items(scored_douyin) if scored_douyin else []
+    sorted_baidu = score.sort_items(scored_baidu) if scored_baidu else []
 
     # Dedupe items
     deduped_reddit = dedupe.dedupe_reddit(sorted_reddit)
@@ -1278,7 +1904,16 @@ def main():
     deduped_youtube = dedupe.dedupe_youtube(sorted_youtube) if sorted_youtube else []
     deduped_hn = dedupe.dedupe_hackernews(sorted_hn) if sorted_hn else []
     deduped_pm = dedupe.dedupe_polymarket(sorted_pm) if sorted_pm else []
+    deduped_arxiv = dedupe.dedupe_arxiv(sorted_arxiv) if sorted_arxiv else []
+    deduped_patents = dedupe.dedupe_patents(sorted_patents) if sorted_patents else []
+    deduped_books = dedupe.dedupe_books(sorted_books) if sorted_books else []
     deduped_web = websearch.dedupe_websearch(sorted_web) if sorted_web else []
+    # Chinese platforms
+    deduped_bilibili = dedupe.dedupe_bilibili(sorted_bilibili) if sorted_bilibili else []
+    deduped_zhihu = dedupe.dedupe_zhihu(sorted_zhihu) if sorted_zhihu else []
+    deduped_weibo = dedupe.dedupe_weibo(sorted_weibo) if sorted_weibo else []
+    deduped_douyin = dedupe.dedupe_douyin(sorted_douyin) if sorted_douyin else []
+    deduped_baidu = dedupe.dedupe_baidu(sorted_baidu) if sorted_baidu else []
 
     # Minimum result guarantee: if all Reddit results were filtered out but
     # we had raw results, keep top 3 by relevance regardless of score
@@ -1290,6 +1925,8 @@ def main():
     # Cross-source linking: annotate items that discuss the same story
     dedupe.cross_source_link(
         deduped_reddit, deduped_x, deduped_youtube, deduped_hn, deduped_pm, deduped_web,
+        deduped_arxiv, deduped_patents, deduped_books,
+        deduped_bilibili, deduped_zhihu, deduped_weibo, deduped_douyin, deduped_baidu,
     )
 
     progress.end_processing()
@@ -1308,13 +1945,31 @@ def main():
     report.youtube = deduped_youtube
     report.hackernews = deduped_hn
     report.polymarket = deduped_pm
+    report.arxiv = deduped_arxiv
+    report.patents = deduped_patents
+    report.books = deduped_books
     report.web = deduped_web
+    # Chinese platforms
+    report.bilibili = deduped_bilibili
+    report.zhihu = deduped_zhihu
+    report.weibo = deduped_weibo
+    report.douyin = deduped_douyin
+    report.baidu = deduped_baidu
+    # Errors
     report.reddit_error = reddit_error
     report.x_error = x_error
     report.youtube_error = youtube_error
     report.hackernews_error = hackernews_error
     report.polymarket_error = polymarket_error
+    report.arxiv_error = arxiv_error
+    report.patent_error = patent_error
+    report.book_error = book_error
     report.web_error = web_error
+    report.bilibili_error = bilibili_error
+    report.zhihu_error = zhihu_error
+    report.weibo_error = weibo_error
+    report.douyin_error = douyin_error
+    report.baidu_error = baidu_error
     report.resolved_x_handle = args.x_handle
 
     # Generate context snippet
@@ -1327,7 +1982,13 @@ def main():
     if sources == "web":
         progress.show_web_only_complete()
     else:
-        progress.show_complete(len(deduped_reddit), len(deduped_x), len(deduped_youtube), len(deduped_hn), len(deduped_pm))
+        progress.show_complete(
+            len(deduped_reddit), len(deduped_x), len(deduped_youtube),
+            len(deduped_hn), len(deduped_pm),
+            len(deduped_arxiv), len(deduped_patents), len(deduped_books),
+            len(deduped_bilibili), len(deduped_zhihu), len(deduped_weibo),
+            len(deduped_douyin), len(deduped_baidu),
+        )
 
     # Build source info for status footer
     source_info = {}
@@ -1403,6 +2064,36 @@ def main():
                 "author": "polymarket",
                 "content": item.title,
                 "engagement_score": item.engagement.volume if item.engagement and item.engagement.volume else 0,
+                "relevance_score": item.relevance,
+            })
+        for item in deduped_arxiv:
+            findings.append({
+                "source": "arxiv",
+                "url": item.url,
+                "title": item.title,
+                "author": ", ".join(item.authors[:3]),
+                "content": item.summary,
+                "engagement_score": 0,
+                "relevance_score": item.relevance,
+            })
+        for item in deduped_patents:
+            findings.append({
+                "source": "patents",
+                "url": item.url,
+                "title": item.title,
+                "author": item.assignee,
+                "content": item.abstract,
+                "engagement_score": 0,
+                "relevance_score": item.relevance,
+            })
+        for item in deduped_books:
+            findings.append({
+                "source": "books",
+                "url": item.url,
+                "title": item.title,
+                "author": ", ".join(item.authors[:3]),
+                "content": item.description,
+                "engagement_score": 0,
                 "relevance_score": item.relevance,
             })
         for item in deduped_web:

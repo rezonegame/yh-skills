@@ -43,8 +43,13 @@ git clone https://github.com/op7418/Humanizer-zh.git ~/.claude/skills/humanizer-
 3. 确保文件夹结构如下：
    ```
    ~/.claude/skills/humanizer-zh/
-   ├── SKILL.md       # 技能定义文件（中文版）
-   └── README.md      # 说明文档
+   ├── SKILL.md                    # 技能定义文件（中文版）
+   ├── README.md                   # 说明文档
+   ├── evals/
+   │   └── evals.json              # 测试用例
+   └── references/
+       ├── ai-patterns.md          # 28种AI模式详细解析
+       └── curated-intellectualism-style-guide.md  # 策展式深度阅读风格指南
    ```
 
 ### 验证安装
@@ -122,9 +127,9 @@ git clone https://github.com/op7418/Humanizer-zh.git ~/.claude/skills/humanizer-
 
 ## 检测的 AI 写作模式
 
-本工具能够识别并修复 **24 种** AI 写作痕迹，分为四大类：
+本工具能够识别并修复 **28 种** AI 写作痕迹，分为四大类：
 
-### 📝 内容模式（6种）
+### 内容模式（6种）
 1. 过度强调意义、遗产和更广泛的趋势
 2. 过度强调知名度和媒体报道
 3. 以 -ing 结尾的肤浅分析
@@ -132,7 +137,7 @@ git clone https://github.com/op7418/Humanizer-zh.git ~/.claude/skills/humanizer-
 5. 模糊归因和含糊措辞
 6. 提纲式的"挑战与未来展望"部分
 
-### 🔤 语言和语法模式（6种）
+### 语言和语法模式（6种）
 7. 过度使用的"AI 词汇"
 8. 避免使用"是"（系动词回避）
 9. 否定式排比
@@ -140,21 +145,25 @@ git clone https://github.com/op7418/Humanizer-zh.git ~/.claude/skills/humanizer-
 11. 刻意换词（同义词循环）
 12. 虚假范围
 
-### 🎨 风格模式（6种）
+### 风格和交流模式（12种）
 13. 破折号过度使用
 14. 粗体过度使用
 15. 内联标题垂直列表
 16. 标题中的标题大写
 17. 表情符号
 18. 弯引号
-
-### 💬 交流模式和填充词（6种）
 19. 协作交流痕迹
 20. 知识截止日期免责声明
 21. 谄媚/卑躬屈膝的语气
 22. 填充短语
 23. 过度限定
 24. 通用积极结论
+
+### 中文特供模式（4种）
+25. 否定式双重描述
+26. 领域术语泛化
+27. 段落过度拆分
+28. 首尾呼应缺失
 
 ## 文件说明
 

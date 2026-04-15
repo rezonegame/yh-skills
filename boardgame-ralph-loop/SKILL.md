@@ -1,13 +1,6 @@
 ---
 name: boardgame-ralph-loop
-description: Ralph Loop自主迭代技能。当用户要求"Ralph Loop"、"游戏自主迭代"、"GRD迭代设计"、"游戏自动测试循环"时使用此技能。提供完全自主的bash循环和交互模式，通过GRD（游戏需求文档）持续迭代游戏设计，直到达到适应度目标。
-version: 1.0.0
-tags: [boardgame, design, automation, iteration, ralph-loop]
-triggers:
-  - "Ralph Loop"
-  - "游戏自主迭代"
-  - "GRD迭代设计"
-  - "游戏自动测试循环"
+description: "Ralph Loop自主迭代技能。当用户要求\"Ralph Loop\"、\"游戏自主迭代\"、\"GRD迭代设计\"、\"游戏自动测试循环\"时使用此技能。提供完全自主的bash循环和交互模式，通过GRD（游戏需求文档）持续迭代游戏设计，直到达到适应度目标。"
 ---
 
 # Board Game Ralph Loop

@@ -28,6 +28,12 @@ def _xref_tag(item) -> str:
             source_names.add('HN')
         elif ref_id.startswith('PM'):
             source_names.add('Polymarket')
+        elif ref_id.startswith('AR'):
+            source_names.add('arXiv')
+        elif ref_id.startswith('PAT'):
+            source_names.add('Patents')
+        elif ref_id.startswith('BK'):
+            source_names.add('Books')
         elif ref_id.startswith('W'):
             source_names.add('Web')
     if source_names:
@@ -56,9 +62,12 @@ def _assess_data_freshness(report: schema.Report) -> dict:
     web_recent = sum(1 for w in report.web if w.date and w.date >= report.range_from)
     hn_recent = sum(1 for h in report.hackernews if h.date and h.date >= report.range_from)
     pm_recent = sum(1 for p in report.polymarket if p.date and p.date >= report.range_from)
+    arxiv_recent = sum(1 for a in report.arxiv if a.date and a.date >= report.range_from)
+    pat_recent = sum(1 for p in report.patents if p.date and p.date >= report.range_from)
+    book_recent = sum(1 for b in report.books if b.date and b.date >= report.range_from)
 
-    total_recent = reddit_recent + x_recent + web_recent + hn_recent + pm_recent
-    total_items = len(report.reddit) + len(report.x) + len(report.web) + len(report.hackernews) + len(report.polymarket)
+    total_recent = reddit_recent + x_recent + web_recent + hn_recent + pm_recent + arxiv_recent + pat_recent + book_recent
+    total_items = len(report.reddit) + len(report.x) + len(report.web) + len(report.hackernews) + len(report.polymarket) + len(report.arxiv) + len(report.patents) + len(report.books)
 
     return {
         "reddit_recent": reddit_recent,
@@ -68,6 +77,102 @@ def _assess_data_freshness(report: schema.Report) -> dict:
         "total_items": total_items,
         "is_sparse": total_recent < 5,
         "mostly_evergreen": total_items > 0 and total_recent < total_items * 0.3,
+    }
+
+
+def _compute_signal_analysis(report: schema.Report) -> dict:
+    """Compute signal maturity, source-leading, trend direction, and confidence.
+
+    Simple rule-based analysis (no LLM needed).
+    """
+    # Count sources with results
+    source_counts = {
+        "arXiv": len(report.arxiv),
+        "Reddit": len(report.reddit),
+        "X": len(report.x),
+        "HN": len(report.hackernews),
+        "Patents": len(report.patents),
+        "Books": len(report.books),
+        "Polymarket": len(report.polymarket),
+        "Web": len(report.web),
+    }
+    active_sources = {k: v for k, v in source_counts.items() if v > 0}
+    total_active = len(active_sources)
+
+    # Maturity Stage
+    has_research = bool(report.arxiv)
+    has_discussion = bool(report.reddit or report.x or report.hackernews)
+    has_industry = bool(report.patents)
+    has_consolidation = bool(report.books)
+
+    if total_active == 0:
+        maturity = "No data"
+    elif has_consolidation and has_industry:
+        maturity = "Consolidation"
+    elif has_industry and has_research:
+        maturity = "Industry"
+    elif has_research and has_discussion:
+        maturity = "Mixed (Research + Discussion)"
+    elif has_research:
+        maturity = "Research"
+    elif has_discussion:
+        maturity = "Discussion"
+    elif has_industry:
+        maturity = "Industry"
+    elif has_consolidation:
+        maturity = "Consolidation"
+    else:
+        maturity = "Mixed"
+
+    # Source Leading: which source had the earliest first result
+    earliest_dates = {}
+    for source, items in [
+        ("arXiv", report.arxiv),
+        ("Reddit", report.reddit),
+        ("X", report.x),
+        ("HN", report.hackernews),
+        ("Patents", report.patents),
+        ("Books", report.books),
+        ("Polymarket", report.polymarket),
+    ]:
+        dates_with_data = [item.date for item in items if item.date]
+        if dates_with_data:
+            earliest_dates[source] = min(dates_with_data)
+
+    if earliest_dates:
+        source_leading = min(earliest_dates, key=earliest_dates.get)
+    else:
+        source_leading = "None detected"
+
+    # Trend Direction
+    if total_active == 0:
+        trend = "Insufficient data"
+    elif total_active >= 5:
+        trend = "Accelerating ↗"
+    elif total_active >= 3:
+        trend = "Active ↗"
+    elif total_active >= 2:
+        trend = "Stable →"
+    else:
+        trend = "Emerging →"
+
+    # Confidence based on cross-source consistency
+    if total_active >= 4:
+        confidence = "High"
+    elif total_active >= 2:
+        confidence = "Medium"
+    elif total_active >= 1:
+        confidence = "Low"
+    else:
+        confidence = "Insufficient data"
+
+    return {
+        "maturity": maturity,
+        "source_leading": source_leading,
+        "trend": trend,
+        "confidence": confidence,
+        "active_sources": active_sources,
+        "total_active": total_active,
     }
 
 
@@ -332,6 +437,92 @@ def render_compact(report: schema.Report, limit: int = 15, missing_keys: str = "
             lines.append(f"  *{item.why_relevant}*")
             lines.append("")
 
+    # arXiv items
+    if report.arxiv_error:
+        lines.append("### arXiv Research Papers")
+        lines.append("")
+        lines.append(f"**ERROR:** {report.arxiv_error}")
+        lines.append("")
+    elif report.arxiv:
+        lines.append("### arXiv Research Papers")
+        lines.append("")
+        for item in report.arxiv[:limit]:
+            date_str = f" ({item.date})" if item.date else ""
+            authors_str = f" [{', '.join(item.authors[:3])}{'...' if len(item.authors) > 3 else ''}]" if item.authors else ""
+            cats_str = f" [{', '.join(item.categories[:3])}]" if item.categories else ""
+
+            lines.append(f"**{item.id}** (score:{item.score}){date_str}{_xref_tag(item)}")
+            lines.append(f"  {item.title}")
+            lines.append(f"  {item.url} | [PDF]({item.pdf_url})")
+            if authors_str:
+                lines.append(f"  Authors:{authors_str}")
+            if item.summary:
+                lines.append(f"  {item.summary[:200]}...")
+            lines.append(f"  *{item.why_relevant}*")
+            lines.append("")
+
+    # Patent items
+    if report.patents_error:
+        lines.append("### Patents")
+        lines.append("")
+        lines.append(f"**ERROR:** {report.patents_error}")
+        lines.append("")
+    elif report.patents:
+        lines.append("### Patents")
+        lines.append("")
+        for item in report.patents[:limit]:
+            date_str = f" ({item.date})" if item.date else ""
+            assignee_str = f" — {item.assignee}" if item.assignee else ""
+
+            lines.append(f"**{item.id}** (score:{item.score}){date_str}{_xref_tag(item)}")
+            lines.append(f"  {item.title}{assignee_str}")
+            if item.patent_number:
+                lines.append(f"  Patent: {item.patent_number}")
+            lines.append(f"  {item.url}")
+            if item.abstract:
+                lines.append(f"  {item.abstract[:200]}...")
+            lines.append(f"  *{item.why_relevant}*")
+            lines.append("")
+
+    # Book items
+    if report.books_error:
+        lines.append("### Books")
+        lines.append("")
+        lines.append(f"**ERROR:** {report.books_error}")
+        lines.append("")
+    elif report.books:
+        lines.append("### Books")
+        lines.append("")
+        for item in report.books[:limit]:
+            date_str = f" ({item.date})" if item.date else ""
+            authors_str = f" by {', '.join(item.authors[:3])}{'...' if len(item.authors) > 3 else ''}" if item.authors else ""
+            meta_parts = []
+            if item.publisher:
+                meta_parts.append(item.publisher)
+            if item.page_count:
+                meta_parts.append(f"{item.page_count}pp")
+            meta_str = f" ({', '.join(meta_parts)})" if meta_parts else ""
+
+            lines.append(f"**{item.id}** (score:{item.score}){date_str}{_xref_tag(item)}")
+            lines.append(f"  {item.title}{authors_str}{meta_str}")
+            lines.append(f"  {item.url}")
+            if item.description:
+                lines.append(f"  {item.description[:200]}...")
+            lines.append(f"  *{item.why_relevant}*")
+            lines.append("")
+
+    # Signal Analysis
+    signal = _compute_signal_analysis(report)
+    if signal["total_active"] > 0:
+        lines.append("### 📊 Signal Analysis")
+        lines.append("")
+        lines.append(f"**Maturity Stage:** {signal['maturity']}")
+        lines.append(f"**Source Leading:** {signal['source_leading']}")
+        lines.append(f"**Trend Direction:** {signal['trend']}")
+        lines.append(f"**Confidence:** {signal['confidence']}")
+        lines.append(f"**Cross-Source Consistency:** {signal['total_active']}/8 sources active")
+        lines.append("")
+
     # Web items (if any - populated by the assistant)
     if report.web_error:
         lines.append("### Web Results")
@@ -420,6 +611,27 @@ def render_source_status(report: schema.Report, source_info: dict = None) -> str
         lines.append(f"  ✅ Polymarket: {len(report.polymarket)} markets")
     # Hide when zero results
 
+    # arXiv
+    if report.arxiv_error:
+        lines.append(f"  ❌ arXiv: error — {report.arxiv_error}")
+    elif report.arxiv:
+        lines.append(f"  ✅ arXiv: {len(report.arxiv)} papers")
+    # Hide when zero results
+
+    # Patents
+    if report.patents_error:
+        lines.append(f"  ❌ Patents: error — {report.patents_error}")
+    elif report.patents:
+        lines.append(f"  ✅ Patents: {len(report.patents)} patents")
+    # Hide when zero results
+
+    # Books
+    if report.books_error:
+        lines.append(f"  ❌ Books: error — {report.books_error}")
+    elif report.books:
+        lines.append(f"  ✅ Books: {len(report.books)} books")
+    # Hide when zero results
+
     # Web
     if report.web_error:
         lines.append(f"  ❌ Web: error — {report.web_error}")
@@ -463,6 +675,12 @@ def render_context_snippet(report: schema.Report) -> str:
         all_items.append((item.score, "Polymarket", item.question[:50] + "...", item.url))
     for item in report.web[:5]:
         all_items.append((item.score, "Web", item.title[:50] + "...", item.url))
+    for item in report.arxiv[:3]:
+        all_items.append((item.score, "arXiv", item.title[:50] + "...", item.url))
+    for item in report.patents[:3]:
+        all_items.append((item.score, "Patent", item.title[:50] + "...", item.url))
+    for item in report.books[:3]:
+        all_items.append((item.score, "Book", item.title[:50] + "...", item.url))
 
     all_items.sort(key=lambda x: -x[0])
     for score, source, text, url in all_items[:7]:
@@ -615,6 +833,83 @@ def render_full_report(report: schema.Report) -> str:
             lines.append("")
             lines.append(f"> {item.snippet}")
             lines.append("")
+
+    # arXiv section
+    if report.arxiv:
+        lines.append("## arXiv Research Papers")
+        lines.append("")
+        for item in report.arxiv:
+            lines.append(f"### {item.id}: {item.title}")
+            lines.append("")
+            if item.authors:
+                lines.append(f"- **Authors:** {', '.join(item.authors[:5])}{'...' if len(item.authors) > 5 else ''}")
+            lines.append(f"- **URL:** {item.url}")
+            lines.append(f"- **PDF:** {item.pdf_url}")
+            lines.append(f"- **Date:** {item.date or 'Unknown'}")
+            lines.append(f"- **Score:** {item.score}/100")
+            if item.categories:
+                lines.append(f"- **Categories:** {', '.join(item.categories[:5])}")
+            lines.append(f"- **Relevance:** {item.why_relevant}")
+            if item.summary:
+                lines.append("")
+                lines.append(f"> {item.summary[:400]}...")
+            lines.append("")
+
+    # Patents section
+    if report.patents:
+        lines.append("## Patents")
+        lines.append("")
+        for item in report.patents:
+            lines.append(f"### {item.id}: {item.title}")
+            lines.append("")
+            if item.assignee:
+                lines.append(f"- **Assignee:** {item.assignee}")
+            if item.patent_number:
+                lines.append(f"- **Patent Number:** {item.patent_number}")
+            lines.append(f"- **URL:** {item.url}")
+            lines.append(f"- **Date:** {item.date or 'Unknown'}")
+            lines.append(f"- **Score:** {item.score}/100")
+            if item.cpc_codes:
+                lines.append(f"- **CPC Codes:** {', '.join(item.cpc_codes[:5])}")
+            if item.abstract:
+                lines.append("")
+                lines.append(f"> {item.abstract[:400]}...")
+            lines.append("")
+
+    # Books section
+    if report.books:
+        lines.append("## Books")
+        lines.append("")
+        for item in report.books:
+            lines.append(f"### {item.id}: {item.title}")
+            lines.append("")
+            if item.authors:
+                lines.append(f"- **Authors:** {', '.join(item.authors)}")
+            if item.publisher:
+                lines.append(f"- **Publisher:** {item.publisher}")
+            lines.append(f"- **URL:** {item.url}")
+            lines.append(f"- **Date:** {item.date or 'Unknown'}")
+            if item.page_count:
+                lines.append(f"- **Pages:** {item.page_count}")
+            if item.isbn:
+                lines.append(f"- **ISBN:** {item.isbn}")
+            lines.append(f"- **Score:** {item.score}/100")
+            if item.description:
+                lines.append("")
+                lines.append(f"> {item.description[:400]}...")
+            lines.append("")
+
+    # Signal Analysis in full report
+    signal = _compute_signal_analysis(report)
+    if signal["total_active"] > 0:
+        lines.append("## Signal Analysis")
+        lines.append("")
+        lines.append(f"- **Maturity Stage:** {signal['maturity']}")
+        lines.append(f"- **Source Leading:** {signal['source_leading']}")
+        lines.append(f"- **Trend Direction:** {signal['trend']}")
+        lines.append(f"- **Confidence:** {signal['confidence']}")
+        lines.append(f"- **Cross-Source Consistency:** {signal['total_active']}/8 sources active")
+        lines.append("")
 
     # Placeholders for assistant synthesis
     lines.append("## Best Practices")

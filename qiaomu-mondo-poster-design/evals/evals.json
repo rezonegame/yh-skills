@@ -1,0 +1,23 @@
+{
+  "skill_name": "qiaomu-mondo-poster-design",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "设计一张赛博朋克电影的海报，主题是黑客在霓虹闪烁的东京发现了一个巨大的阴谋。",
+      "expected_output": "A Mondo-style prompt for a cyberpunk movie poster, vertical 9:16 layout, and an image output if required.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "帮我做一张史蒂芬金风格的恐怖小说封面，书名叫《深渊之眼》，关于一座闹鬼的灯塔的。",
+      "expected_output": "A minimalist, negative-space driven book cover prompt in Mondo style.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我要一张独立摇滚乐队的专辑封面，乐队叫“沉默回声”，需要忧郁和氛围感的风格，黑白色调为主，可以带点红色点缀。",
+      "expected_output": "A square 1:1 album cover prompt, duotone with an accent color, atmospheric Mondo style.",
+      "files": []
+    }
+  ]
+}

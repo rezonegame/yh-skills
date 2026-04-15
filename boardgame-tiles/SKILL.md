@@ -1,15 +1,6 @@
 ---
 name: boardgame-tiles
 description: 桌游方块设计技能。当用户要求"设计桌游方块"、"六边形方块设计"、"方块边缘连接"、"板块拼接设计"、"卡坦岛风格方块"时使用此技能。提供六边形/方形/圆形方块、边缘连接系统、旋转兼容、模切考虑和印刷生产指导。
-version: 1.0.0
-parent: print-design
-tags: [boardgame, tiles, print-design, game-components, hex-tiles]
-triggers:
-  - "设计桌游方块"
-  - "六边形方块设计"
-  - "方块边缘连接"
-  - "板块拼接设计"
-  - "卡坦岛风格方块"
 ---
 
 # Board Game Tile Design

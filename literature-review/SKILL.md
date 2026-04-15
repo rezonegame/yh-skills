@@ -1,7 +1,6 @@
 ---
 name: literature-review
-description: Conduct comprehensive, systematic literature reviews using multiple academic databases (PubMed, arXiv, bioRxiv, Semantic Scholar, etc.). This skill should be used when conducting systematic literature reviews, meta-analyses, research synthesis, or comprehensive literature searches across biomedical, scientific, and technical domains. Creates professionally formatted markdown documents and PDFs with verified citations in multiple citation styles (APA, Nature, Vancouver, etc.).
-allowed-tools: [Read, Write, Edit, Bash]
+description: "跨多个学术数据库（PubMed, arXiv 等）进行系统性文献综述检索生成器。附加密集的引文注释验证逻辑。 当用户要求在学术数据库检索文献、生成系统性文献综述或进行引用验证时使用此技能。"
 ---
 
 # Literature Review

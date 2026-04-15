@@ -1,16 +1,6 @@
 ---
 name: multi-agent-debate
 description: 多视角角色讨论框架。当用户要求"组织讨论"、"模拟不同视角辩论"、"角色扮演对话"、"多角度分析话题"时使用此技能。使用平台内置模型模拟15种不同人设进行三轮深度讨论，包括专家角色和普通人角色，自动保存过程与总结。
-version: 3.0.0
-author: wudao
-license: MIT
-tags:
-  - multi-agent
-  - debate
-  - discussion
-  - role-playing
-  - simulation
-  - three-round-discussion
 ---
 
 # Multi-Agent Debate / 多视角角色讨论

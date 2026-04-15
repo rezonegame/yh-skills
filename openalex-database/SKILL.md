@@ -1,6 +1,6 @@
 ---
 name: openalex-database
-description: Query and analyze scholarly literature using the OpenAlex database. This skill should be used when searching for academic papers, analyzing research trends, finding works by authors or institutions, tracking citations, discovering open access publications, or conducting bibliometric analysis across 240M+ scholarly works. Use for literature searches, research output analysis, citation analysis, and academic database queries.
+description: "通过查询并分析 OpenAlex 学术文献库。这对于搜索学术研究论文、发掘领域内开放材料进行引用验证极为重要。 当用户要求查询 OpenAlex 数据库搜索特定的论文、学者或验证文献时使用此技能。"
 ---
 
 # OpenAlex Database

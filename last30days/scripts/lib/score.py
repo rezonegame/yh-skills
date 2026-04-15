@@ -1,6 +1,7 @@
 """Popularity-aware scoring for last30days skill."""
 
 import math
+import re
 from typing import List, Optional, Union
 
 from . import dates, schema
@@ -396,6 +397,559 @@ def score_polymarket_items(items: List[schema.PolymarketItem]) -> List[schema.Po
     return items
 
 
+def score_arxiv_items(items: List[schema.ArxivItem]) -> List[schema.ArxivItem]:
+    """Compute scores for arXiv items.
+
+    Uses websearch-like weights (relevance + recency, no engagement data).
+    arXiv has no direct engagement metrics available from the API.
+    """
+    if not items:
+        return items
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=0,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score
+        )
+
+        # Apply date confidence adjustment
+        if item.date_confidence == "med":
+            overall -= 2
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def score_patent_items(items: List[schema.PatentItem]) -> List[schema.PatentItem]:
+    """Compute scores for patent items.
+
+    Uses websearch-like weights (relevance + recency, no engagement data).
+    """
+    if not items:
+        return items
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=0,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score
+        )
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def score_book_items(items: List[schema.BookItem]) -> List[schema.BookItem]:
+    """Compute scores for book items.
+
+    Uses websearch-like weights (relevance + recency, no engagement data).
+    """
+    if not items:
+        return items
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=0,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score
+        )
+
+        # Book dates are less precise (year-only common)
+        if item.date_confidence == "med":
+            overall -= 2
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def compute_tiktok_engagement_raw(engagement: Optional[schema.Engagement]) -> Optional[float]:
+    """Compute raw engagement score for TikTok item.
+
+    Formula: 0.40*log1p(views) + 0.35*log1p(likes) + 0.15*log1p(comments) + 0.10*log1p(shares)
+    Views dominate on TikTok, but shares are a strong virality signal.
+    """
+    if engagement is None:
+        return None
+
+    if engagement.views is None and engagement.likes is None:
+        return None
+
+    views = log1p_safe(engagement.views)
+    likes = log1p_safe(engagement.likes)
+    comments = log1p_safe(engagement.num_comments)
+    shares = log1p_safe(engagement.shares)
+
+    return 0.40 * views + 0.35 * likes + 0.15 * comments + 0.10 * shares
+
+
+def score_tiktok_items(items: List[schema.TikTokItem]) -> List[schema.TikTokItem]:
+    """Compute scores for TikTok items.
+
+    Uses same weight structure as Reddit/X (relevance + recency + engagement).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_tiktok_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        # TikTok dates are often less precise
+        if item.date_confidence == "low":
+            overall -= 5
+        elif item.date_confidence == "med":
+            overall -= 2
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def compute_instagram_engagement_raw(engagement: Optional[schema.Engagement]) -> Optional[float]:
+    """Compute raw engagement score for Instagram item.
+
+    Formula: 0.60*log1p(likes) + 0.40*log1p(comments)
+    Likes are the primary signal on Instagram; comments indicate depth.
+    """
+    if engagement is None:
+        return None
+
+    if engagement.likes is None and engagement.num_comments is None:
+        return None
+
+    likes = log1p_safe(engagement.likes)
+    comments = log1p_safe(engagement.num_comments)
+
+    return 0.60 * likes + 0.40 * comments
+
+
+def score_instagram_items(items: List[schema.InstagramItem]) -> List[schema.InstagramItem]:
+    """Compute scores for Instagram items.
+
+    Uses same weight structure as Reddit/X (relevance + recency + engagement).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_instagram_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def score_bluesky_items(items: List[schema.BlueskyItem]) -> List[schema.BlueskyItem]:
+    """Compute scores for Bluesky items.
+
+    Uses same engagement formula as X (likes + reposts + replies + quotes).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_x_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def score_truthsocial_items(items: List[schema.TruthSocialItem]) -> List[schema.TruthSocialItem]:
+    """Compute scores for Truth Social items.
+
+    Uses same engagement formula as X (likes + reposts + replies).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_x_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def compute_bilibili_engagement_raw(engagement: Optional[schema.Engagement]) -> Optional[float]:
+    """Compute raw engagement score for Bilibili item.
+
+    Formula: 0.40*log1p(views) + 0.25*log1p(danmaku) + 0.20*log1p(likes) + 0.10*log1p(comments) + 0.05*log1p(favorites)
+    Views dominate on Bilibili, but danmaku (bullet comments) are a unique engagement signal.
+    """
+    if engagement is None:
+        return None
+
+    if engagement.views is None and engagement.likes is None:
+        return None
+
+    views = log1p_safe(engagement.views)
+    danmaku = log1p_safe(engagement.danmaku)
+    likes = log1p_safe(engagement.likes)
+    comments = log1p_safe(engagement.num_comments)
+    favorites = log1p_safe(engagement.favorites)
+
+    return 0.40 * views + 0.25 * danmaku + 0.20 * likes + 0.10 * comments + 0.05 * favorites
+
+
+def score_bilibili_items(items: List[schema.BilibiliItem]) -> List[schema.BilibiliItem]:
+    """Compute scores for Bilibili items.
+
+    Uses same weight structure as YouTube (relevance + recency + engagement).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_bilibili_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def compute_zhihu_engagement_raw(engagement: Optional[schema.Engagement]) -> Optional[float]:
+    """Compute raw engagement score for Zhihu item.
+
+    Formula: 0.50*log1p(voteups) + 0.30*log1p(comments) + 0.15*log1p(thanks) + 0.05*log1p(collects)
+    Voteups (赞同) are the primary signal on Zhihu; collects (收藏) indicate lasting value.
+    """
+    if engagement is None:
+        return None
+
+    if engagement.voteups is None and engagement.num_comments is None:
+        return None
+
+    voteups = log1p_safe(engagement.voteups)
+    comments = log1p_safe(engagement.num_comments)
+    thanks = log1p_safe(engagement.thanks)
+    collects = log1p_safe(engagement.collects)
+
+    return 0.50 * voteups + 0.30 * comments + 0.15 * thanks + 0.05 * collects
+
+
+def score_zhihu_items(items: List[schema.ZhihuItem]) -> List[schema.ZhihuItem]:
+    """Compute scores for Zhihu items.
+
+    Uses same weight structure as Reddit/X (relevance + recency + engagement).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_zhihu_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        # Zhihu dates are often less precise
+        if item.date_confidence == "low":
+            overall -= 5
+        elif item.date_confidence == "med":
+            overall -= 2
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def score_weibo_items(items: List[schema.WeiboItem]) -> List[schema.WeiboItem]:
+    """Compute scores for Weibo items.
+
+    Uses same engagement formula as X (likes + reposts + comments).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_x_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        # Weibo dates from public interface are less precise
+        if item.date_confidence == "low":
+            overall -= 5
+        elif item.date_confidence == "med":
+            overall -= 2
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def score_douyin_items(items: List[schema.DouyinItem]) -> List[schema.DouyinItem]:
+    """Compute scores for Douyin items.
+
+    Uses same engagement formula as TikTok (views + likes + comments + shares).
+    """
+    if not items:
+        return items
+
+    eng_raw = [compute_tiktok_engagement_raw(item.engagement) for item in items]
+    eng_normalized = normalize_to_100(eng_raw)
+
+    for i, item in enumerate(items):
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        if eng_normalized[i] is not None:
+            eng_score = int(eng_normalized[i])
+        else:
+            eng_score = DEFAULT_ENGAGEMENT
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=eng_score,
+        )
+
+        overall = (
+            WEIGHT_RELEVANCE * rel_score +
+            WEIGHT_RECENCY * rec_score +
+            WEIGHT_ENGAGEMENT * eng_score
+        )
+
+        if eng_raw[i] is None:
+            overall -= UNKNOWN_ENGAGEMENT_PENALTY
+
+        # Douyin dates are often less precise
+        if item.date_confidence == "low":
+            overall -= 5
+        elif item.date_confidence == "med":
+            overall -= 2
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
+def score_baidu_items(items: List[schema.BaiduItem]) -> List[schema.BaiduItem]:
+    """Compute scores for Baidu search items.
+
+    Uses websearch-like weights (relevance + recency, no engagement data).
+    """
+    if not items:
+        return items
+
+    for item in items:
+        rel_score = int(item.relevance * 100)
+        rec_score = dates.recency_score(item.date)
+
+        item.subs = schema.SubScores(
+            relevance=rel_score,
+            recency=rec_score,
+            engagement=0,
+        )
+
+        overall = (
+            WEBSEARCH_WEIGHT_RELEVANCE * rel_score +
+            WEBSEARCH_WEIGHT_RECENCY * rec_score
+        )
+
+        # Apply source penalty
+        overall -= WEBSEARCH_SOURCE_PENALTY
+
+        # Apply date confidence adjustments
+        if item.date_confidence == "high":
+            overall += WEBSEARCH_VERIFIED_BONUS
+        elif item.date_confidence == "low":
+            overall -= WEBSEARCH_NO_DATE_PENALTY
+
+        item.score = max(0, min(100, int(overall)))
+
+    return items
+
+
 def score_websearch_items(items: List[schema.WebSearchItem]) -> List[schema.WebSearchItem]:
     """Compute scores for WebSearch items WITHOUT engagement metrics.
 
@@ -453,7 +1007,7 @@ def score_websearch_items(items: List[schema.WebSearchItem]) -> List[schema.WebS
     return items
 
 
-def sort_items(items: List[Union[schema.RedditItem, schema.XItem, schema.WebSearchItem, schema.YouTubeItem, schema.HackerNewsItem, schema.PolymarketItem]]) -> List:
+def sort_items(items: List[Union[schema.RedditItem, schema.XItem, schema.WebSearchItem, schema.YouTubeItem, schema.HackerNewsItem, schema.PolymarketItem, schema.ArxivItem, schema.PatentItem, schema.BookItem, schema.TikTokItem, schema.InstagramItem, schema.BlueskyItem, schema.TruthSocialItem, schema.BilibiliItem, schema.ZhihuItem, schema.WeiboItem, schema.DouyinItem, schema.BaiduItem]]) -> List:
     """Sort items by score (descending), then date, then source priority.
 
     Args:
@@ -468,9 +1022,14 @@ def sort_items(items: List[Union[schema.RedditItem, schema.XItem, schema.WebSear
 
         # Secondary: date descending (recent first)
         date = item.date or "0000-00-00"
-        date_key = -int(date.replace("-", ""))
+        # Sanitize date: remove non-digit characters before parsing
+        clean_date = re.sub(r"[^\d]", "", date[:10])
+        if clean_date and len(clean_date) >= 8:
+            date_key = -int(clean_date)
+        else:
+            date_key = 0
 
-        # Tertiary: source priority (Reddit > X > YouTube > HN > Polymarket > WebSearch)
+        # Tertiary: source priority
         if isinstance(item, schema.RedditItem):
             source_priority = 0
         elif isinstance(item, schema.XItem):
@@ -481,8 +1040,30 @@ def sort_items(items: List[Union[schema.RedditItem, schema.XItem, schema.WebSear
             source_priority = 3
         elif isinstance(item, schema.PolymarketItem):
             source_priority = 4
-        else:  # WebSearchItem
+        elif isinstance(item, schema.ArxivItem):
             source_priority = 5
+        elif isinstance(item, schema.PatentItem):
+            source_priority = 6
+        elif isinstance(item, schema.BookItem):
+            source_priority = 7
+        elif isinstance(item, schema.TikTokItem):
+            source_priority = 8
+        elif isinstance(item, schema.InstagramItem):
+            source_priority = 9
+        elif isinstance(item, schema.BlueskyItem):
+            source_priority = 10
+        elif isinstance(item, schema.TruthSocialItem):
+            source_priority = 11
+        elif isinstance(item, schema.BilibiliItem):
+            source_priority = 12
+        elif isinstance(item, schema.ZhihuItem):
+            source_priority = 13
+        elif isinstance(item, schema.WeiboItem):
+            source_priority = 14
+        elif isinstance(item, schema.DouyinItem):
+            source_priority = 15
+        else:  # BaiduItem or WebSearchItem
+            source_priority = 16
 
         # Quaternary: title/text for stability
         text = getattr(item, "title", "") or getattr(item, "text", "")

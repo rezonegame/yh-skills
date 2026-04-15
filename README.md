@@ -1,8 +1,9 @@
 # YH Skills Collection
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Mar%202026-green)
+![Version](https://img.shields.io/badge/version-1.5.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Apr%202026-green)
 
 ## 📅 更新日志 (Changelog)
+- **v1.5.0** (2026-04-15): 整合整理，新增 `geo-content-optimizer`, `khazix-writer`, `yh-slides`, `gamified-course-designer` 等多项核心技能。
 - **v1.4.0** (2026-03-12): 新增 `multi-agent-debate` 多视角角色讨论框架。
 - **v1.3.0** (2026-03-03): 新增 `last30days` 跨平台趋势搜索与分析技能。
 - **v1.2.0** (2026-02-25): 新增 `humanizer-zh` 文本去 AI 痕迹与深度润色技能。
@@ -14,8 +15,8 @@
 
 ## 📂 技能列表
 
-### 🎲 桌游设计 (Board Game Design)
-这一系列技能专注于桌游的各个设计环节，从机制到配件制作。
+### 🎲 桌游与游戏化 (Board Games & Gamification)
+这一系列技能专注于桌游各环节设计、机制研究及游戏化教育。
 
 - **boardgame-design**: 桌游设计专家技能。使用 5-Component Filter（清晰度、策略、互动、满意度、适配）来评估和设计游戏机制。
 - **boardgame-boards**: 游戏板和地图设计指南。涵盖布局系统、折叠模式、信息密度和路径清晰度。
@@ -24,26 +25,39 @@
 - **boardgame-components**: 通用配件设计。包括标记 (Tokens)、指示物、玩家辅助卡、规则书和记分板的设计规范。
 - **boardgame-tiles**: 方块 (Tiles) 设计技能。专注于六边形、方形等方块的边缘连接系统、旋转兼容性和模切考虑。
 - **boardgame-ralph-loop**: 基于 Ralph Loop 方法论的自主迭代设计技能。提供自动化的测试和设计改进循环。
-- **meeplelm**: MeepleLM 虚拟玩家测试技能。基于 MeepleLM 框架，使用 5 种玩家人设和 MDA 推理链模拟桌游玩家的主观体验评测，生成类似 BGG 的评论。
+- **boardgame-writer**: 智研家桌游公众号长文写作。支持 7 种作者人设（咕咚来了、苏微等），提供深度桌游评测与推荐。
+- **meeplelm**: MeepleLM 虚拟玩家测试技能。基于 MeepleLM 框架，使用 5 种玩家人设和 MDA 推理链模拟桌游玩家评测。
+- **gamified-course-designer**: 游戏化课程设计师。基于布卢姆分类法自动生成教学与游戏化方案，提升课程趣味性。
 
-### 📝 研究与写作 (Research & Writing)
-一套用于辅助高水平学术研究和专业写作的工具。
+### 📝 内容创作与研究 (Content Creation & Research)
+用于辅助高水平学术研究、公众号写作及深度内容优化的工具。
 
-- **scientific-writing**: 科学写作核心技能。指导遵循 IMRAD 结构，使用两阶段写作法（大纲 -> 完整段落），确保符合学术出版标准。
-- **scientific-critical-thinking**: 科学批判性思维。用于评估研究的严谨性、方法论、实验设计、统计有效性及偏差检测。
-- **literature-review**: 系统性文献综述技能。支持跨多个数据库（PubMed, arXiv 等）进行检索、筛选、综合和引用验证。
-- **openalex-database**: OpenAlex 数据库查询技能。用于搜索学术论文、分析研究趋势、追踪引用和进行文献计量分析。
-- **content-research-writer**: 内容研究与协作写作。辅助进行深入研究、添加引用、优化开头（Hook）并提供分段反馈。
-- **content-strategist**: SEO 内容策略专家。创建经过搜索引擎优化的内容，涵盖关键词整合、元标签编写和结构优化。
-- **doc-coauthoring**: 文档共创工作流。引导用户完成"背景收集 -> 结构细化 -> 读者测试"的文档编写流程。
-- **multi-agent-debate**: 多视角角色讨论框架。模拟 15 种不同人设（专家/普通人）进行三轮深度讨论，支持自动调研和总结报告生成。
-- **humanizer-zh**: 去除中文文本中的 AI 生成痕迹。剔除虚夸词汇与模式，注入真实且具有深度的“人味”，非常适用于书评与长评文章。
+- **khazix-writer**: 数字生命卡兹克文风写作。专注于 AI 行业深度内容创作，注入好奇心与活人感，涵盖调查实验、产品体验等原型。
+- **humanizer-zh**: 文本去 AI 痕迹与深度润色。剔除虚夸词汇，注入真实深度“人味”，非常适用于书评与长评。
+- **geo-content-optimizer**: GEO 内容架构师。针对 RAG 系统（Perplexity/SearchGPT）优化，提升事实密度与语义结构。
+- **merge-drafts**: 多稿合并专家。将多份草稿合并为一份统一、完整、直接交付的高质量文章。
+- **scientific-writing**: 科学写作核心技能。遵循 IMRAD 结构，确保符合学术出版标准。
+- **scientific-critical-thinking**: 科学批判性思维。用于评估研究的严谨性、方法论及偏差检测。
+- **literature-review**: 系统性文献综述技能。支持跨数据库检索、综合和引用验证。
+- **openalex-database**: OpenAlex 数据库查询。用于搜索学术论文、追踪趋势和文献计量分析。
+- **content-research-writer**: 内容研究与协作写作。辅助打捞事实、优化 Hook 并提供分段反馈。
+- **content-strategist**: SEO 内容策略专家。创建经过搜索引擎优化的内容，涵盖关键词整合与结构优化。
+- **doc-coauthoring**: 文档共创工作流。引导用户完成从背景收集到读者测试的完整编写流程。
+- **multi-agent-debate**: 多视角角色讨论框架。模拟 15 种人设进行三轮深度讨论，支持自动调研。
+
+### 🎨 视觉与演示 (Visuals & Presentations)
+专注于视觉设计、演示文稿生成与多媒体排版。
+
+- **yh-slides**: 演示文稿端到端制作。支持 PPTX 和 HTML 双输出，内置多种视觉风格与动画特效。
+- **qiaomu-mondo-poster-design**: 乔木 Mondo 大师海报设计。一句话生成大师级海报、书封、专辑封面及极简插画。
 
 ### 💻 开发与技术 (Development & Tech)
-用于辅助软件开发和技术任务的技能。
+用于辅助软件开发、技术管理与信息检索的任务。
 
-- **ducksearch**: 命令行网页搜索工具。基于 DuckDuckGo，支持搜索网络信息、抓取网页内容及作为 MCP 服务器使用。
-- **last30days**: 跨平台趋势搜索与分析技能。支持对 Reddit, X, YouTube, Hacker News, Polymarket 及 Web 进行深度搜索，分析过去 30 天内的热门讨论、推荐和新闻。
+- **ducksearch**: 命令行网页搜索工具。基于 DuckDuckGo，支持抓取网页内容及作为 MCP 服务器。
+- **last30days**: 跨平台趋势搜索。深度分析 Reddit, X, YouTube 等平台过去 30 天的热门讨论。
+- **obsidian-plugin-release**: Obsidian 插件自动化发布。支持版本管理、GitHub Release 及 BRAT 插件同步。
+- **skill-manager**: 技能包管理器。从 30,000+ 社区技能中搜索、安装并管理 AI 技能包。
 
 ## 📦 安装 (Installation)
 

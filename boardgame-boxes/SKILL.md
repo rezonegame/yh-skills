@@ -1,15 +1,6 @@
 ---
 name: boardgame-boxes
 description: 桌游包装盒设计技能。当用户要求"桌游包装盒设计"、"游戏盒尺寸"、"包装盒结构"、"盒盖盒底设计"、"包装盒制作"时使用此技能。提供包装盒尺寸、结构设计、封面艺术布局、书脊/背面设计和生产规格指导。
-version: 1.0.0
-parent: print-design
-tags: [boardgame, boxes, packaging, print-design, game-components]
-triggers:
-  - "桌游包装盒设计"
-  - "游戏盒尺寸"
-  - "包装盒结构"
-  - "盒盖盒底设计"
-  - "包装盒制作"
 ---
 
 # Board Game Box Design

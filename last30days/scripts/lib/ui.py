@@ -18,6 +18,7 @@ class Colors:
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
     RED = '\033[91m'
+    MAGENTA = '\033[95m'
     BOLD = '\033[1m'
     DIM = '\033[2m'
     RESET = '\033[0m'
@@ -84,6 +85,27 @@ POLYMARKET_MESSAGES = [
     "Finding what people are betting on...",
     "Scanning Polymarket for odds...",
     "Discovering prediction markets...",
+]
+
+ARXIV_MESSAGES = [
+    "Searching arXiv for papers...",
+    "Scanning research papers...",
+    "Finding academic publications...",
+    "Checking the research frontier...",
+]
+
+PATENTS_MESSAGES = [
+    "Searching patents...",
+    "Scanning patent databases...",
+    "Finding industry patents...",
+    "Checking patent filings...",
+]
+
+BOOKS_MESSAGES = [
+    "Searching Google Books...",
+    "Scanning book publications...",
+    "Finding relevant books...",
+    "Checking recent publications...",
 ]
 
 PROCESSING_MESSAGES = [
@@ -290,6 +312,33 @@ class ProgressDisplay:
         if self.spinner:
             self.spinner.stop(f"{Colors.GREEN}Polymarket{Colors.RESET} Found {count} markets")
 
+    def start_arxiv(self):
+        msg = random.choice(ARXIV_MESSAGES)
+        self.spinner = Spinner(f"{Colors.CYAN}arXiv{Colors.RESET} {msg}", Colors.CYAN, quiet=True)
+        self.spinner.start()
+
+    def end_arxiv(self, count: int):
+        if self.spinner:
+            self.spinner.stop(f"{Colors.CYAN}arXiv{Colors.RESET} Found {count} papers")
+
+    def start_patents(self):
+        msg = random.choice(PATENTS_MESSAGES)
+        self.spinner = Spinner(f"{Colors.YELLOW}Patents{Colors.RESET} {msg}", Colors.YELLOW, quiet=True)
+        self.spinner.start()
+
+    def end_patents(self, count: int):
+        if self.spinner:
+            self.spinner.stop(f"{Colors.YELLOW}Patents{Colors.RESET} Found {count} patents")
+
+    def start_books(self):
+        msg = random.choice(BOOKS_MESSAGES)
+        self.spinner = Spinner(f"{Colors.PURPLE}Books{Colors.RESET} {msg}", Colors.PURPLE, quiet=True)
+        self.spinner.start()
+
+    def end_books(self, count: int):
+        if self.spinner:
+            self.spinner.stop(f"{Colors.PURPLE}Books{Colors.RESET} Found {count} books")
+
     def start_processing(self):
         msg = random.choice(PROCESSING_MESSAGES)
         self.spinner = Spinner(f"{Colors.PURPLE}Processing{Colors.RESET} {msg}", Colors.PURPLE)
@@ -299,7 +348,8 @@ class ProgressDisplay:
         if self.spinner:
             self.spinner.stop()
 
-    def show_complete(self, reddit_count: int, x_count: int, youtube_count: int = 0, hn_count: int = 0, pm_count: int = 0):
+    def show_complete(self, reddit_count: int, x_count: int, youtube_count: int = 0, hn_count: int = 0, pm_count: int = 0, arxiv_count: int = 0, pat_count: int = 0, book_count: int = 0,
+                    bilibili_count: int = 0, zhihu_count: int = 0, weibo_count: int = 0, douyin_count: int = 0, baidu_count: int = 0):
         elapsed = time.time() - self.start_time
         if IS_TTY:
             sys.stderr.write(f"\n{Colors.GREEN}{Colors.BOLD}✓ Research complete{Colors.RESET} ")
@@ -312,6 +362,23 @@ class ProgressDisplay:
                 sys.stderr.write(f"  {Colors.YELLOW}HN:{Colors.RESET} {hn_count} stories")
             if pm_count:
                 sys.stderr.write(f"  {Colors.GREEN}Polymarket:{Colors.RESET} {pm_count} markets")
+            if arxiv_count:
+                sys.stderr.write(f"  {Colors.CYAN}arXiv:{Colors.RESET} {arxiv_count} papers")
+            if pat_count:
+                sys.stderr.write(f"  {Colors.YELLOW}Patents:{Colors.RESET} {pat_count} patents")
+            if book_count:
+                sys.stderr.write(f"  {Colors.PURPLE}Books:{Colors.RESET} {book_count} books")
+            # Chinese platforms
+            if bilibili_count:
+                sys.stderr.write(f"  {Colors.MAGENTA}Bilibili:{Colors.RESET} {bilibili_count} videos")
+            if zhihu_count:
+                sys.stderr.write(f"  {Colors.BLUE}Zhihu:{Colors.RESET} {zhihu_count} answers")
+            if weibo_count:
+                sys.stderr.write(f"  {Colors.MAGENTA}Weibo:{Colors.RESET} {weibo_count} posts")
+            if douyin_count:
+                sys.stderr.write(f"  {Colors.RED}Douyin:{Colors.RESET} {douyin_count} videos")
+            if baidu_count:
+                sys.stderr.write(f"  {Colors.BLUE}Baidu:{Colors.RESET} {baidu_count} results")
             sys.stderr.write("\n\n")
         else:
             parts = [f"Reddit: {reddit_count} threads", f"X: {x_count} posts"]
@@ -321,6 +388,23 @@ class ProgressDisplay:
                 parts.append(f"HN: {hn_count} stories")
             if pm_count:
                 parts.append(f"Polymarket: {pm_count} markets")
+            if arxiv_count:
+                parts.append(f"arXiv: {arxiv_count} papers")
+            if pat_count:
+                parts.append(f"Patents: {pat_count} patents")
+            if book_count:
+                parts.append(f"Books: {book_count} books")
+            # Chinese platforms
+            if bilibili_count:
+                parts.append(f"Bilibili: {bilibili_count} videos")
+            if zhihu_count:
+                parts.append(f"Zhihu: {zhihu_count} answers")
+            if weibo_count:
+                parts.append(f"Weibo: {weibo_count} posts")
+            if douyin_count:
+                parts.append(f"Douyin: {douyin_count} videos")
+            if baidu_count:
+                parts.append(f"Baidu: {baidu_count} results")
             sys.stderr.write(f"✓ Research complete ({elapsed:.1f}s) - {', '.join(parts)}\n")
         sys.stderr.flush()
 

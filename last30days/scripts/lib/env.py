@@ -27,7 +27,7 @@ def load_env_file(path: Path) -> Dict[str, str]:
     if not path.exists():
         return env
 
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith('#'):
@@ -63,6 +63,22 @@ def get_config() -> Dict[str, Any]:
         ('OPENAI_MODEL_PIN', None),
         ('XAI_MODEL_POLICY', 'latest'),
         ('XAI_MODEL_PIN', None),
+        # New v2.9.6+ keys
+        ('SCRAPECREATORS_API_KEY', None),
+        ('BSKY_HANDLE', None),
+        ('BSKY_APP_PASSWORD', None),
+        ('TRUTHSOCIAL_TOKEN', None),
+        ('EXA_API_KEY', None),
+        ('XIAOHONGSHU_API_BASE_URL', None),
+        # New v2.9.8+ Chinese platform keys
+        ('WEIBO_ACCESS_TOKEN', None),
+        ('TIKHUB_API_KEY', None),
+        ('ZHIHU_COOKIE', None),
+        ('BAIDU_API_KEY', None),
+        ('BAIDU_SECRET_KEY', None),
+        # Setup wizard flags
+        ('SETUP_COMPLETE', None),
+        ('FROM_BROWSER', 'auto'),
     ]
 
     config = {}
@@ -74,16 +90,18 @@ def get_config() -> Dict[str, Any]:
 
 def config_exists() -> bool:
     """Check if configuration file exists."""
-    return CONFIG_FILE.exists()
+    return CONFIG_FILE.exists() if CONFIG_FILE else False
 
 
 def get_reddit_source(config: Dict[str, Any]) -> str:
     """Determine the best available Reddit search backend.
 
-    Priority: Gemini (free + Google Search) > OpenAI (Responses API) > Native (free JSON)
+    Priority: ScrapeCreators (with comments) > Gemini (free + Google Search) > OpenAI (Responses API) > Native (free JSON)
 
-    Returns: 'gemini', 'openai', or 'native'
+    Returns: 'scrapecreators', 'gemini', 'openai', or 'native'
     """
+    if config.get('SCRAPECREATORS_API_KEY'):
+        return 'scrapecreators'
     if config.get('GEMINI_API_KEY'):
         return 'gemini'
     if config.get('OPENAI_API_KEY'):
@@ -116,18 +134,25 @@ def get_available_sources(config: Dict[str, Any]) -> str:
 
 def has_web_search_keys(config: Dict[str, Any]) -> bool:
     """Check if any web search API keys are configured."""
-    return bool(config.get('OPENROUTER_API_KEY') or config.get('PARALLEL_API_KEY') or config.get('BRAVE_API_KEY'))
+    return bool(
+        config.get('OPENROUTER_API_KEY') or
+        config.get('PARALLEL_API_KEY') or
+        config.get('BRAVE_API_KEY') or
+        config.get('EXA_API_KEY')
+    )
 
 
 def get_web_search_source(config: Dict[str, Any]) -> Optional[str]:
     """Determine the best available web search backend.
 
-    Priority: Parallel AI > Brave > OpenRouter/Sonar Pro
+    Priority: Parallel AI > Exa > Brave > OpenRouter/Sonar Pro
 
-    Returns: 'parallel', 'brave', 'openrouter', or None
+    Returns: 'parallel', 'exa', 'brave', 'openrouter', or None
     """
     if config.get('PARALLEL_API_KEY'):
         return 'parallel'
+    if config.get('EXA_API_KEY'):
+        return 'exa'
     if config.get('BRAVE_API_KEY'):
         return 'brave'
     if config.get('OPENROUTER_API_KEY'):
@@ -186,7 +211,6 @@ def validate_sources(requested: str, available: str, include_web: bool = False) 
             return 'reddit', None
         else:
             return 'web', f"No API keys configured. Add GEMINI_API_KEY or OPENAI_API_KEY for Reddit, XAI_API_KEY for X."
-
 
 
     if requested == 'auto':
@@ -306,3 +330,13 @@ def get_x_source_status(config: Dict[str, Any]) -> Dict[str, Any]:
         "xai_available": xai_available,
         "can_install_bird": bird_status["can_install"],
     }
+
+
+# Cookie domains for auto-setup wizard
+# Maps source name to {domain, cookies} for extraction
+COOKIE_DOMAINS = {
+    "x": {
+        "domain": ".x.com",
+        "cookies": ["auth_token", "ct0"],
+    },
+}

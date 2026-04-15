@@ -1,15 +1,6 @@
 ---
 name: boardgame-cards
 description: 桌游卡牌设计技能。当用户要求"设计桌游卡牌"、"卡牌布局"、"卡牌背面对齐"、"卡牌整版排版"、"游戏卡牌制作"时使用此技能。提供卡牌布局层级、图标系统、背面对齐和整版排版指导，涵盖扑克/迷你/方形尺寸和可读性标准。
-version: 1.0.0
-parent: print-design
-tags: [boardgame, cards, print-design, game-components, layout]
-triggers:
-  - "设计桌游卡牌"
-  - "卡牌布局"
-  - "卡牌背面对齐"
-  - "卡牌整版排版"
-  - "游戏卡牌制作"
 ---
 
 # Board Game Card Design

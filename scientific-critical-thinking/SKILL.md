@@ -1,7 +1,6 @@
 ---
 name: scientific-critical-thinking
-description: "Evaluate research rigor. Assess methodology, experimental design, statistical validity, biases, confounding, evidence quality (GRADE, Cochrane ROB), for critical analysis of scientific claims."
-allowed-tools: [Read, Write, Edit, Bash]
+description: "科学研究严密性批判评估工具（含 Cochrane ROB 偏倚风险评估）。当用户需要审阅论文、评估研究质量、揭露假设混杂、识别数据漏洞或进行科学批判性分析时使用此技能。"
 ---
 
 # Scientific Critical Thinking

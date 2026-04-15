@@ -1,19 +1,6 @@
 ---
 name: boardgame-design
 description: 桌游设计专家技能。当用户要求"设计桌游"、"游戏机制设计"、"平衡游戏"、"测试游戏"、"playtest"、"游戏测试场景"时使用此技能。使用5组件过滤器（清晰度>策略>互动>满意度>适配）评估和设计游戏机制。
-version: 1.1.0
-parent: game-design-theory
-tags: [boardgame, design, testing, balance, iteration]
-triggers:
-  - "设计桌游"
-  - "游戏机制设计"
-  - "平衡游戏"
-  - "测试游戏"
-  - "playtest"
-  - "游戏测试场景"
-  - "evaluate game feel"
-  - "balance tabletop game"
-  - "debug game mechanics"
 ---
 
 # Board Game Design Framework
