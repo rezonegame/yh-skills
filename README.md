@@ -1,8 +1,9 @@
 # YH Skills Collection
 
-![Version](https://img.shields.io/badge/version-1.5.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Apr%202026-green)
+![Version](https://img.shields.io/badge/version-1.6.0-blue) ![Last Updated](https://img.shields.io/badge/last%20updated-Apr%2023,%202026-green)
 
 ## 📅 更新日志 (Changelog)
+- **v1.6.0** (2026-04-23): 更新 `gamified-course-designer` 与 `last30days`。优化了课程设计框架及跨平台热点搜索脚本。
 - **v1.5.0** (2026-04-15): 整合整理，新增 `geo-content-optimizer`, `gamified-course-designer` 等多项核心技能。
 - **v1.4.0** (2026-03-12): 新增 `multi-agent-debate` 多视角角色讨论框架。
 - **v1.3.0** (2026-03-03): 新增 `last30days` 跨平台趋势搜索与分析技能。
