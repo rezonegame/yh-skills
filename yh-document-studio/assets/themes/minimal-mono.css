@@ -1,0 +1,27 @@
+/* ============================================================
+   yh-document-studio · 美学包 2/5: minimal-mono
+   调性: 极简黑白灰（"简单版/裸文"，屏幕阅读友好）
+   色源: theme-factory modern-minimalist (anthropics/skills)
+   字体: 复用 kami 默认（不用 theme-factory 的 DejaVu/FreeSans）
+   适用: 你说的"简单版文档"、内部备忘、纯文本感阅读
+   ============================================================ */
+
+:root {
+  --parchment:         #ffffff;
+  --ivory:             #fafafa;
+  --sand:              #f0f0f0;
+  --border:            #d3d3d3;
+  --border-soft:       #e0e0e0;
+  --brand:             #36454f;
+  --brand-tint:        #ececec;
+  --brand-tint-strong: #dcdcdc;
+  --near-black:        #1a1a1a;
+  --dark-warm:         #2a2a2a;
+  --charcoal:          #36454f;
+  --olive:             #555555;
+  --stone:             #708090;
+}
+
+/* 覆盖 kami 模板 @page 中写死的页面背景 */
+@page { background: #ffffff; }
+html, body { background: #ffffff; }

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!--
+  ============================================================================
+  yh-slides · Path C 极简种子文件（零依赖单文件 HTML）
+  ============================================================================
+
+  适用场景：个人分享、轻量 Demo、不需要 WebGL / 复杂动效
+  对比 magazine-seed：更轻量、无 WebGL、样式精简、上手更快
+
+  【铁律】
+  [1] 单文件主体，字体与图标从本地 assets/vendor 加载，不引用外部 CDN
+  [2] 每页 <section class="slide [theme]">，theme 必须是 light/dark/hero-light/hero-dark
+  [3] 不连续 3 页同主题
+  [4] 图片用相对路径（images/xxx.png）
+  [5] 图片用 height:Nvh 而非 aspect-ratio 原图比例
+  [6] 不发明 <style> 里没有的 class
+
+  【文件分层】
+  [A] 禁改区：<head> 的 viewport + scroll-snap JS + 键盘导航
+  [B] 样式层：可修改 :root 变量、字体声明（但不要删 class 定义）
+  [C] 内容层：<main id="deck"> 里的所有 <section>
+
+  【主题标记速查】
+  light      → 浅色正文页（数据/列表/图文）
+  dark       → 深色正文页（反差/强调）
+  hero-light → 浅色全屏页（章节转场/金句）
+  hero-dark  → 深色全屏页（封面/重要问题/结尾）
+
+  ============================================================================
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[必填] 项目名</title>
+
+<!-- Local Fonts -->
+<link href="assets/vendor/google-fonts-local.css" rel="stylesheet">
+
+<!-- Lucide Icons：本地 vendor 资源 -->
+<script src="assets/vendor/js/lucide.js"></script>
+
+<!-- ===== [A] 禁改区 START ===== -->
+<style>
+  /* ──────────────────────────────────────
+     基础重置与 Scroll-snap 架构
+     ────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  #deck {
+    width: 100vw;
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6vh 6vw;
+  }
+/* ===== [A] 禁改区 END ===== */
+
+  /* ──────────────────────────────────────
+     [B] 样式层：主题变量（可整套替换）
+     ────────────────────────────────────── */
+  :root {
+    /* 墨水经典 - 学术 / 严肃 */
+    --ink: #1a1a1a;
+    --ink-rgb: 26,26,26;
+    --paper: #f5f1ed;
+    --paper-rgb: 245,241,237;
+    --paper-tint: #ece8e3;
+    --ink-tint: #2d2d2d;
+    --accent: #c4302b;
+
+    /* 可选替换：靛蓝瓷 */
+    /* --ink: #0a1f3d; --ink-rgb: 10,31,61; --paper: #f1f3f5; --paper-rgb: 241,243,245; --paper-tint: #e4e8ec; --ink-tint: #152a4a; --accent: #2a6db5; */
+
+    /* 可选替换：沙丘 */
+    /* --ink: #3d2817; --ink-rgb: 61,40,23; --paper: #f6ede0; --paper-rgb: 246,237,224; --paper-tint: #ede3d4; --ink-tint: #5c3a1e; --accent: #d4a574; */
+  }
+
+  /* ── 主题：light ── */
+  .slide.light {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* ── 主题：dark ── */
+  .slide.dark {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* ── 主题：hero-light ── */
+  .slide.hero-light {
+    background: var(--paper-tint);
+    color: var(--ink);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ── 主题：hero-dark ── */
+  .slide.hero-dark {
+    background: var(--ink-tint);
+    color: var(--paper);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ──────────────────────────────────────
+     [B] 样式层：排版系统
+     ────────────────────────────────────── */
+
+  /* 页眉 / 页脚 */
+  .chrome {
+    position: absolute;
+    top: 3vh;
+    left: 6vw; right: 6vw;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(10px, 1.2vh, 13px);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    display: flex;
+    justify-content: space-between;
+  }
+  .foot {
+    position: absolute;
+    bottom: 3vh;
+    left: 6vw; right: 6vw;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(10px, 1.2vh, 13px);
+    letter-spacing: 0.08em;
+    opacity: 0.4;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* 引导词（比 h1 小，比 chrome 显眼） */
+  .kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(12px, 1.4vh, 16px);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 2vh;
+  }
+
+  /* 中文大标题 */
+  .h1-zh {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 72px);
+    line-height: 1.2;
+    margin-bottom: 2vh;
+  }
+
+  /* 英文大标题 */
+  .h1-en {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 72px);
+    line-height: 1.1;
+    margin-bottom: 2vh;
+  }
+
+  /* 二级标题 */
+  .h2-zh {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 700;
+    font-size: clamp(20px, 3vw, 40px);
+    line-height: 1.3;
+    margin-bottom: 1.5vh;
+  }
+
+  /* 正文 */
+  .body-zh {
+    font-family: "Noto Sans SC", sans-serif;
+    font-weight: 400;
+    font-size: clamp(14px, 1.8vh, 20px);
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  /* 小字注释 */
+  .meta {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(10px, 1.2vh, 14px);
+    opacity: 0.5;
+    margin-top: 1vh;
+  }
+
+  /* 大数字 */
+  .big-num {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: clamp(60px, 12vw, 160px);
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  /* 分隔线 */
+  .rule {
+    height: 2px;
+    background: var(--accent);
+    width: 40px;
+    margin: 2vh 0;
+  }
+
+  /* 强调色文字 */
+  .accent { color: var(--accent); }
+
+  /* ── 布局组件 ── */
+
+  /* 两栏布局（left:55% right:45%） */
+  .split {
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    gap: 4vw;
+    align-items: center;
+    height: 70vh;
+    margin-top: 2vh;
+  }
+
+  /* 图片容器 */
+  .frame-img {
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  .frame-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  /* 要点列表 */
+  .points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+  }
+  .points li {
+    font-family: "Noto Sans SC", sans-serif;
+    font-size: clamp(14px, 1.8vh, 20px);
+    line-height: 1.5;
+    padding-left: 1.5em;
+    position: relative;
+    opacity: 0.85;
+  }
+  .points li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* 数据卡片网格 */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2vw;
+    margin-top: 2vh;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+  }
+  .stat .n { /* 数字 */
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: clamp(32px, 5vw, 60px);
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat .l { /* 标签 */
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(10px, 1.2vh, 14px);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+  .stat .m { /* 说明 */
+    font-family: "Noto Sans SC", sans-serif;
+    font-size: clamp(12px, 1.4vh, 16px);
+    opacity: 0.7;
+  }
+
+  /* 引文块 */
+  .callout {
+    border-left: 3px solid var(--accent);
+    padding-left: 2vw;
+    margin: 2vh 0;
+  }
+  .callout .q-big {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 700;
+    font-size: clamp(18px, 2.5vh, 28px);
+    line-height: 1.5;
+  }
+  .callout .cite {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(10px, 1.2vh, 14px);
+    opacity: 0.6;
+    margin-top: 1vh;
+  }
+
+  /* ──────────────────────────────────────
+     导航指示点
+     ────────────────────────────────────── */
+  #nav {
+    position: fixed;
+    right: 1.5vw;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+  }
+  #nav .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(127,127,127,.35);
+    cursor: pointer;
+    transition: all .25s;
+  }
+  #nav .dot.active {
+    background: var(--accent);
+    transform: scale(1.5);
+  }
+</style>
+
+<!-- ===== [A] 禁改区 START ===== -->
+<style>
+  /* 防止用户选中文字时干扰翻页 */
+  #deck { user-select: none; }
+</style>
+</head>
+
+<body>
+
+<!-- ── 导航指示点（JS 动态生成） ── -->
+<nav id="nav"></nav>
+
+<!-- ============================================================
+     [C] 内容层：幻灯片
+     ──────────────────
+     每页 <section class="slide [theme]">
+     theme 必须是 light / dark / hero-light / hero-dark
+     ============================================================ -->
+<main id="deck">
+
+  <!-- SLIDE 01 · 封面 → hero-dark -->
+  <section class="slide hero-dark">
+    <div class="chrome">
+      <div>[项目/部门名]</div>
+      <div>2026</div>
+    </div>
+
+    <p class="kicker">[引导词 / 类别标签]</p>
+    <h1 class="h1-zh">[必填] 主标题</h1>
+    <p class="body-zh" style="max-width:40ch;opacity:.75">[选填] 副标题或一句话定义</p>
+
+    <div class="foot">
+      <div>01 / [总页数]</div>
+      <div>[日期 / 作者]</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 02 · 正文（图文 split） → light -->
+  <section class="slide light">
+    <div class="chrome">
+      <div>Chapter 01 · [章节名]</div>
+      <div>02 / [总页数]</div>
+    </div>
+
+    <div class="split">
+      <!-- 左列：文字 -->
+      <div>
+        <p class="kicker">Section 01</p>
+        <h2 class="h2-zh">[必填] 本页核心论断</h2>
+        <div class="rule"></div>
+        <p class="body-zh">[必填] 展开说明，2-3 句话，每句 20 字以内。</p>
+      </div>
+      <!-- 右列：图片 -->
+      <div>
+        <div class="frame-img" style="height: 40vh">
+          <img src="images/slide-02.png" alt="[描述]">
+        </div>
+        <p class="meta">FIG.01 · [图注]</p>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div>[品牌名]</div>
+      <div>02 / [总页数]</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 03 · 深度正文 → dark -->
+  <section class="slide dark">
+    <div class="chrome" style="opacity:.35">
+      <div>Chapter 01 · [章节名]</div>
+      <div>03 / [总页数]</div>
+    </div>
+
+    <p class="kicker" style="opacity:.5">深度</p>
+    <h2 class="h2-zh">[必填] 反差 / 挑战 / 转折</h2>
+    <div class="rule"></div>
+    <ul class="points">
+      <li>[必填] 要点 1</li>
+      <li>[必填] 要点 2</li>
+      <li>[选填] 要点 3</li>
+    </ul>
+
+    <div class="foot" style="opacity:.3">
+      <div>[品牌名]</div>
+      <div>03 / [总页数]</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 04 · 章节转场 → hero-light -->
+  <section class="slide hero-light">
+    <div class="chrome">
+      <div>[项目/部门名]</div>
+      <div>Act II</div>
+    </div>
+
+    <p class="kicker">Chapter 02</p>
+    <h1 class="h1-zh" style="text-align:center;max-width:12ch">[必填] 章节标题</h1>
+    <p class="meta" style="opacity:.5">[选填] 一句话预告这一幕的主题</p>
+
+    <div class="foot">
+      <div>04 / [总页数]</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 05 · 数据页 → light -->
+  <section class="slide light">
+    <div class="chrome">
+      <div>Chapter 02 · [章节名]</div>
+      <div>05 / [总页数]</div>
+    </div>
+
+    <p class="kicker">Key Metrics</p>
+    <h2 class="h2-zh" style="margin-bottom:4vh">[必填] 数据页标题</h2>
+
+    <div class="grid-3">
+      <div class="stat">
+        <span class="n">83<small style="font-size:.5em">%</small></span>
+        <span class="l">Metric A</span>
+        <span class="m">[说明文字]</span>
+      </div>
+      <div class="stat">
+        <span class="n">2.4<small style="font-size:.5em">x</small></span>
+        <span class="l">Metric B</span>
+        <span class="m">[说明文字]</span>
+      </div>
+      <div class="stat">
+        <span class="n">12K</span>
+        <span class="l">Metric C</span>
+        <span class="m">[说明文字]</span>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div>[数据来源]</div>
+      <div>05 / [总页数]</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 06 · 引文页 → dark -->
+  <section class="slide dark">
+    <div class="chrome" style="opacity:.35">
+      <div>Chapter 02 · [章节名]</div>
+      <div>06 / [总页数]</div>
+    </div>
+
+    <div class="callout" style="max-width:70ch">
+      <p class="q-big">"[必填] 核心引文。金句、用户反馈、行业洞察。"</p>
+      <p class="cite">— [作者] · [来源]</p>
+    </div>
+
+    <div class="foot" style="opacity:.3">
+      <div>[品牌名]</div>
+      <div>06 / [总页数]</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 07 · 结尾 → hero-dark -->
+  <section class="slide hero-dark">
+    <div class="chrome" style="opacity:.4">
+      <div>[项目/部门名]</div>
+      <div>Fin</div>
+    </div>
+
+    <p class="kicker" style="opacity:.5">谢谢</p>
+    <h1 class="h1-en">Thank you.</h1>
+    <p class="body-zh" style="opacity:.6;margin-top:2vh">[选填] 联系方式 / 下一步行动号召</p>
+
+    <div class="foot" style="opacity:.35">
+      <div>07 / 07</div>
+      <div>[邮箱 / 社交]</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== [A] 禁改区 START ===== -->
+<script>
+  // Lucide 图标初始化
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // ── 导航指示点 ──
+  const deck = document.getElementById('deck');
+  const navEl = document.getElementById('nav');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+
+  // 生成指示点
+  slides.forEach((slide, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.title = `Page ${i + 1}`;
+    dot.addEventListener('click', () => {
+      slide.scrollIntoView({ behavior: 'smooth' });
+    });
+    navEl.appendChild(dot);
+  });
+
+  // 监听滚动，高亮当前页
+  const dots = Array.from(navEl.querySelectorAll('.dot'));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = slides.indexOf(e.target);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    });
+  }, { threshold: 0.5, root: deck });
+  slides.forEach(s => io.observe(s));
+
+  // ── 键盘导航 ──
+  let currentIdx = 0;
+  const goTo = (idx) => {
+    idx = Math.max(0, Math.min(slides.length - 1, idx));
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+    currentIdx = idx;
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); goTo(currentIdx + 1); }
+    if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')                    { e.preventDefault(); goTo(currentIdx - 1); }
+  });
+
+  // 监听滚动更新 currentIdx
+  const ioIdx = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) currentIdx = slides.indexOf(e.target);
+    });
+  }, { threshold: 0.5, root: deck });
+  slides.forEach(s => ioIdx.observe(s));
+</script>
+<!-- ===== [A] 禁改区 END ===== -->
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "html-ppt-skill",
+  "url": "https://github.com/lewislulu/html-ppt-skill.git",
+  "commit": "f3a8435d3901697d5ac5e64d356c933637e43107",
+  "vendored_at": "2026-06-03T16:13:24",
+  "update_policy": "Pinned commit; update only by re-absorbing selected local assets, refreshing this lock, and running provenance review."
+}

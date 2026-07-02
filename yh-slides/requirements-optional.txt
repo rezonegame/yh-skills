@@ -1,0 +1,15 @@
+# Optional Path S preview compatibility Python dependencies.
+#
+# Native editable PPTX export uses python-pptx and does not require these.
+# Install one compatible preview renderer when the SVG reference PPTX must
+# display reliably in older Office builds that do not handle embedded SVG well.
+# On Windows, both CairoSVG and the svglib/reportlab renderPM backend may also
+# require a system Cairo runtime/DLL; the exporter will safely fall back to pure
+# SVG preview when no PNG renderer can load.
+
+# Preferred renderer. On Windows this may still need a system Cairo DLL.
+cairosvg>=2.7.1
+
+# Pure-Python-friendly fallback used when CairoSVG cannot load Cairo.
+svglib>=1.5.1
+reportlab>=4.0.0

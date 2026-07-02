@@ -1,0 +1,33 @@
+/* ============================================================
+   yh-document-studio · 美学包 5/5: natural-essay
+   调性: 自然长文（冷青雾绿纸面 + 深森林绿，清新冷静，植物学手册感）
+   色源: theme-factory forest-canopy (anthropics/skills)
+   字体: 复用 kami 衬线
+   适用: 可持续/健康/环保/自然类长文，教育内容
+
+   v2 修订（2026-06-21）: 初版纸面用暖米色，与 parchment-ink
+   几乎相同导致两套撞脸。本次纸面改为冷青雾绿系，与 ink 暖纸
+   墨蓝彻底区隔。
+   ============================================================ */
+
+:root {
+  /* 纸面：冷青雾绿系（明显区别于 ink 的暖米） */
+  --parchment:         #eef1ea;
+  --ivory:             #f3f5ef;
+  --sand:              #e2e7db;
+  --border:            #c8d2bc;
+  --border-soft:       #d8dfd0;
+  /* brand：深森林绿，比初版更深更沉 */
+  --brand:             #1f3d1d;
+  --brand-tint:        #dde6d4;
+  --brand-tint-strong: #c4d3b6;
+  /* 文字：带绿调的深色，不用纯黑 */
+  --near-black:        #161a12;
+  --dark-warm:         #243018;
+  --charcoal:          #2e3a22;
+  --olive:             #4a5040;
+  --stone:             #6b7558;
+}
+
+@page { background: #eef1ea; }
+html, body { background: #eef1ea; }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "YH Image Inspirer"
+  short_description: "面向独立视觉作品的灵感检索、提示词设计与原生图像创作"
+  default_prompt: "Use $yh-image-inspirer to develop this visual-first idea into references, a structured brief, and a final native image prompt."

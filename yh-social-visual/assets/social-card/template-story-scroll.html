@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Article Story Scroll</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #d9ddd8; font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+    .poster.story-scroll {
+      --ink: #17231e;
+      --muted: #53645c;
+      --accent: #e75c3d;
+      --paper: #f7f5ee;
+      position: relative;
+      width: 2400px;
+      height: 900px;
+      overflow: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(231, 92, 61, .12), transparent 25%),
+        radial-gradient(circle at 76% 80%, rgba(49, 126, 111, .13), transparent 28%),
+        var(--paper);
+    }
+    .story-head { position: absolute; left: 72px; top: 54px; z-index: 5; max-width: 760px; }
+    .story-kicker { margin: 0 0 12px; color: var(--accent); font-size: 27px; font-weight: 700; letter-spacing: .08em; }
+    .story-title { margin: 0; font-size: 56px; font-weight: 750; line-height: 1.08; letter-spacing: -.03em; }
+    .story-subtitle { margin: 16px 0 0; color: var(--muted); font-size: 28px; line-height: 1.45; }
+    .story-base { position: absolute; inset: 0; z-index: 1; }
+    .story-route { position: absolute; left: 130px; top: 245px; width: 2140px; height: 500px; overflow: visible; }
+    .story-route path { fill: none; stroke: #9ab0a6; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 1 24; }
+    .object { position: absolute; width: 122px; height: 122px; border: 5px solid var(--ink); background: #fffdf7; box-shadow: 12px 12px 0 rgba(23, 35, 30, .12); transform: translate(-50%, -50%); }
+    .object.circle { border-radius: 50%; }
+    .object.folder { border-radius: 12px; }
+    .object.folder::before { content: ""; position: absolute; left: 12px; top: -27px; width: 48px; height: 28px; border: 5px solid var(--ink); border-bottom: 0; background: #fffdf7; border-radius: 10px 10px 0 0; }
+    .object.blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 13px; transform: translate(-50%, -50%) rotate(-7deg); }
+    .object.blocks span { background: #f0b543; border: 3px solid var(--ink); }
+    .object.tool::before, .object.tool::after { content: ""; position: absolute; left: 52px; top: 18px; width: 15px; height: 84px; border-radius: 10px; background: var(--accent); transform: rotate(38deg); }
+    .object.tool::after { transform: rotate(-38deg); }
+    .object.flag::before { content: ""; position: absolute; left: 34px; top: 18px; width: 7px; height: 84px; background: var(--ink); }
+    .object.flag::after { content: ""; position: absolute; left: 41px; top: 20px; border-top: 24px solid var(--accent); border-right: 48px solid transparent; }
+    .story-node {
+      position: absolute;
+      left: calc(var(--x) * 100%);
+      top: calc(var(--y) * 100%);
+      z-index: 4;
+      width: 320px;
+      transform: translate(-50%, -50%);
+    }
+    .story-node.above { transform: translate(-50%, calc(-100% - 75px)); }
+    .story-node.below { transform: translate(-50%, 75px); }
+    .story-node h2 { margin: 0 0 8px; font-size: 34px; line-height: 1.15; }
+    .story-node p { margin: 0; color: var(--muted); font-size: 27px; line-height: 1.38; }
+    .story-foot { position: absolute; right: 72px; bottom: 42px; z-index: 5; color: var(--muted); font-size: 26px; }
+  </style>
+</head>
+<body>
+  <section id="article-story-scroll" class="poster story-scroll" data-story-base-reviewed="true" data-id="article-story-scroll">
+    <header class="story-head">
+      <p class="story-kicker">PROJECT STORY</p>
+      <h1 class="story-title">从模糊问题到清晰结果</h1>
+      <p class="story-subtitle">示例种子：制作任务时替换为已审阅的无文字底图与事实锚定节点。</p>
+    </header>
+
+    <div class="story-base" aria-hidden="true">
+      <svg class="story-route" viewBox="0 0 2140 500" preserveAspectRatio="none">
+        <path d="M 20 310 C 210 180, 360 360, 530 260 S 790 80, 1010 215 S 1330 430, 1510 260 S 1850 90, 2110 205"></path>
+      </svg>
+      <div class="object folder" data-story-anchor="start" style="left: 12%; top: 65%;"></div>
+      <div class="object blocks" data-story-anchor="prototype" style="left: 29%; top: 53%;"><span></span><span></span><span></span><span></span></div>
+      <div class="object circle tool" data-story-anchor="turn" style="left: 50%; top: 40%;"></div>
+      <div class="object" data-story-anchor="system" style="left: 73%; top: 63%; transform: translate(-50%, -50%) rotate(8deg);"></div>
+      <div class="object circle flag" data-story-anchor="result" style="left: 89%; top: 46%;"></div>
+    </div>
+
+    <article class="story-node above" data-story-node data-anchor="start" data-source="brief:start" data-x="0.12" data-y="0.65" style="--x:.12; --y:.65;">
+      <h2>发现真实问题</h2><p>从用户提供的事实中确认起点。</p>
+    </article>
+    <article class="story-node below" data-story-node data-anchor="prototype" data-source="brief:prototype" data-x="0.29" data-y="0.53" style="--x:.29; --y:.53;">
+      <h2>搭出原型</h2><p>把假设变成可观察的关系。</p>
+    </article>
+    <article class="story-node above" data-story-node data-anchor="turn" data-source="brief:turn" data-x="0.50" data-y="0.40" style="--x:.50; --y:.40;">
+      <h2>中段转折</h2><p>用关键证据改变原来的路径。</p>
+    </article>
+    <article class="story-node below" data-story-node data-anchor="system" data-source="brief:system" data-x="0.73" data-y="0.63" style="--x:.73; --y:.63;">
+      <h2>形成系统</h2><p>让重复动作成为稳定机制。</p>
+    </article>
+    <article class="story-node above" data-story-node data-anchor="result" data-source="brief:result" data-x="0.89" data-y="0.46" style="--x:.89; --y:.46;">
+      <h2>收束结果</h2><p>只呈现来源明确的最终节点。</p>
+    </article>
+    <footer class="story-foot">2400 × 900 · hybrid story-scroll seed</footer>
+  </section>
+</body>
+</html>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "YH Social Visual"
+  short_description: "把文章与内容转成多平台社媒封面、轮播卡片和发布配图"
+  default_prompt: "Use $yh-social-visual to turn this content into a platform-ready social visual package."

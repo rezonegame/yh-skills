@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "YH Local Knowledge Asset",
+  "type": "object",
+  "required": ["id", "type", "status", "title", "version", "sources"],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["concept", "path", "process", "claim", "case", "spec", "other"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["verified", "deprecated", "needs_review"]
+    },
+    "title": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "citable": {
+      "type": ["boolean", "null"],
+      "description": "Whether downstream agents can cite this asset directly without going back to raw sources. Defaults to true for verified assets with source_evidence role."
+    },
+    "trust_role": {
+      "type": ["string", "null"],
+      "enum": ["source_evidence", "working_memory", "synthesis", null],
+      "description": "Trust role indicating how this asset should be consumed downstream."
+    }
+  },
+  "additionalProperties": true
+}

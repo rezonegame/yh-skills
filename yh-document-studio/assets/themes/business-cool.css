@@ -1,0 +1,26 @@
+/* ============================================================
+   yh-document-studio · 美学包 3/5: business-cool
+   调性: 灰蓝商务冷调（克制、专业、报表感）
+   色源: theme-factory ocean-depths (anthropics/skills)，已调整为更克制的灰蓝
+   字体: 复用 kami 默认
+   适用: 商业报告、研报、估值分析、正式商务文档
+   ============================================================ */
+
+:root {
+  --parchment:         #f6f7f9;
+  --ivory:             #fbfcfd;
+  --sand:              #eaeef2;
+  --border:            #d4dae2;
+  --border-soft:       #e2e7ed;
+  --brand:             #1a3a5c;
+  --brand-tint:        #e8eef4;
+  --brand-tint-strong: #d2deea;
+  --near-black:        #14181d;
+  --dark-warm:         #2b3340;
+  --charcoal:          #3a4654;
+  --olive:             #4a5666;
+  --stone:             #6b7888;
+}
+
+@page { background: #f6f7f9; }
+html, body { background: #f6f7f9; }

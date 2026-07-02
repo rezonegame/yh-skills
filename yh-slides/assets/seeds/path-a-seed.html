@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<!--
+  ============================================================================
+  yh-slides · Path A 种子文件（HTML → 可编辑 PPTX）
+  ============================================================================
+
+  适用场景：企业演示、学术幻灯、可编辑文字、精确布局
+  转换工具：scripts/html2pptx.js
+  输出格式：.pptx（PowerPoint 可编辑）
+
+  【铁律（违反会翻车）】
+  [1] 根容器尺寸必须是 720pt × 405pt（16:9 标准演示）
+  [2] 所有元素必须 position: absolute
+  [3] 用 top/left/width/height 指定 pt 单位坐标
+  [4] 图片必须有明确的 width/height（pt 单位）
+  [5] 图片路径必须是本地相对路径
+  [6] 不要用 flex / grid / margin-auto 布局
+
+  【文件分层】
+  [A] 禁改区：<!DOCTYPE>、<html>、<body>、.slide 容器规范
+  [B] 样式层：可修改字体、颜色、尺寸（但保留 absolute 规范）
+  [C] 内容层：在 <body> 里填充多个 .slide 幻灯片
+
+  ============================================================================
+-->
+<head>
+<meta charset="UTF-8">
+<title>[必填] 项目名</title>
+
+<!-- ============================================================
+     [A] 禁改区：基础设施
+     ============================================================ -->
+<style>
+  /* Reset */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e5e7eb; padding: 20pt; font-family: "Noto Sans SC", sans-serif; }
+
+  /* 幻灯片容器规范：720pt × 405pt，所有内部元素 position:absolute */
+  .slide {
+    width: 720pt;
+    height: 405pt;
+    position: relative;       /* 子元素的定位锚 */
+    overflow: hidden;
+    background: #ffffff;
+    margin: 0 auto 20pt;      /* 多页预览时的间距（PPTX 转换时自动忽略） */
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);  /* 仅用于浏览器预览 */
+  }
+
+  /* ============================================================
+     [B] 样式层：可以修改字体、颜色、尺寸
+     ============================================================ */
+
+  /* 字体系统 */
+  .t-display  { font-family: "Playfair Display", "Noto Serif SC", serif; font-weight: 700; }
+  .t-title    { font-family: "Noto Serif SC", "Playfair Display", serif; font-weight: 700; }
+  .t-body     { font-family: "Noto Sans SC", "Inter", sans-serif; font-weight: 400; }
+  .t-mono     { font-family: "IBM Plex Mono", "Courier New", monospace; font-weight: 400; }
+
+  /* 调色板（可替换） */
+  :root {
+    --ink: #1a1a1a;          /* 主文本色 */
+    --ink-light: #6b6b6b;    /* 次要文本色 */
+    --paper: #ffffff;        /* 背景色 */
+    --paper-tint: #f5f1ed;   /* 次要背景色 */
+    --accent: #c4302b;       /* 强调色（数据、标记） */
+    --line: #d1d5db;         /* 分隔线 */
+  }
+
+  /* 主题变体 */
+  .slide.dark {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .slide.tint {
+    background: var(--paper-tint);
+  }
+
+  /* ============================================================
+     预设组件 class（Path A 专用，全部 position:absolute）
+     ============================================================ */
+
+  /* 标题层级 */
+  .h-display { font-size: 48pt; line-height: 1.1; color: var(--ink); }
+  .h-title   { font-size: 32pt; line-height: 1.2; color: var(--ink); }
+  .h-sub     { font-size: 20pt; line-height: 1.3; color: var(--ink-light); }
+  .b-body    { font-size: 14pt; line-height: 1.6; color: var(--ink); }
+  .b-small   { font-size: 10pt; line-height: 1.4; color: var(--ink-light); }
+  .b-mono    { font-size: 10pt; line-height: 1.4; color: var(--ink-light); letter-spacing: 0.05em; }
+
+  /* 页眉页脚（通常在每页的固定位置） */
+  .chrome {
+    position: absolute;
+    top: 20pt;
+    left: 40pt;
+    right: 40pt;
+    font-size: 10pt;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+  }
+  .foot {
+    position: absolute;
+    bottom: 20pt;
+    left: 40pt;
+    right: 40pt;
+    font-size: 9pt;
+    color: var(--ink-light);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* 强调数字 */
+  .big-num {
+    font-family: "Playfair Display", serif;
+    font-size: 96pt;
+    line-height: 1;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* 分隔线 */
+  .rule {
+    background: var(--line);
+  }
+
+  /* 图片容器（强制绝对定位 + 固定宽高） */
+  .fig {
+    position: absolute;
+    overflow: hidden;
+  }
+  .fig img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+</head>
+
+<body>
+<!-- ============================================================
+     [C] 内容层：幻灯片 (每页一个 .slide)
+     ============================================================
+
+     示例 5 页封面 + 正文 + 数据 + 引用 + 结尾
+     删除示例，替换成实际内容
+     ============================================================ -->
+
+<!-- ============================================================
+     SLIDE 01 · 封面（Hero）
+     ============================================================ -->
+<div class="slide dark">
+  <!-- 页眉 -->
+  <div class="chrome" style="color: rgba(255,255,255,.5)">
+    <div>[项目/部门名]</div>
+    <div>2026</div>
+  </div>
+
+  <!-- 主标题 -->
+  <h1 class="t-display h-display"
+      style="position:absolute;top:150pt;left:60pt;font-size:64pt;color:#fff">
+    [必填] 主标题
+  </h1>
+
+  <!-- 副标题 -->
+  <p class="t-body"
+     style="position:absolute;top:240pt;left:60pt;font-size:20pt;color:rgba(255,255,255,.75)">
+    [选填] 副标题或引导句
+  </p>
+
+  <!-- 底部元信息 -->
+  <div class="foot" style="color: rgba(255,255,255,.5)">
+    <div>01 / XX</div>
+    <div>[作者姓名]</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 02 · 标准正文（图文 7:5）
+     ============================================================ -->
+<div class="slide">
+  <div class="chrome">
+    <div>Chapter 01 · [章节名]</div>
+    <div>02 / XX</div>
+  </div>
+
+  <!-- 小标题 -->
+  <p class="t-mono b-mono" style="position:absolute;top:70pt;left:40pt">
+    SECTION 01
+  </p>
+
+  <!-- 主标题 -->
+  <h2 class="t-title h-title" style="position:absolute;top:100pt;left:40pt;width:350pt">
+    [必填] 本页核心论断
+  </h2>
+
+  <!-- 分隔线 -->
+  <div class="rule" style="position:absolute;top:180pt;left:40pt;width:40pt;height:2pt;background:var(--accent)"></div>
+
+  <!-- 正文 -->
+  <p class="t-body b-body" style="position:absolute;top:210pt;left:40pt;width:350pt">
+    [必填] 展开论述。建议 2-3 句话，每句 20 字以内。
+    避免大段堆文字；观众 7 秒扫完最好。
+  </p>
+
+  <!-- 右侧图片（7:5 比例） -->
+  <div class="fig" style="top:70pt;right:40pt;width:260pt;height:185pt">
+    <img src="images/slide-02.png" alt="[描述]">
+  </div>
+
+  <!-- 图注 -->
+  <p class="t-mono b-mono" style="position:absolute;top:265pt;right:40pt;width:260pt">
+    FIG.01 · [图片说明]
+  </p>
+
+  <div class="foot">
+    <div>[品牌/产品名]</div>
+    <div>02 / XX</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 03 · 数据页（大数字）
+     ============================================================ -->
+<div class="slide tint">
+  <div class="chrome">
+    <div>Chapter 01 · [章节名]</div>
+    <div>03 / XX</div>
+  </div>
+
+  <!-- 大数字 -->
+  <div class="big-num" style="position:absolute;top:110pt;left:60pt">
+    83<span style="font-size:48pt">%</span>
+  </div>
+
+  <!-- 数字标签 -->
+  <p class="t-mono b-mono" style="position:absolute;top:245pt;left:60pt;color:var(--accent)">
+    KEY METRIC
+  </p>
+
+  <!-- 数字解读 -->
+  <h3 class="t-title" style="position:absolute;top:265pt;left:60pt;width:400pt;font-size:24pt">
+    [必填] 这个数字代表什么
+  </h3>
+
+  <!-- 补充说明 -->
+  <p class="t-body b-body" style="position:absolute;top:320pt;left:60pt;width:400pt;color:var(--ink-light)">
+    [选填] 数据来源 / 对比基准 / 结论
+  </p>
+
+  <!-- 右侧可选图片或留白 -->
+  <div class="fig" style="top:110pt;right:60pt;width:200pt;height:200pt;background:var(--paper);border-radius:4pt">
+    <!-- 可放 icon 或留白 -->
+  </div>
+
+  <div class="foot">
+    <div>[数据来源]</div>
+    <div>03 / XX</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 04 · 引用页（大引文）
+     ============================================================ -->
+<div class="slide">
+  <div class="chrome">
+    <div>Chapter 02 · [章节名]</div>
+    <div>04 / XX</div>
+  </div>
+
+  <!-- 大引号 -->
+  <div class="t-display"
+       style="position:absolute;top:100pt;left:60pt;font-size:120pt;color:var(--accent);line-height:0.8">
+    "
+  </div>
+
+  <!-- 引文内容 -->
+  <blockquote class="t-title"
+              style="position:absolute;top:160pt;left:60pt;width:600pt;font-size:28pt;line-height:1.4">
+    [必填] 引文内容。可以是名人语、用户反馈、核心观点。
+  </blockquote>
+
+  <!-- 引文来源 -->
+  <p class="t-body b-body"
+     style="position:absolute;top:310pt;left:60pt;color:var(--ink-light)">
+    — [必填] 作者 · [来源]
+  </p>
+
+  <div class="foot">
+    <div>[章节名]</div>
+    <div>04 / XX</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 05 · 结尾页
+     ============================================================ -->
+<div class="slide dark">
+  <div class="chrome" style="color: rgba(255,255,255,.5)">
+    <div>[项目/部门名]</div>
+    <div>谢谢</div>
+  </div>
+
+  <h1 class="t-display"
+      style="position:absolute;top:150pt;left:60pt;font-size:72pt;color:#fff">
+    谢谢
+  </h1>
+
+  <p class="t-body"
+     style="position:absolute;top:250pt;left:60pt;font-size:18pt;color:rgba(255,255,255,.75)">
+    [选填] 联系方式 / 讨论邀请
+  </p>
+
+  <div class="foot" style="color: rgba(255,255,255,.5)">
+    <div>[邮箱 / 社交]</div>
+    <div>XX / XX</div>
+  </div>
+</div>
+
+</body>
+</html>

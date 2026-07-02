@@ -1,0 +1,26 @@
+/* ============================================================
+   yh-document-studio · 美学包 4/5: editorial-warm
+   调性: 暖调社论（赭石/棕/米，杂志随笔感）
+   色源: theme-factory golden-hour (anthropics/skills)
+   字体: 复用 kami 衬线（TsangerJinKai02 / Charter），强化社论衬线感
+   适用: 随笔、品牌叙事、杂志调长文、年度总结
+   ============================================================ */
+
+:root {
+  --parchment:         #faf5ec;
+  --ivory:             #fdf9f1;
+  --sand:              #f0e6d2;
+  --border:            #e3d5b8;
+  --border-soft:       #ece0c8;
+  --brand:             #8a4a2a;
+  --brand-tint:        #f4e8d8;
+  --brand-tint-strong: #ecd6b8;
+  --near-black:        #2a1f15;
+  --dark-warm:         #3d2e1f;
+  --charcoal:          #4a3826;
+  --olive:             #6b5238;
+  --stone:             #8a7053;
+}
+
+@page { background: #faf5ec; }
+html, body { background: #faf5ec; }

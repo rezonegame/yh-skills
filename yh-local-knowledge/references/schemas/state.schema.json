@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "YH Local Knowledge State",
+  "type": "object",
+  "required": [
+    "workspace_version",
+    "topic",
+    "workflow_state",
+    "pending_candidates",
+    "verified_assets",
+    "exports",
+    "next_recommended_actions"
+  ],
+  "properties": {
+    "workspace_version": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string"
+    },
+    "workflow_state": {
+      "type": "string",
+      "enum": [
+        "uninitialized",
+        "initialized",
+        "synced",
+        "mapped",
+        "menu_ready",
+        "extracting",
+        "candidate_ready",
+        "review_pending",
+        "asset_verified",
+        "linted",
+        "exported"
+      ]
+    },
+    "last_sync_at": {
+      "type": ["string", "null"]
+    },
+    "last_source_map_at": {
+      "type": ["string", "null"]
+    },
+    "last_extraction_menu_at": {
+      "type": ["string", "null"]
+    },
+    "pending_candidates": {
+      "type": "integer"
+    },
+    "verified_assets": {
+      "type": "integer"
+    },
+    "affected_assets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["export_id", "target", "path", "created_at"],
+        "properties": {
+          "export_id": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "next_recommended_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "projects": {
+      "type": "array",
+      "description": "Cross-workspace projects that reference assets from this workspace. Forward-compatible addition.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "project_id": {"type": "string"},
+          "title": {"type": "string"},
+          "path": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

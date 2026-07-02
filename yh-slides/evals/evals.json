@@ -1,0 +1,98 @@
+{
+  "skill_name": "yh-slides",
+  "version": "2.1.0",
+  "description": "Unified presentation skill with 2A/2B/2C/2D product options, including Ian Chinese hand-drawn technical explanation as a routed 2B/2C style.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我做一个关于 AI 未来趋势的 PPT，文字之后还要反复修改。",
+      "expected_output": "推荐 2A / Path A 可编辑 PPTX；不因主题宽泛而自动选择 Ian 手绘。",
+      "path": "2A",
+      "source": "yh-slides"
+    },
+    {
+      "id": 2,
+      "prompt": "用 Snoopy 漫画风格做团队协作 PPT，每页都是完整 AI 图片，不需要改字。",
+      "expected_output": "选择 2B / Path B，按 Snoopy 风格生成完整栅格页并组装图片型 PPTX。",
+      "path": "2B",
+      "source": "yh-slides"
+    },
+    {
+      "id": 3,
+      "prompt": "创建一个关于 Web 开发技术栈的 HTML 演示文稿。",
+      "expected_output": "选择 2D HTML 路径，而不是 PPTX 图片路径。",
+      "path": "2D",
+      "source": "yh-slides"
+    },
+    {
+      "id": 4,
+      "prompt": "做一个带动画和配音的产品发布演示，介绍我们的新 App。",
+      "expected_output": "选择 2D / Path D，使用 HTML 动效与 TTS 流程。",
+      "path": "2D / Path D",
+      "source": "yh-slides"
+    },
+    {
+      "id": 5,
+      "prompt": "把这份 PPTX 转成网页演示文稿：/presentation.pptx",
+      "expected_output": "选择 2D HTML 转换路径，提取原内容并生成网页演示。",
+      "path": "2D",
+      "source": "yh-slides"
+    },
+    {
+      "id": 6,
+      "prompt": "做一套解释数据库索引原理的教学 PPT，先给我三种视觉风格建议。",
+      "expected_output": "在 Step 4 将 Ian 中文手绘技术解释作为候选推荐，并说明适合物件隐喻和技术教学；不得未经确认自动选中。",
+      "path": "style recommendation",
+      "source": "ian-handdrawn-ppt"
+    },
+    {
+      "id": 7,
+      "prompt": "就用 Ian 中文手绘技术解释风格做缓存机制课件。每页只有短标题和两个短标签，文字不需要编辑。",
+      "expected_output": "选择 2B / Path B，读取 Ian 风格契约，并为每页提供 Required text only 列表，禁止额外文字。",
+      "path": "2B",
+      "source": "ian-handdrawn-ppt"
+    },
+    {
+      "id": 8,
+      "prompt": "用 Ian 手绘风做季度技术复盘，日期、指标和项目名称必须完全准确，而且交付后还要改字。",
+      "expected_output": "选择 2C / Path H；生成完全无字的手绘底图，精确文字由 PPT 原生文本框承担。",
+      "path": "2C",
+      "source": "ian-handdrawn-ppt"
+    },
+    {
+      "id": 9,
+      "prompt": "做一份数据密集的财务经营报告，要有可编辑图表和来源脚注。",
+      "expected_output": "优先 2A-S 或 2A，不推荐 Ian 手绘；数据和图表可编辑性优先。",
+      "path": "2A-S",
+      "source": "yh-slides"
+    },
+    {
+      "id": 10,
+      "prompt": "按公司现有品牌模板填充这份销售汇报，不要改变品牌视觉。",
+      "expected_output": "选择 2A-T Template Fill，尊重原模板，不推荐或套用 Ian 手绘。",
+      "path": "2A-T",
+      "source": "yh-slides"
+    },
+    {
+      "id": 11,
+      "prompt": "做一个高端酒店发布会 PPT，使用真实空间摄影和品牌大片感。",
+      "expected_output": "推荐摄影或品牌视觉路径，不推荐 Ian 手绘技术解释。",
+      "path": "2A or 2B non-Ian style",
+      "source": "yh-slides"
+    },
+    {
+      "id": 12,
+      "prompt": "把已经生成的带字整图 PPT 改成可以编辑文字。",
+      "expected_output": "选择 2B-R / FigEdit 可编辑重建，说明将恢复文字、结构、公式和可替换资产，不误判为从零开始的 2C。",
+      "path": "2B-R",
+      "source": "yh-slides"
+    },
+    {
+      "id": 13,
+      "prompt": "用 Ian 中文手绘技术解释做五页课件，交付前给我整套缩略图预览。",
+      "expected_output": "使用 2B 或 2C 的 Ian 风格契约；逐页检查后运行 create_contact_sheet.py，生成带页码联系表和 QA 报告。",
+      "path": "2B or 2C",
+      "source": "ian-handdrawn-ppt"
+    }
+  ]
+}

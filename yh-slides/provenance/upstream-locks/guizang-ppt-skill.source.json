@@ -1,0 +1,7 @@
+{
+  "name": "guizang-ppt-skill",
+  "url": "https://github.com/op7418/guizang-ppt-skill.git",
+  "commit": "82fe5ae129e8c2a12e1155fcabed6703342749d6",
+  "vendored_at": "2026-06-03T16:13:18",
+  "update_policy": "Pinned commit; update only by re-absorbing selected local assets, refreshing this lock, and running provenance review."
+}

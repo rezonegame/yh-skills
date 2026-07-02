@@ -1,0 +1,142 @@
+{
+  "skill_name": "yh-social-visual",
+  "version": "1.1.0",
+  "evals": [
+    {
+      "id": 1,
+      "name": "xiaohongshu-carousel",
+      "prompt": "把这篇关于独立开发者如何验证产品方向的 2500 字文章做成一套小红书轮播图。",
+      "expected_output": "触发 carousel 或 package，先拆分内容，再规划 3:4 封面和有顺序的内容卡片。",
+      "assertions": [
+        {"name": "content_first", "check": "analyzes the article before choosing visuals"},
+        {"name": "platform_aware", "check": "uses Xiaohongshu 3:4 defaults"},
+        {"name": "multi_asset", "check": "plans an ordered carousel"}
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "concept-metaphor",
+      "prompt": "给这篇讲‘反馈循环为什么会让错误越来越大’的方法论文章做两张正文插图，不要文字。",
+      "expected_output": "article 模式；从认知锚点选择 concept-metaphor，用物理动作和低科技物件表达关系，native 无文字。",
+      "assertions": [
+        {"name": "visual_form", "check": "routes strong abstract anchors to concept-metaphor"},
+        {"name": "physical_relation", "check": "defines a physical verb, object, and semantic subject"},
+        {"name": "native_no_text", "check": "uses native with no text"}
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "object-scene",
+      "prompt": "文章写的是创作者同时被交付、流量和自我怀疑拉扯，请做一张有共鸣的正文配图。",
+      "expected_output": "选择 object-scene，将读者处境转换为一个熟悉物件和清晰力学关系，而不是元素拼贴。",
+      "assertions": [
+        {"name": "visual_form", "check": "routes lived pressure to object-scene"},
+        {"name": "one_action", "check": "keeps one core action and one primary object relationship"},
+        {"name": "semantic_subject", "check": "subject performs the meaning-bearing action"}
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "structured-overrides-metaphor",
+      "prompt": "把文章里的四阶段流程、每阶段的准确百分比和名称做成一张正文图。",
+      "expected_output": "选择 structured，并因准确文字和数字使用 HTML 或 hybrid，而不是 native 隐喻图。",
+      "assertions": [
+        {"name": "structured", "check": "routes exact process and numbers to structured"},
+        {"name": "text_accuracy", "check": "uses HTML or hybrid for exact text"}
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "literal-fidelity",
+      "prompt": "正文这里需要展示我提供的产品截图和创始人本人，不能改产品界面和人物身份。",
+      "expected_output": "选择 literal，明确身份与界面保真；如需准确标注则使用 hybrid。",
+      "assertions": [
+        {"name": "literal", "check": "routes supplied product/person facts to literal"},
+        {"name": "preservation", "check": "records identity and interface invariants"}
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "skip-decoration",
+      "prompt": "这一段只是重复上一节结论：‘坚持很重要’，要不要也配一张图？",
+      "expected_output": "选择 skip，说明该图缺少独立视觉价值，不为了平均密度生成装饰图。",
+      "assertions": [
+        {"name": "skip", "check": "rejects a merely repetitive illustration"},
+        {"name": "no_quota_filler", "check": "does not use the character-count heuristic as a quota"}
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "insufficient-anchors",
+      "prompt": "这篇很短的文章要六张正文插图，但只有两个明确观点。",
+      "expected_output": "在 preflight 和 brief 中区分两个核心图与可选弱候选，不静默补齐装饰图。",
+      "assertions": [
+        {"name": "transparent_strength", "check": "labels core versus optional weak candidates"},
+        {"name": "no_silent_filler", "check": "does not invent decorative anchors"}
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "unprovided-achievement",
+      "prompt": "把我的创业经历做成插图。文章只说我做过三个版本，没有提供营收、用户数或获奖信息。",
+      "expected_output": "只使用三个版本这一已知事实，不补写营收、用户数、奖项或时间。",
+      "assertions": [
+        {"name": "fact_gate", "check": "does not invent achievements, quantities, or dates"},
+        {"name": "source_record", "check": "records the user article as the fact source"}
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "retrospective-not-auto-scroll",
+      "prompt": "给这篇项目复盘文章做封面和三张普通正文配图。",
+      "expected_output": "使用 article；可以简短建议长卷，但不自动创建 story-scroll。",
+      "assertions": [
+        {"name": "article", "check": "uses article mode"},
+        {"name": "explicit_only", "check": "does not create story-scroll without explicit request"}
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "explicit-story-scroll",
+      "prompt": "请把这篇产品从原型到发布的复盘做成一张完整成长长卷，节点文字和日期必须准确。",
+      "expected_output": "article 中创建一个 hybrid story-scroll，规划 5–8 个事实节点，先审阅无文字底图，再记录坐标并叠加 HTML。",
+      "assertions": [
+        {"name": "story_role", "check": "uses story-scroll as an asset role, not a mode"},
+        {"name": "hybrid", "check": "uses the two-stage hybrid flow"},
+        {"name": "base_review", "check": "reviews base geometry before label placement"},
+        {"name": "exact_facts", "check": "anchors labels and dates to supplied facts"}
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "english-label-language",
+      "prompt": "Create an English article illustration. Use one short label only if it improves comprehension.",
+      "expected_output": "Any optional native label remains English; Chinese labels are not imposed as a global style rule.",
+      "assertions": [
+        {"name": "language_follows_source", "check": "keeps optional labels in English"},
+        {"name": "label_optional", "check": "does not add text unless it improves comprehension"}
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "visual-first-near-miss",
+      "prompt": "设计一张文字很多的独立电影海报，不用于社媒文章或内容分发。",
+      "expected_output": "不由 yh-social-visual 接管，应路由到 yh-image-inspirer。",
+      "assertions": [
+        {"name": "intent_boundary", "check": "routes by content-distribution intent rather than text density"}
+      ],
+      "files": []
+    }
+  ]
+}

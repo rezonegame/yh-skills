@@ -1,0 +1,60 @@
+{
+  "skill_name": "yh-image-inspirer",
+  "version": "1.0.0",
+  "evals": [
+    {
+      "id": 1,
+      "name": "reference-search",
+      "prompt": "帮我找三种桌游卡牌视觉方向，并说明各自适合什么机制。",
+      "expected_output": "检索本地案例库，比较可复用方向，不进入社媒分页。",
+      "assertions": [
+        {"name": "library_search", "check": "output searches the board-game case library"},
+        {"name": "direction_comparison", "check": "output compares distinct visual directions"}
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "standalone-poster",
+      "prompt": "设计一张文字很多的独立电影海报，黑色电影风格。",
+      "expected_output": "按独立视觉作品处理，选择海报模板、构图与 prompt。",
+      "assertions": [
+        {"name": "visual_first", "check": "output treats the poster as a visual-first artifact"},
+        {"name": "poster_resources", "check": "output uses poster composition or genre references"}
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "prompt-reverse-engineering",
+      "prompt": "分析这张参考图的构图、光线和材质，并整理成可编辑 prompt。",
+      "expected_output": "拆解参考图角色与视觉变量，输出结构化 prompt。",
+      "assertions": [
+        {"name": "visual_analysis", "check": "output separates composition, lighting, material, and subject"},
+        {"name": "editable_prompt", "check": "output produces a structured editable prompt"}
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "coherent-series",
+      "prompt": "生成六张同风格奇幻职业卡牌，角色不同但边框和世界观统一。",
+      "expected_output": "使用系列生成与卡牌 recipe，建立共享锁定变量。",
+      "assertions": [
+        {"name": "series_lock", "check": "output defines shared style and continuity locks"},
+        {"name": "card_recipe", "check": "output follows the board-game card workflow"}
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "social-near-miss",
+      "prompt": "把这篇文章做成一张无文字的小红书配图。",
+      "expected_output": "不应由 yh-image-inspirer 接管，应路由到 yh-social-visual。",
+      "assertions": [
+        {"name": "intent_boundary", "check": "output routes by article and platform intent rather than text presence"}
+      ],
+      "files": []
+    }
+  ]
+}

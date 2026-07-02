@@ -1,0 +1,7 @@
+{
+  "name": "ian-handdrawn-ppt",
+  "url": "https://github.com/helloianneo/ian-handdrawn-ppt.git",
+  "commit": "b2cc5f303337e5470fd6ac2870d261a43b218439",
+  "vendored_at": "2026-06-20T00:00:00+08:00",
+  "update_policy": "Pinned commit; update only by reviewing the visual method and style anchor, refreshing attribution, and rerunning yh-slides validation."
+}

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!--
+  ============================================================================
+  yh-slides · Path D 种子文件（多文件 HTML + GSAP + TTS）
+  ============================================================================
+
+  适用场景：产品发布演示、教学课件、含配音 / 动画的富交互展示
+  依赖：本地 vendor GSAP、可选 TTS 音频
+
+  【多文件目录结构】
+  output/
+  ├── index.html        ← 本文件
+  ├── styles/
+  │   └── main.css      ← 可抽离 CSS（小项目可内联）
+  ├── scripts/
+  │   └── main.js       ← 可抽离 JS（小项目可内联）
+  └── audio/
+      ├── s01.mp3       ← 每页配音（可选）
+      └── s02.mp3
+
+  【铁律】
+  [1] GSAP 加载必须在 </body> 前，DOM 加载后
+  [2] 每页 <section class="slide [theme]">，theme 规则同 Path C
+  [3] 动画不遮挡文字可读性（动效服务内容，不抢戏）
+  [4] TTS 音频用相对路径 audio/sNN.mp3
+  [5] 所有 class 使用已定义的，不发明新 class
+
+  【文件分层】
+  [A] 禁改区：scroll-snap、GSAP 加载、IntersectionObserver 触发机制
+  [B] 样式层：:root 变量、字体、布局 class
+  [C] 内容层：<main id="deck"> 里的 <section>
+
+  【主题标记】light / dark / hero-light / hero-dark（规则同 Path C）
+
+  ============================================================================
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[必填] 项目名</title>
+
+<!-- Local Fonts -->
+<link href="assets/vendor/google-fonts-local.css" rel="stylesheet">
+
+<!-- Lucide Icons -->
+<script src="assets/vendor/js/lucide.js"></script>
+
+<style>
+/* ===== [A] 禁改区：基础架构 ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+#deck {
+  width: 100vw; height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.slide {
+  width: 100vw; height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6vh 7vw;
+}
+
+/* GSAP 动画元素初始状态：不可见，由 JS 触发入场 */
+/* [A] 禁止修改这些初始状态，否则动画翻车 */
+[data-anim] { opacity: 0; }
+/* ===== [A] 禁改区结束 ===== */
+
+
+/* ===== [B] 样式层：主题变量 ===== */
+:root {
+  /* 靛蓝瓷 — 科技/产品发布推荐主题 */
+  --ink: #0a1f3d;
+  --ink-rgb: 10,31,61;
+  --paper: #f1f3f5;
+  --paper-rgb: 241,243,245;
+  --paper-tint: #e4e8ec;
+  --ink-tint: #152a4a;
+  --accent: #2a6db5;
+  --accent-rgb: 42,109,181;
+
+  /* 可替换：墨水经典 */
+  /* --ink:#1a1a1a; --ink-rgb:26,26,26; --paper:#f5f1ed; --paper-rgb:245,241,237; --paper-tint:#ece8e3; --ink-tint:#2d2d2d; --accent:#c4302b; --accent-rgb:196,48,43; */
+
+  /* 动画时长变量（统一调整节奏） */
+  --dur-fast: 0.4s;
+  --dur-normal: 0.7s;
+  --dur-slow: 1.1s;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 主题 ── */
+.slide.light      { background: var(--paper); color: var(--ink); }
+.slide.dark       { background: var(--ink); color: var(--paper); }
+.slide.hero-light { background: var(--paper-tint); color: var(--ink); justify-content: center; align-items: center; text-align: center; }
+.slide.hero-dark  { background: var(--ink-tint); color: var(--paper); justify-content: center; align-items: center; text-align: center; }
+
+/* ── 排版 ── */
+.chrome {
+  position: absolute; top: 3vh; left: 7vw; right: 7vw;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(10px, 1.2vh, 13px);
+  letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.45;
+  display: flex; justify-content: space-between;
+}
+.foot {
+  position: absolute; bottom: 3vh; left: 7vw; right: 7vw;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(10px, 1.1vh, 13px);
+  letter-spacing: 0.08em; opacity: 0.35;
+  display: flex; justify-content: space-between;
+}
+.kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(11px, 1.3vh, 15px);
+  letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.55;
+  margin-bottom: 1.5vh;
+}
+.h1-zh {
+  font-family: "Noto Serif SC", serif; font-weight: 700;
+  font-size: clamp(32px, 6vw, 80px); line-height: 1.15;
+  margin-bottom: 2vh;
+}
+.h1-en {
+  font-family: "Playfair Display", serif; font-weight: 700;
+  font-size: clamp(32px, 6vw, 80px); line-height: 1.1;
+  margin-bottom: 2vh;
+}
+.h2-zh {
+  font-family: "Noto Serif SC", serif; font-weight: 700;
+  font-size: clamp(22px, 3.2vw, 44px); line-height: 1.25;
+  margin-bottom: 1.5vh;
+}
+.body-zh {
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: clamp(14px, 1.8vh, 20px); line-height: 1.75; opacity: 0.82;
+}
+.meta {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(10px, 1.2vh, 13px); opacity: 0.5; margin-top: 1vh;
+}
+.accent-text { color: var(--accent); }
+.rule { height: 2px; background: var(--accent); width: 40px; margin: 2vh 0; }
+
+/* ── 布局 ── */
+.split {
+  display: grid; grid-template-columns: 55fr 45fr; gap: 4vw;
+  align-items: center; margin-top: 2vh;
+}
+.frame-img { overflow: hidden; border-radius: 4px; }
+.frame-img img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5vw; margin-top: 3vh; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5vw; margin-top: 3vh; }
+
+/* ── 组件 ── */
+.stat { display: flex; flex-direction: column; gap: 0.5vh; }
+.stat .n { font-family: "Playfair Display", serif; font-weight: 700; font-size: clamp(36px, 5vw, 64px); color: var(--accent); line-height: 1; }
+.stat .l { font-family: "IBM Plex Mono", monospace; font-size: clamp(10px, 1.2vh, 13px); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.55; }
+.stat .m { font-family: "Noto Sans SC", sans-serif; font-size: clamp(12px, 1.4vh, 16px); opacity: 0.7; margin-top: 0.5vh; }
+
+.callout { border-left: 3px solid var(--accent); padding-left: 2vw; margin: 2vh 0; }
+.callout .q-big { font-family: "Noto Serif SC", serif; font-weight: 700; font-size: clamp(18px, 2.4vh, 28px); line-height: 1.55; }
+.callout .cite { font-family: "IBM Plex Mono", monospace; font-size: clamp(10px, 1.2vh, 13px); opacity: 0.55; margin-top: 1vh; }
+
+.pillar { display: flex; flex-direction: column; gap: 1vh; }
+.pillar .ic { color: var(--accent); margin-bottom: 0.5vh; }
+.pillar .t { font-family: "Noto Serif SC", serif; font-weight: 700; font-size: clamp(16px, 2vh, 22px); }
+.pillar .d { font-family: "Noto Sans SC", sans-serif; font-size: clamp(13px, 1.6vh, 17px); opacity: 0.72; line-height: 1.5; }
+
+.points { list-style: none; display: flex; flex-direction: column; gap: 1.5vh; }
+.points li { font-family: "Noto Sans SC", sans-serif; font-size: clamp(14px, 1.8vh, 20px); line-height: 1.5; padding-left: 1.5em; position: relative; opacity: 0.85; }
+.points li::before { content: "—"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+/* ── 进度条（TTS 页可选） ── */
+.progress-bar {
+  position: absolute; bottom: 0; left: 0; height: 3px;
+  background: var(--accent); width: 0%;
+  transition: width linear;
+}
+
+/* ── 导航点 ── */
+#nav {
+  position: fixed; right: 1.5vw; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 8px; z-index: 200;
+}
+#nav .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(127,127,127,.3); cursor: pointer; transition: all .25s;
+}
+#nav .dot.active { background: var(--accent); transform: scale(1.5); }
+
+/* ── TTS 控制按钮 ── */
+#tts-ctrl {
+  position: fixed; bottom: 3vh; right: 3vw;
+  display: flex; gap: 12px; align-items: center; z-index: 200;
+}
+#tts-ctrl button {
+  background: rgba(var(--accent-rgb),.15);
+  border: 1px solid rgba(var(--accent-rgb),.3);
+  color: var(--accent); border-radius: 4px;
+  padding: 6px 12px; cursor: pointer;
+  font-family: "IBM Plex Mono", monospace; font-size: 12px;
+  transition: background .2s;
+}
+#tts-ctrl button:hover { background: rgba(var(--accent-rgb),.3); }
+</style>
+</head>
+
+<body>
+<nav id="nav"></nav>
+
+<!-- TTS 控制（启用 TTS 时取消注释） -->
+<!--
+<div id="tts-ctrl">
+  <button id="btn-play">▶ 播放</button>
+  <button id="btn-pause">⏸ 暂停</button>
+</div>
+-->
+
+<!-- ============================================================
+     [C] 内容层
+     ──────────────────────────────────────────────────────────
+     data-anim 属性控制入场动画类型：
+       data-anim="fade"         → 淡入
+       data-anim="slide-up"     → 从下滑入
+       data-anim="slide-right"  → 从左滑入
+       data-anim="scale"        → 缩放入场
+
+     TTS 绑定：
+       data-audio="audio/s01.mp3"  在 <section> 上绑定音频
+     ============================================================ -->
+<main id="deck">
+
+  <!-- SLIDE 01 · 封面 → hero-dark -->
+  <section class="slide hero-dark" data-audio="audio/s01.mp3">
+    <div class="chrome" style="opacity:.3">
+      <div>[项目/部门名]</div>
+      <div>2026</div>
+    </div>
+
+    <p class="kicker" data-anim="slide-up" style="opacity:0">[类别 / 引导词]</p>
+    <h1 class="h1-zh" data-anim="slide-up" style="opacity:0">[必填] 主标题</h1>
+    <p class="body-zh" data-anim="fade" style="opacity:0;max-width:40ch;opacity:0">[选填] 副标题或核心主张</p>
+
+    <div class="foot" style="opacity:.3">
+      <div>01 / [总页数]</div>
+      <div>[日期 / 演讲人]</div>
+    </div>
+    <div class="progress-bar" id="pb-01"></div>
+  </section>
+
+  <!-- SLIDE 02 · 正文图文 → light -->
+  <section class="slide light" data-audio="audio/s02.mp3">
+    <div class="chrome">
+      <div>Chapter 01 · [章节名]</div>
+      <div>02 / [总页数]</div>
+    </div>
+
+    <div class="split">
+      <div>
+        <p class="kicker" data-anim="slide-right" style="opacity:0">Section 01</p>
+        <h2 class="h2-zh" data-anim="slide-up" style="opacity:0">[必填] 本页核心论断</h2>
+        <div class="rule" data-anim="scale" style="opacity:0"></div>
+        <p class="body-zh" data-anim="fade" style="opacity:0">[必填] 展开说明 2-3 句话。</p>
+      </div>
+      <div data-anim="fade" style="opacity:0">
+        <div class="frame-img" style="height:42vh">
+          <img src="images/slide-02.png" alt="[描述]">
+        </div>
+        <p class="meta">FIG.01 · [图注]</p>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div>[品牌名]</div>
+      <div>02 / [总页数]</div>
+    </div>
+    <div class="progress-bar" id="pb-02"></div>
+  </section>
+
+  <!-- SLIDE 03 · 要点列表 → dark -->
+  <section class="slide dark" data-audio="audio/s03.mp3">
+    <div class="chrome" style="opacity:.3">
+      <div>Chapter 01 · [章节名]</div>
+      <div>03 / [总页数]</div>
+    </div>
+
+    <p class="kicker" data-anim="slide-up" style="opacity:0">要点</p>
+    <h2 class="h2-zh" data-anim="slide-up" style="opacity:0">[必填] 本页标题</h2>
+    <div class="rule" data-anim="scale" style="opacity:0"></div>
+    <ul class="points" data-anim="fade" style="opacity:0">
+      <li>[必填] 要点 1</li>
+      <li>[必填] 要点 2</li>
+      <li>[选填] 要点 3</li>
+    </ul>
+
+    <div class="foot" style="opacity:.25">
+      <div>[品牌名]</div>
+      <div>03 / [总页数]</div>
+    </div>
+    <div class="progress-bar" id="pb-03"></div>
+  </section>
+
+  <!-- SLIDE 04 · 章节转场 → hero-light -->
+  <section class="slide hero-light">
+    <div class="chrome">
+      <div>[项目名]</div>
+      <div>Act II</div>
+    </div>
+
+    <p class="kicker" data-anim="fade" style="opacity:0">Chapter 02</p>
+    <h1 class="h1-zh" data-anim="slide-up" style="opacity:0;text-align:center;max-width:12ch">[必填] 章节标题</h1>
+    <p class="meta" data-anim="fade" style="opacity:0">[选填] 章节预告</p>
+
+    <div class="foot">
+      <div>04 / [总页数]</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 05 · 数据 → light -->
+  <section class="slide light" data-audio="audio/s05.mp3">
+    <div class="chrome">
+      <div>Chapter 02 · [章节名]</div>
+      <div>05 / [总页数]</div>
+    </div>
+
+    <p class="kicker" data-anim="slide-up" style="opacity:0">Key Metrics</p>
+    <h2 class="h2-zh" data-anim="slide-up" style="opacity:0">[必填] 数据标题</h2>
+
+    <div class="grid-3">
+      <div class="pillar" data-anim="fade" style="opacity:0">
+        <div class="ic"><i data-lucide="trending-up" style="width:24px;height:24px"></i></div>
+        <div class="t">[指标 A]</div>
+        <div class="d">[说明]</div>
+      </div>
+      <div class="pillar" data-anim="fade" style="opacity:0;transition-delay:.15s">
+        <div class="ic"><i data-lucide="users" style="width:24px;height:24px"></i></div>
+        <div class="t">[指标 B]</div>
+        <div class="d">[说明]</div>
+      </div>
+      <div class="pillar" data-anim="fade" style="opacity:0;transition-delay:.3s">
+        <div class="ic"><i data-lucide="zap" style="width:24px;height:24px"></i></div>
+        <div class="t">[指标 C]</div>
+        <div class="d">[说明]</div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div>[数据来源]</div>
+      <div>05 / [总页数]</div>
+    </div>
+    <div class="progress-bar" id="pb-05"></div>
+  </section>
+
+  <!-- SLIDE 06 · 引文 → dark -->
+  <section class="slide dark" data-audio="audio/s06.mp3">
+    <div class="chrome" style="opacity:.3">
+      <div>Chapter 02 · [章节名]</div>
+      <div>06 / [总页数]</div>
+    </div>
+
+    <div class="callout" data-anim="slide-right" style="opacity:0;max-width:70ch">
+      <p class="q-big">"[必填] 核心引文。可以是用户反馈、行业洞见、金句。"</p>
+      <p class="cite">— [作者] · [来源]</p>
+    </div>
+
+    <div class="foot" style="opacity:.25">
+      <div>[品牌名]</div>
+      <div>06 / [总页数]</div>
+    </div>
+    <div class="progress-bar" id="pb-06"></div>
+  </section>
+
+  <!-- SLIDE 07 · 结尾 → hero-dark -->
+  <section class="slide hero-dark">
+    <div class="chrome" style="opacity:.3">
+      <div>[项目名]</div>
+      <div>Fin</div>
+    </div>
+
+    <p class="kicker" data-anim="fade" style="opacity:0;opacity:.5">谢谢</p>
+    <h1 class="h1-en" data-anim="slide-up" style="opacity:0">Thank you.</h1>
+    <p class="body-zh" data-anim="fade" style="opacity:0;margin-top:2vh">[选填] 联系方式 / 行动号召</p>
+
+    <div class="foot" style="opacity:.3">
+      <div>07 / 07</div>
+      <div>[邮箱 / 社交]</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== [A] 禁改区：GSAP + 动画引擎 ===== -->
+<!-- GSAP 本地 vendor 资源 -->
+<script src="assets/vendor/js/gsap.min.js"></script>
+<script src="assets/vendor/js/ScrollTrigger.min.js"></script>
+
+<script>
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // ── 导航点 ──
+  const deck = document.getElementById('deck');
+  const navEl = document.getElementById('nav');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+
+  slides.forEach((slide, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => slide.scrollIntoView({ behavior: 'smooth' }));
+    navEl.appendChild(dot);
+  });
+  const dots = Array.from(navEl.querySelectorAll('.dot'));
+
+  // ── GSAP 动画定义 ──
+  const animMap = {
+    'fade':        { from: { opacity: 0 },                    to: { opacity: 1 } },
+    'slide-up':    { from: { opacity: 0, y: 40 },             to: { opacity: 1, y: 0 } },
+    'slide-right': { from: { opacity: 0, x: -40 },            to: { opacity: 1, x: 0 } },
+    'scale':       { from: { opacity: 0, scale: 0.6 },        to: { opacity: 1, scale: 1 } },
+  };
+
+  // ── TTS 状态 ──
+  let currentAudio = null;
+  let currentPb = null;
+
+  function stopAudio() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
+    }
+    if (currentPb) {
+      currentPb.style.width = '0%';
+      currentPb = null;
+    }
+  }
+
+  function playSlideAudio(slide) {
+    const src = slide.dataset.audio;
+    if (!src) return;
+    const pb = slide.querySelector('.progress-bar');
+    try {
+      const audio = new Audio(src);
+      currentAudio = audio;
+      currentPb = pb;
+      audio.addEventListener('loadedmetadata', () => {
+        if (pb) {
+          pb.style.transition = `width ${audio.duration}s linear`;
+          pb.style.width = '100%';
+        }
+      });
+      audio.play().catch(() => {}); // 自动播放被浏览器阻止时静默失败
+    } catch(e) {}
+  }
+
+  // ── 入场动画 + TTS 触发 ──
+  let currentIdx = 0;
+
+  function triggerSlideEnter(slide, idx) {
+    // 更新导航点
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    currentIdx = idx;
+
+    // 停止上一页音频
+    stopAudio();
+
+    // GSAP 入场动画
+    const animEls = slide.querySelectorAll('[data-anim]');
+    animEls.forEach((el, i) => {
+      const type = el.dataset.anim || 'fade';
+      const conf = animMap[type] || animMap['fade'];
+      gsap.fromTo(el, conf.from, {
+        ...conf.to,
+        duration: 0.7,
+        delay: i * 0.12,
+        ease: 'power3.out',
+      });
+    });
+
+    // 播放 TTS
+    setTimeout(() => playSlideAudio(slide), 300);
+  }
+
+  // IntersectionObserver 监听当前页
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = slides.indexOf(e.target);
+        triggerSlideEnter(e.target, idx);
+      }
+    });
+  }, { threshold: 0.6, root: deck });
+  slides.forEach(s => io.observe(s));
+
+  // ── 键盘导航 ──
+  const goTo = (idx) => {
+    idx = Math.max(0, Math.min(slides.length - 1, idx));
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  };
+  document.addEventListener('keydown', e => {
+    if (['ArrowDown', 'ArrowRight', ' '].includes(e.key)) { e.preventDefault(); goTo(currentIdx + 1); }
+    if (['ArrowUp', 'ArrowLeft'].includes(e.key))          { e.preventDefault(); goTo(currentIdx - 1); }
+  });
+
+  // ── TTS 控制按钮（可选，取消注释启用） ──
+  /*
+  const btnPlay  = document.getElementById('btn-play');
+  const btnPause = document.getElementById('btn-pause');
+  if (btnPlay)  btnPlay.addEventListener('click',  () => currentAudio?.play());
+  if (btnPause) btnPause.addEventListener('click', () => currentAudio?.pause());
+  */
+
+  // ── 首页入场 ──
+  triggerSlideEnter(slides[0], 0);
+</script>
+<!-- ===== [A] 禁改区结束 ===== -->
+
+</body>
+</html>

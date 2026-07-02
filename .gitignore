@@ -1,4 +1,12 @@
-.DS_Store
-**/.DS_Store
+node_modules/
 __pycache__/
 *.pyc
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+*.log
+tmp/
+temp/
+.cache/

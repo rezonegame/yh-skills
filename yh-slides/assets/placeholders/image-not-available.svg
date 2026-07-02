@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="720" viewBox="0 0 1080 720" role="img" aria-label="Image not available">
+  <rect width="1080" height="720" fill="#f3f0e8"/>
+  <rect x="80" y="80" width="920" height="560" fill="none" stroke="#111111" stroke-width="4"/>
+  <text x="540" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" fill="#111111">Image not available</text>
+  <text x="540" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#666666">Replace with a local project image</text>
+</svg>

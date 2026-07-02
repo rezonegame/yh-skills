@@ -1,0 +1,27 @@
+{
+  "skill_name": "yh-social-visual",
+  "version": "1.1.0",
+  "cases": [
+    {"id": "social-pos-01", "should_trigger": true, "prompt": "把这篇独立开发文章做成小红书九页轮播图。", "reason": "content-first platform package"},
+    {"id": "social-pos-02", "should_trigger": true, "prompt": "给公众号长文生成一张封面和三张正文插图。", "reason": "article visual package"},
+    {"id": "social-pos-03", "should_trigger": true, "prompt": "把现有微博套图改成视频号竖版封面。", "reason": "cross-platform adaptation"},
+    {"id": "social-pos-04", "should_trigger": true, "prompt": "这篇城市更新文章需要一张无文字的正文插图。", "reason": "article intent remains primary"},
+    {"id": "social-pos-05", "should_trigger": true, "prompt": "为这条小红书笔记设计单页封面，标题必须准确。", "reason": "platform-specific social cover"},
+    {"id": "social-pos-06", "should_trigger": true, "prompt": "把研究报告摘要拆成知乎信息卡片。", "reason": "content decomposition for platform"},
+    {"id": "social-pos-07", "should_trigger": true, "prompt": "给这期访谈做抖音静态封面，保留嘉宾照片。", "reason": "video-platform static cover"},
+    {"id": "social-pos-08", "should_trigger": true, "prompt": "把新品测评内容做成微博九宫格，不要像广告海报。", "reason": "social content package"},
+    {"id": "social-pos-09", "should_trigger": true, "prompt": "同一篇文章需要公众号、小红书和微博三套适配图。", "reason": "cross-platform content adaptation"},
+    {"id": "social-pos-10", "should_trigger": true, "prompt": "把这些产品截图整理成一套发布用轮播卡片。", "reason": "supplied assets organized for publishing"},
+    {"id": "social-pos-11", "should_trigger": true, "prompt": "把项目从原型到发布的复盘做成一张成长长卷，日期要准确。", "reason": "explicit article story-scroll asset"},
+    {"id": "social-neg-01", "should_trigger": false, "prompt": "设计一张独立电影海报，文字很多，但不用于社媒发布。", "reason": "standalone visual-first poster"},
+    {"id": "social-neg-02", "should_trigger": false, "prompt": "帮我找桌游卡牌的视觉灵感和参考案例。", "reason": "inspiration search"},
+    {"id": "social-neg-03", "should_trigger": false, "prompt": "生成一张香水产品英雄图，纯摄影质感。", "reason": "standalone product imagery"},
+    {"id": "social-neg-04", "should_trigger": false, "prompt": "分析这张图的风格并反推可复用 prompt。", "reason": "prompt reverse engineering"},
+    {"id": "social-neg-05", "should_trigger": false, "prompt": "探索三种复古科幻插画方向，先不要考虑发布平台。", "reason": "style exploration"},
+    {"id": "social-neg-06", "should_trigger": false, "prompt": "设计一套实体桌游卡牌和版图。", "reason": "board-game visual system"},
+    {"id": "social-neg-07", "should_trigger": false, "prompt": "做一张个人摄影肖像，电影灯光。", "reason": "standalone photography"},
+    {"id": "social-neg-08", "should_trigger": false, "prompt": "为咖啡品牌探索 logo 和视觉识别方向。", "reason": "brand exploration"},
+    {"id": "social-neg-09", "should_trigger": false, "prompt": "画一张独立科普信息图，用于展览印刷。", "reason": "standalone infographic"},
+    {"id": "social-neg-10", "should_trigger": false, "prompt": "把这张照片改成水彩风，不需要配合任何内容。", "reason": "visual-first image edit"}
+  ]
+}

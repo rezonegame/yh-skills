@@ -1,0 +1,4 @@
+interface:
+  display_name: "YH Slides"
+  short_description: "Create slide decks and rebuild raster slides as editable PPTX"
+  default_prompt: "Use $yh-slides to create a polished presentation or rebuild raster slides through FigEdit."

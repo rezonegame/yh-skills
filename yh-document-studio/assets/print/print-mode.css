@@ -1,0 +1,71 @@
+/* ============================================================
+   yh-document-studio · 印刷档 override: print-mode.css
+   来源: references/print-spec.md（抽取自 print-design）
+   作用: 仅在"印刷版"导出档位时由 inject-override.py 注入
+   路径: 浏览器 Ctrl+P → 另存为 PDF（需手动关页眉页脚 + 设无边距）
+
+   浏览器打印能力边界（详见 print-spec.md）:
+   - 能做: 出血尺寸、安全区、裁切线、300DPI（源文件清晰即可）
+   - 不能做: CMYK（浏览器只输出 RGB）、PDF/X-4（Chrome 输出普通 PDF）
+   ============================================================ */
+
+/* --- 出血 + 安全区 ---
+   kami 模板 @page 默认 margin 约 15mm，已是安全区量级。
+   印刷档把 @page margin 设为 0（让背景/出血色铺满纸边），
+   再在 body 上保留 5mm 安全区 padding，确保内容不被裁切。
+   打印对话框必须选"无边距"才能让 @page margin:0 生效。 */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+/* body 安全区：所有内容离纸边至少 5mm。
+   出血 3mm 由背景色/装饰元素溢出到纸边实现（@page margin:0 后，
+   body 背景会铺满包括出血区在内的整张纸）。 */
+html, body {
+  padding: 8mm 8mm 8mm 8mm; /* 5mm 安全区 + 3mm 出血余量 */
+  margin: 0;
+}
+
+/* --- 裁切线（4 角十字标）---
+   用 @page 的 margin-box 伪元素画裁切标记。
+   打印时出现在纸张 4 角，标示裁切位置。 */
+@page {
+  @top-left {
+    content: "✛";
+    color: #999;
+    font-size: 10pt;
+  }
+  @top-right {
+    content: "✛";
+    color: #999;
+    font-size: 10pt;
+  }
+  @bottom-left {
+    content: "✛";
+    color: #999;
+    font-size: 10pt;
+  }
+  @bottom-right {
+    content: "✛";
+    color: #999;
+    font-size: 10pt;
+  }
+}
+
+/* --- 印刷档提示水印（仅 @media screen 显示，打印时不出现）---
+   提醒用户：打印前在对话框关掉"页眉页脚"、选"无边距"。 */
+@media screen {
+  body::before {
+    content: "印刷档模式 · 打印前请在对话框关闭页眉页脚 + 选择无边距 · CMYK/PDF-X 需专业印厂后处理（见 print-spec.md）";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #1a3a5c;
+    color: #fff;
+    font-size: 9pt;
+    padding: 4pt 8pt;
+    z-index: 9999;
+  }
+  body { padding-top: 20mm; }
+}

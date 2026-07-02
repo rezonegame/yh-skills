@@ -1,0 +1,7 @@
+{
+  "name": "ppt-master",
+  "url": "https://github.com/hugohe3/ppt-master.git",
+  "commit": "328388d4e76778535676056f49be8f28a08e79b2",
+  "vendored_at": "2026-06-03T16:13:14",
+  "update_policy": "Pinned commit; update only by re-absorbing selected local assets, refreshing this lock, and running provenance review."
+}

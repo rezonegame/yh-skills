@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "YH Local Knowledge Manifest",
+  "type": "object",
+  "required": ["workspace_id", "topic", "source_roots", "updated_at", "files"],
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string"
+    },
+    "source_roots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "path", "type", "status"],
+        "properties": {
+          "source_id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": ["integer", "null"]
+          },
+          "mtime": {
+            "type": ["string", "null"]
+          },
+          "hash": {
+            "type": ["string", "null"]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "indexed",
+              "indexed_metadata_only",
+              "changed",
+              "deleted",
+              "failed",
+              "unchanged"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "error": {
+            "type": ["string", "null"]
+          },
+          "normalized_path": {
+            "type": ["string", "null"],
+            "description": "Path to the markdown conversion under .knowledge/normalized/, or null if not normalized."
+          },
+          "normalization_status": {
+            "type": ["string", "null"],
+            "enum": [
+              "not_required",
+              "normalized",
+              "normalized_cached",
+              "fallback_metadata_only",
+              "failed",
+              "skipped",
+              null
+            ],
+            "description": "Outcome of format normalization for this file."
+          },
+          "normalization_error": {
+            "type": ["string", "null"],
+            "description": "Error message if normalization failed."
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

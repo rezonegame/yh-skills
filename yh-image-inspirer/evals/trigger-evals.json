@@ -1,0 +1,26 @@
+{
+  "skill_name": "yh-image-inspirer",
+  "version": "1.0.0",
+  "cases": [
+    {"id": "inspirer-pos-01", "should_trigger": true, "prompt": "找桌游卡牌视觉灵感，并给我三套方向。", "reason": "reference and style exploration"},
+    {"id": "inspirer-pos-02", "should_trigger": true, "prompt": "设计一张独立电影海报，不用于内容分发。", "reason": "standalone poster"},
+    {"id": "inspirer-pos-03", "should_trigger": true, "prompt": "生成一张香水产品英雄图。", "reason": "standalone product imagery"},
+    {"id": "inspirer-pos-04", "should_trigger": true, "prompt": "反推这张参考图的 prompt 和构图规则。", "reason": "prompt reverse engineering"},
+    {"id": "inspirer-pos-05", "should_trigger": true, "prompt": "探索三种复古科幻插画方向。", "reason": "style exploration"},
+    {"id": "inspirer-pos-06", "should_trigger": true, "prompt": "设计六张统一世界观的桌游职业卡。", "reason": "coherent visual series"},
+    {"id": "inspirer-pos-07", "should_trigger": true, "prompt": "做一张电影感人物摄影肖像。", "reason": "standalone photography"},
+    {"id": "inspirer-pos-08", "should_trigger": true, "prompt": "为咖啡品牌探索 logo 与视觉识别方向。", "reason": "brand visual exploration"},
+    {"id": "inspirer-pos-09", "should_trigger": true, "prompt": "画一张用于展览印刷的独立科普信息图。", "reason": "standalone infographic"},
+    {"id": "inspirer-pos-10", "should_trigger": true, "prompt": "把这张照片改成水彩插画，不考虑发布平台。", "reason": "visual-first edit"},
+    {"id": "inspirer-neg-01", "should_trigger": false, "prompt": "把这篇文章做成小红书九页轮播图。", "reason": "content-first social package"},
+    {"id": "inspirer-neg-02", "should_trigger": false, "prompt": "生成公众号封面和三张正文插图。", "reason": "article visual package"},
+    {"id": "inspirer-neg-03", "should_trigger": false, "prompt": "把微博套图改成视频号封面。", "reason": "cross-platform adaptation"},
+    {"id": "inspirer-neg-04", "should_trigger": false, "prompt": "画一张无文字的文章正文插图。", "reason": "article intent remains primary"},
+    {"id": "inspirer-neg-05", "should_trigger": false, "prompt": "给这条小红书笔记做单张封面。", "reason": "platform-specific social cover"},
+    {"id": "inspirer-neg-06", "should_trigger": false, "prompt": "把研究报告摘要拆成知乎卡片。", "reason": "content decomposition for publishing"},
+    {"id": "inspirer-neg-07", "should_trigger": false, "prompt": "给访谈节目做抖音静态封面。", "reason": "video-platform cover"},
+    {"id": "inspirer-neg-08", "should_trigger": false, "prompt": "把新品测评做成微博九宫格。", "reason": "social content cards"},
+    {"id": "inspirer-neg-09", "should_trigger": false, "prompt": "一篇文章同时适配公众号、小红书和微博配图。", "reason": "cross-platform package"},
+    {"id": "inspirer-neg-10", "should_trigger": false, "prompt": "把这些截图整理成发布用轮播卡片。", "reason": "publishing package from supplied assets"}
+  ]
+}
