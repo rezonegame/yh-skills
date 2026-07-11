@@ -1,12 +1,30 @@
-node_modules/
-__pycache__/
-*.pyc
-.DS_Store
-Thumbs.db
+# Secrets and machine-local configuration
 .env
 .env.*
 !.env.example
-*.log
-tmp/
-temp/
-.cache/
+.yh-skills/.env
+.yh-skills/secrets.env
+**/secrets.env
+**/*.key
+**/*.pem
+
+# Dependency and interpreter artifacts
+**/node_modules/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.venv/
+
+# Generated workspace/build output
+.knowledge/
+**/dist/
+**/tmp/
+**/temp/
+**/.cache/
+**/*.log
+**/backups/
+
+# OS files
+.DS_Store
+Thumbs.db

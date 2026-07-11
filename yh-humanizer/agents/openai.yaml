@@ -1,0 +1,4 @@
+interface:
+  display_name: "YH Humanizer"
+  short_description: "在不虚构事实、经历或身份的前提下去除中文文本的 AI 味"
+  default_prompt: "Use $yh-humanizer to rewrite this Chinese text naturally while preserving every fact and narrator."

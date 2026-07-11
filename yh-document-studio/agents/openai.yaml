@@ -1,0 +1,4 @@
+interface:
+  display_name: "YH Document Studio"
+  short_description: "排版报告、简历、落地页和静态 HTML/PDF 文档"
+  default_prompt: "Use $yh-document-studio to turn this content into a polished static HTML/PDF document."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "YH Local Knowledge"
+  short_description: "建立可追溯、可验证、安全且可长期复用的本地知识工作区"
+  default_prompt: "Use $yh-local-knowledge to organize these local sources into a trustworthy knowledge workspace."
