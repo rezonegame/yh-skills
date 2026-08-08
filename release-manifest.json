@@ -1,8 +1,8 @@
 {
   "schema": "yh-skills.release-manifest.v1",
-  "version": "2026.08.07-local-private",
+  "version": "2026.08.08-local-private",
   "release_track": "private-only",
-  "generated_at": "2026-08-07",
+  "generated_at": "2026-08-08",
   "scope": [
     "yh-document-studio",
     "yh-humanizer",
@@ -14,8 +14,12 @@
   ],
   "required_checks": [
     "python scripts/validate_yh_skills.py --provenance",
-    "python -m unittest yh-slides/scripts/tests/test_validate_design_brief.py yh-slides/scripts/tests/test_validate_deck_plan.py yh-slides/scripts/tests/test_svg_path_safety.py yh-local-knowledge/scripts/tests/test_normalize.py yh-local-knowledge/scripts/tests/test_input_policy.py yh-local-knowledge/scripts/tests/test_content_safety.py",
+    "python -m unittest yh-document-studio/scripts/tests/test_artifact_contract.py yh-slides/scripts/tests/test_validate_design_brief.py yh-slides/scripts/tests/test_validate_deck_plan.py yh-slides/scripts/tests/test_svg_path_safety.py yh-slides/scripts/tests/test_export_and_text_contract.py yh-slides/scripts/tests/test_presenter_mode.py yh-slides/scripts/tests/test_template_specs.py yh-local-knowledge/scripts/tests/test_normalize.py yh-local-knowledge/scripts/tests/test_input_policy.py yh-local-knowledge/scripts/tests/test_content_safety.py",
     "python yh-slides/scripts/check_upstream_locks.py",
+    "python yh-slides/scripts/validate_upstream_templates.py",
+    "python yh-slides/scripts/validate_svg_text_contract.py yh-slides/templates/upstream/ppt-master/layouts yh-social-visual/assets/upstream/ppt-master/layouts",
+    "python scripts/validate_representative_renders.py",
+    "python scripts/validate_markitdown_evidence.py",
     "python yh-slides/scripts/check_yh_slides_integrity.py",
     "node yh-social-visual/scripts/check-skill.mjs",
     "python yh-humanizer/scripts/validate_factuality_cases.py",

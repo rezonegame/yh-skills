@@ -19,6 +19,8 @@ EXPECTED = {
     "academic-pptx-skill": "9f2b703ffe8d1449851617665ab1ffb3516d54ac",
     "dashi-ppt-skill": "7cb23347f91cda1a5519eafc8c040704e389535a",
     "bento": "f51795b8e71496b11e13e53ce3f4c8a97a72a699",
+    "ppt-master-templates": "bbb323f0ebd6a6a230dd6063209326b53bfd2e1d",
+    "z-skills": "f5832fba31911cc423e86fcab88bf04361b5cf36",
 }
 
 
@@ -47,6 +49,22 @@ def main() -> int:
                 actual_hash = hashlib.sha256(artifact.read_bytes()).hexdigest().upper()
                 if actual_hash != expected_hash.upper():
                     errors.append(f"bento: pinned shell hash differs; expected {expected_hash}, found {actual_hash}")
+        if name == "z-skills":
+            patch_manifest = ROOT / data.get("local_patch_manifest", "")
+            if not patch_manifest.is_file():
+                errors.append(f"z-skills: missing local patch manifest: {patch_manifest}")
+            else:
+                patch_data = json.loads(patch_manifest.read_text(encoding="utf-8"))
+                if patch_data.get("reviewed_commit") != commit:
+                    errors.append("z-skills: patch manifest commit does not match source lock")
+                for item in patch_data.get("files", []):
+                    artifact = ROOT / item["path"]
+                    if not artifact.is_file():
+                        errors.append(f"z-skills: missing patched file: {artifact}")
+                        continue
+                    actual_hash = hashlib.sha256(artifact.read_bytes()).hexdigest()
+                    if actual_hash.lower() != item.get("sha256", "").lower():
+                        errors.append(f"z-skills: local patch hash differs: {item['path']}")
     if errors:
         print("upstream lock check FAILED:")
         for err in errors:

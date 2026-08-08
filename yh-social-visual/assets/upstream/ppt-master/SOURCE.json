@@ -1,0 +1,13 @@
+{
+  "schema": "yh.upstream-template-source.v1",
+  "source": "https://github.com/hugohe3/ppt-master.git",
+  "commit": "bbb323f0ebd6a6a230dd6063209326b53bfd2e1d",
+  "license": "MIT",
+  "license_file": "UPSTREAM_LICENSE",
+  "imported_at": "2026-08-08",
+  "imported": {
+    "layouts": {"xiaohongshu_post": 10, "story_vertical": 9, "moments_square": 8}
+  },
+  "excluded": ["logos", "images", "presentation routing", "runtime code"],
+  "local_adapter": "../../../presets/ppt-master-social.json"
+}

@@ -349,6 +349,8 @@ D. 打开风格库
 
 来自 `ppt-master`、`guizang-ppt-skill`、`html-ppt-skill` 的可用资产已吸收到 `templates/`、`assets/`、`scripts/` 和 `references/provenance/`，供离线调用。它们现在是 `yh-slides` 的本地原生资产库，不是新的默认入口。
 
+PPT Master commit `bbb323f0ebd6a6a230dd6063209326b53bfd2e1d` 的 39 个演示布局位于 `templates/upstream/ppt-master/layouts/`，12 个风格规格和 15 个无 Logo 品牌规格保持独立文件；本地选择和优先级规则位于 `templates/adapters/ppt-master.json`。不得在安装时把这些规格无损据地融合。低到高优先级为上游默认、风格、结构、品牌、项目显式指令；用户品牌资料和当前项目指令始终高于上游参考。IBM/NVIDIA 仅其已标记的 primary 值是事实，其余品牌值均为近似参考，不得声称为官方品牌手册。社媒布局不在本技能路由，交给 `yh-social-visual`。
+
 使用规则：
 
 - 先完成 Step 0-3，再根据产物路径、受众和内容形状推荐资产。
@@ -430,6 +432,10 @@ D. 打开风格库
 ### 检查流程
 
 进入 Step 7 后读取 `references/constraints/quality-checklist.md`，按当前 Path 执行完整 P0/P1；2D / Path C-D-E 与 2D-B 都必须读取 `references/constraints/visual-qa.md` 做截图 QA。对有多页内容、数据或本地媒体的项目，先创建并校验 `deck-plan.json`（见 `references/contracts/deck-plan.md`）；它检查模板文案泄漏、文案预算、媒体路径、重复版式和图表洞察。`2D-B` 还必须创建并通过 `bento-deck.json`（见 `references/contracts/bento-deck.md`），可用 `--deck-plan` 对齐页序；生成后必须本地打开验证编辑、notes、状态/morph 和评论回流。对需要先审阅视觉/叙事方案的重要 deck，再创建 `design-brief.json`（见 `references/contracts/design-brief.md`），并用 `--deck-plan` 交叉验证页序和受众行动；经用户确认后才开始构建。两者都不替代路径专项 QA。**P0 不通过 = 不能交付**，修复后重新进入对应 QA。
+
+Path S 导出必须同时生成 `.pptx.sources.json`，输出路径和所有本地图片必须包含在项目根目录内；远程图片、缺失图片或越界路径按 P0 失败处理。多语言/RTL/可编辑文本遵循 `references/contracts/editable-text.md`，并运行 `scripts/validate_svg_text_contract.py`。`preserve` 是默认文本流；只有明确需要 Office 自动换行时使用 `reflow`，只有作者用 positional tspan 声明逐行拆分时使用 `split`。
+
+`2D-P / Presenter Mode` 必须遵循 `references/contracts/presenter-mode.md` 并运行 `python scripts/validate_presenter_mode.py <deck.html>`。讲述时间和自动翻页时间必须分开；重复 ID、备注缺失、页序错位、预算超限、歧义 duration、心跳/恢复/结束遮罩/备注持久化缺失都属于 P0。该 validator 为本地独立实现，不复制 Guizang 新增 AGPL runtime。
 
 研究答辩、论文、研讨会、基金简报或证据驱动技术演讲再额外使用 `academic-deck.json` v2（见 `references/contracts/academic-deck.md`）；仅在该模式检查学术论证 spine、早期研究问题、行动标题、单一结果 exhibit、非原创证据的页内引用、结论/参考文献/附录顺序、时间预算与可访问性。学术视觉值是可覆盖默认值，用户模板、品牌和已确认方向仍优先，但不得牺牲证据准确性和可读性。用户明确选择个人风格时，才通过绝对路径 `YH_SLIDES_STYLE_PROFILE` 读取 `references/contracts/style-profile.md` 定义的配置，且当前项目指令优先。
 

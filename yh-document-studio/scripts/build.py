@@ -32,6 +32,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from artifact_contract import candidate_path, discard_candidate, promote_candidate
 from highlight import highlight_code_blocks
 from optional_deps import (
     MissingDepError,
@@ -194,19 +195,25 @@ def build_html(name: str, source: str, max_pages: int,
 
     EXAMPLES.mkdir(parents=True, exist_ok=True)
     out = EXAMPLES / f"{name}.pdf"
+    candidate = candidate_path(out)
 
     html_text = src.read_text(encoding="utf-8")
     html_text = highlight_code_blocks(html_text)
-    HTML(string=html_text, base_url=str(src.parent)).write_pdf(str(out))
-
-    set_pdf_metadata(out, author=infer_author())
-
-    n = len(PdfReader(str(out)).pages)
+    try:
+        HTML(string=html_text, base_url=str(src.parent)).write_pdf(str(candidate))
+        set_pdf_metadata(candidate, author=infer_author())
+        n = len(PdfReader(str(candidate)).pages)
+    except Exception as exc:
+        discard_candidate(candidate)
+        print(f"ERROR: {name}: render failed; last successful artifact preserved ({exc})")
+        return False
     msg = f"OK: {name}: {n} pages"
     if max_pages and n > max_pages:
         msg = f"ERROR: {name}: {n} pages (limit {max_pages})"
+        discard_candidate(candidate)
         print(msg)
         return False
+    promote_candidate(candidate, out)
     print(msg)
     return True
 
@@ -223,21 +230,24 @@ def build_slides(name: str = "slides") -> bool:
 
     EXAMPLES.mkdir(parents=True, exist_ok=True)
     out = EXAMPLES / f"{name}.pptx"
-    # Pass --out so the slides script writes directly to the target path. Older
-    # slides.py defaults to 'output.pptx' in cwd; new copies accept --out.
+    candidate = candidate_path(out)
+    # Render beside the final artifact, then atomically promote only a valid file.
     result = subprocess.run(
-        [sys.executable, str(src), "--out", str(out)],
+        [sys.executable, str(src), "--out", str(candidate)],
         cwd=str(src.parent),
         capture_output=True,
         text=True,
     )
     if result.returncode != 0:
+        discard_candidate(candidate)
         print(f"ERROR: {name}: {result.stderr.strip() or 'script failed'}")
         return False
-    if out.exists():
+    if candidate.exists() and candidate.stat().st_size > 0:
+        promote_candidate(candidate, out)
         print(f"OK: {name}: generated {out.name}")
         return True
-    print(f"ERROR: {name}: {out.name} not produced")
+    discard_candidate(candidate)
+    print(f"ERROR: {name}: candidate not produced; last successful artifact preserved")
     return False
 
 

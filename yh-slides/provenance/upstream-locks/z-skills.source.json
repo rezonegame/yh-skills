@@ -1,0 +1,9 @@
+{
+  "name": "z-skills",
+  "url": "https://github.com/tjxj/z-skills",
+  "commit": "f5832fba31911cc423e86fcab88bf04361b5cf36",
+  "reviewed_at": "2026-08-08",
+  "license": "MIT",
+  "local_patch_manifest": "references/meta/z-skills-local-patches.json",
+  "update_policy": "Pinned review commit. Local CSS hashes are intentional patches and are validated independently."
+}

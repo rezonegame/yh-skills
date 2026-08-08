@@ -23,7 +23,7 @@
 python scripts/bootstrap.py --install        # 核心格式(PDF/Word/Excel/PPT/HTML)
 python scripts/bootstrap.py --install-all    # 全格式(加音频/YouTube/EPub等)
 # 或手动
-pip install 'markitdown[pdf,docx,pptx,xlsx]'
+pip install 'markitdown[pdf,docx,pptx,xlsx]>=0.1.7,<0.2'
 ```
 
 覆盖范围：
@@ -128,5 +128,6 @@ pip install 'markitdown[pdf,docx,pptx,xlsx]'
 ## 何时重新归一化
 
 - 源文件 hash/mtime 变化（增量同步检测到）→ 重新归一化，更新对应资产标 `needs_review`。
-- 转换器升级（如 markitdown 版本更新支持更好表格识别）→ 可选全量重归一化，但需用户确认（因为下游资产可能要重审）。
+- 缓存 manifest 记录实际 `markitdown_version`。转换器版本变化但源文件未变时，状态改为 `renormalization_review_required`，保留已审核的 normalized 资产；用户确认后才用 `--force-renormalize` 覆盖。
+- MarkItDown 0.1.7 修复了 DOCX OMML 数学公式转换；本技能固定兼容范围为 `>=0.1.7,<0.2`，并用普通 DOCX 与 OMML DOCX 双回归验证标题、表格、正文和公式。
 - 用户手动要求"重新提取这个文件"→ 删除该文件的 normalized 产物后重跑。

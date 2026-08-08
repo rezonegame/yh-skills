@@ -19,6 +19,7 @@ from .transitions import (
     KEEP_TRANSITION,
     TRANSITIONS,
 )
+from export_contract import resolve_output, write_template_fill_manifest
 
 
 def _parse_slide_list(value: str | None) -> list[int] | None:
@@ -88,6 +89,10 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     apply.add_argument(
+        "--project-root",
+        help="Contain output under this project root (default: fill-plan directory).",
+    )
+    apply.add_argument(
         "--transition",
         choices=sorted(TRANSITIONS) + ["none", KEEP_TRANSITION],
         default=DEFAULT_TRANSITION,
@@ -145,8 +150,10 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.command == "apply":
             pptx_path = Path(args.pptx_file).expanduser().resolve()
-            plan = _load_json(Path(args.plan_json).expanduser().resolve())
-            output_path = _timestamped_pptx_path(Path(args.output).expanduser().resolve())
+            plan_path = Path(args.plan_json).expanduser().resolve()
+            plan = _load_json(plan_path)
+            project_root = Path(args.project_root).expanduser().resolve() if args.project_root else plan_path.parent
+            output_path = _timestamped_pptx_path(resolve_output(project_root, args.output))
             apply_plan(
                 pptx_path,
                 plan,
@@ -154,6 +161,7 @@ def main(argv: list[str] | None = None) -> int:
                 transition=args.transition,
                 transition_duration=args.transition_duration,
             )
+            write_template_fill_manifest(output_path, project_root, pptx_path, plan_path)
             print(f"Template-filled PPTX -> {output_path}", file=sys.stderr)
             return 0
     except RuntimeError as exc:

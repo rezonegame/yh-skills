@@ -449,6 +449,14 @@ Source templates intentionally keep `{{...}}` fields. Run placeholder checks on 
 
 Visual anomalies (tag double rectangle, font fallback, page break issues) -> `production.md` Part 4.
 
+### Fail-closed delivery and release
+
+For a production delivery, save a JSON brief beside the working files and run `python3 scripts/validate_delivery_contract.py <brief.json>`. The brief must name audience, language, template, output format, acceptance check, required capabilities, materials, assets, and screenshot evidence. Missing or out-of-root inputs stop the build; never silently substitute them.
+
+PDF and PPTX builds render to a same-directory candidate. Only a non-empty candidate that passes deterministic checks replaces the final artifact. Failed rendering, page overflow, font failure, or missing output removes the candidate and preserves the last successful artifact.
+
+Before packaging, run `python3 scripts/release_gate.py <manifest.json>` using the contract in `references/release-gate.md`. Version, current Git SHA, package identity and SHA-256, required members/files, and validation evidence must agree. This private release gate does not remove any public-release blocker.
+
 ## Fonts
 
 Read `references/fonts.md` for the CN/EN/JA/KO stacks, fallback rules, packaging constraints, and optional local recovery. Do not fetch fonts during ordinary user work unless the task requires them and the user has authorized network access.

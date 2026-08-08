@@ -25,9 +25,10 @@
 ## Wanghong Handwritten HTML Style
 - Source: tjxj/z-skills (`z-wanghong-handwritten-ppt`)
 - Source URL: https://github.com/tjxj/z-skills
+- Reviewed/pinned commit: `f5832fba31911cc423e86fcab88bf04361b5cf36`
 - License: MIT for the absorbed runtime/assets; bundled notices retained
 - Material adopted: local CSS/runtime, timeline builder, render preparation, and style guide
-- Material excluded: paid-font dependency; local fallback uses LXGW WenKai
+- Material excluded: paid-font dependency; local fallback uses LXGW WenKai. Local CSS differences are intentional patches recorded in `meta/z-skills-local-patches.json`, not evidence that the upstream lock is stale.
 - Test: compile Python helpers, build a local timeline deck, and verify no remote resources
 - Rollback: delete `assets/wanghong/`, the helper scripts, and the style reference
-- Date: 2026-08-07
+- Date: 2026-08-08

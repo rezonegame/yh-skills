@@ -14,6 +14,7 @@ from .pptx_builder import create_pptx_with_native_svg
 from .pptx_narration import NARRATION_EXTENSIONS, find_narration_files, probe_audio_duration
 from .pptx_slide_xml import TRANSITIONS
 from .animation_config import load_animation_config, validate_animation_config
+from export_contract import inspect_svg_sources, resolve_output, write_source_manifest
 
 try:
     from pptx_animations import ANIMATIONS as _ANIMATIONS
@@ -216,8 +217,8 @@ Recorded narration:
 
     args = parser.parse_args()
 
-    project_path = Path(args.project_path)
-    if not project_path.exists():
+    project_path = Path(args.project_path).resolve()
+    if not project_path.is_dir():
         print(f"Error: Path does not exist: {project_path}")
         sys.exit(1)
 
@@ -274,7 +275,11 @@ Recorded narration:
 
     backup_dir: Path | None = None
     if args.output:
-        output_base = Path(args.output)
+        try:
+            output_base = resolve_output(project_path, args.output)
+        except ValueError as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
         native_path = output_base
         stem = output_base.stem
         legacy_path = output_base.parent / f"{stem}_svg{output_base.suffix}"
@@ -476,6 +481,13 @@ Recorded narration:
 
     success = True
 
+    try:
+        native_sources = inspect_svg_sources(project_path, native_files) if gen_native else []
+        legacy_sources = inspect_svg_sources(project_path, legacy_files) if gen_legacy else []
+    except (OSError, ValueError) as exc:
+        print(f"Error: source provenance validation failed: {exc}", file=sys.stderr)
+        sys.exit(1)
+
     # --- Native shapes version (primary) ---
     if gen_native:
         if verbose:
@@ -493,6 +505,10 @@ Recorded narration:
             **shared_kwargs,
         )
         success = success and ok
+        if ok:
+            manifest = write_source_manifest(native_path, project_path, native_sources)
+            if verbose:
+                print(f"  Source manifest: {manifest}")
 
     # --- SVG image reference version ---
     if gen_legacy:
@@ -514,6 +530,10 @@ Recorded narration:
             **shared_kwargs,
         )
         success = success and ok
+        if ok:
+            manifest = write_source_manifest(legacy_path, project_path, legacy_sources)
+            if verbose:
+                print(f"  Source manifest: {manifest}")
 
         if ok and backup_dir is not None:
             svg_output_src = project_path / "svg_output"

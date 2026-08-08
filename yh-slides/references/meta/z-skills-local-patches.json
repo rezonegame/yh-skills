@@ -1,0 +1,15 @@
+{
+  "schema": "yh-slides.upstream-local-patches.v1",
+  "source": "https://github.com/tjxj/z-skills",
+  "reviewed_commit": "f5832fba31911cc423e86fcab88bf04361b5cf36",
+  "reviewed_at": "2026-08-08",
+  "license": "MIT",
+  "policy": "These hashes describe the intended local state. A difference from upstream is not treated as an out-of-date lock.",
+  "files": [
+    {"path":"assets/wanghong/base.css","sha256":"07805d8d101d7ae2e4f8d07ba20e4cbfa233174dc9f5a0d8070f7f0a28091dcb","patch":"Keep the local offline deck shell and YH-scoped defaults."},
+    {"path":"assets/wanghong/animations.css","sha256":"3bc36127d7e491b0a723fe5788682824c9b9e8849cf2a5ceb72dc3ebb951e3e8","patch":"Retain the reviewed local animation set and reduced-motion behavior."},
+    {"path":"assets/wanghong/neat-annotations.css","sha256":"1e98ff8dac04ca0129ceb00e69fb085a9e4ef5e7807a3e66bae6e29c59a3dd59","patch":"Keep the separately attributed neat-annotations integration."},
+    {"path":"assets/wanghong/template.css","sha256":"3467321fad19beda4518979984d61f785726dae80d398c2e94cb8317c4969f8c","patch":"Replace the paid-font assumption with the local LXGW WenKai fallback chain."},
+    {"path":"assets/wanghong/timeline.css","sha256":"d9feddad7eeddc1df2080c65266c478cab5de14b547081e6681a485cb2c14326","patch":"Retain YH timeline spacing and offline rendering adaptations."}
+  ]
+}

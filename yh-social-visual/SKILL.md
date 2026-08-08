@@ -38,6 +38,8 @@ Default to `package` when a platform is named but a mode is not.
 
 Every rendered asset must use a registered style preset and platform geometry preset. Read `references/contracts/social-preset.md` and run `node scripts/validate_social_preset.mjs <manifest-or-fixture.json>` before rendering. Keep `scripts/lib/browser-safety.mjs` enabled so local HTML cannot fetch remote resources.
 
+Three MIT-licensed structural preset families from PPT Master commit `bbb323f0ebd6a6a230dd6063209326b53bfd2e1d` are available under `assets/upstream/ppt-master/layouts/`: `xiaohongshu_post` (10, 3:4), `story_vertical` (9, 9:16), and `moments_square` (8, 1:1). Their local routing and geometry adapter is `presets/ppt-master-social.json`. They remain neutral structure presets owned by this skill; never route a social task to `yh-slides`, fetch a remote asset at render time, or let upstream preview paint override project direction.
+
 ## Rendering Strategies
 
 | Strategy | Choose when |

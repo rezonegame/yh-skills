@@ -1,0 +1,9 @@
+{
+  "name": "ppt-master-templates",
+  "url": "https://github.com/hugohe3/ppt-master.git",
+  "commit": "bbb323f0ebd6a6a230dd6063209326b53bfd2e1d",
+  "vendored_at": "2026-08-08",
+  "license": "MIT",
+  "local_targets": ["templates/upstream/ppt-master", "../yh-social-visual/assets/upstream/ppt-master"],
+  "update_policy": "Pinned selective template import. Never overwrite local adapters or import excluded runtime routes."
+}

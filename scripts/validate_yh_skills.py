@@ -29,8 +29,15 @@ def validate_provenance(skills: list[dict[str, str]]) -> list[str]:
         data = json.loads(read(PROVENANCE))
     except json.JSONDecodeError as exc:
         return [f"invalid provenance registry JSON: {exc}"]
-    if data.get("schema") != "yh-skills.provenance.v1":
+    if data.get("schema") != "yh-skills.provenance.v2":
         failures.append("provenance registry: unexpected schema")
+    required_source_fields = {
+        "reviewed_commit", "relevant_paths", "local_target", "decision",
+        "license_boundary", "content_hash", "reviewed_at",
+    }
+    declared_fields = data.get("required_source_fields")
+    if not isinstance(declared_fields, list) or not required_source_fields.issubset(set(declared_fields)):
+        failures.append("provenance registry: incomplete required_source_fields declaration")
     records = data.get("skills")
     if not isinstance(records, dict):
         return failures + ["provenance registry: missing skills object"]
@@ -47,12 +54,29 @@ def validate_provenance(skills: list[dict[str, str]]) -> list[str]:
             for field in ("name", "url", "license", "role", "distribution"):
                 if not isinstance(entry.get(field), str) or not entry[field].strip():
                     failures.append(f"provenance registry: {name}[{index}] missing {field}")
+            for field in required_source_fields:
+                if field not in entry:
+                    failures.append(f"provenance registry: {name}[{index}] missing {field}")
             for field in ("absorbed_commit", "reviewed_commit"):
                 value = entry.get(field)
                 if value is not None and (not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{40}", value)):
                     failures.append(f"provenance registry: {name}[{index}] invalid {field}")
             if entry.get("role") != "local-only" and entry.get("reviewed_commit") is None:
                 failures.append(f"provenance registry: {name}[{index}] needs reviewed_commit")
+            if not isinstance(entry.get("relevant_paths"), list) or not all(
+                isinstance(item, str) and item.strip() for item in entry.get("relevant_paths", [])
+            ):
+                failures.append(f"provenance registry: {name}[{index}] invalid relevant_paths")
+            if entry.get("local_target") is not None and not isinstance(entry.get("local_target"), str):
+                failures.append(f"provenance registry: {name}[{index}] invalid local_target")
+            for field in ("decision", "license_boundary"):
+                if not isinstance(entry.get(field), str) or not entry[field].strip():
+                    failures.append(f"provenance registry: {name}[{index}] missing {field}")
+            content_hash = entry.get("content_hash")
+            if content_hash is not None and not re.fullmatch(r"[0-9a-f]{64}", str(content_hash)):
+                failures.append(f"provenance registry: {name}[{index}] invalid content_hash")
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(entry.get("reviewed_at", ""))):
+                failures.append(f"provenance registry: {name}[{index}] invalid reviewed_at")
     return failures
 
 

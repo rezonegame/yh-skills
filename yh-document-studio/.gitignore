@@ -5,6 +5,7 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+LOCAL_APPDATA_FONTCONFIG_CACHE/
 
 # Font build artifacts
 assets/fonts/*.otf

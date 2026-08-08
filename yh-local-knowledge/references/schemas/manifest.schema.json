@@ -71,6 +71,7 @@
               "not_required",
               "normalized",
               "normalized_cached",
+              "renormalization_review_required",
               "fallback_metadata_only",
               "failed",
               "skipped",
