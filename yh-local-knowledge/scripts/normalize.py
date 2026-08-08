@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
 import os
 import shutil
@@ -58,6 +59,7 @@ class Converters:
 
     def __init__(self) -> None:
         self.markitdown = self._try_markitdown()
+        self.markitdown_version = self._markitdown_version() if self.markitdown is not None else None
         self.pandoc = shutil.which("pandoc") is not None
         self.pdftotext = shutil.which("pdftotext") is not None
 
@@ -68,6 +70,13 @@ class Converters:
 
             return MarkItDown()
         except Exception:
+            return None
+
+    @staticmethod
+    def _markitdown_version() -> str | None:
+        try:
+            return importlib.metadata.version("markitdown")
+        except importlib.metadata.PackageNotFoundError:
             return None
 
 
@@ -94,9 +103,9 @@ def _cache_path(out: Path) -> Path:
 
 def _cache_payload(src: Path, source_sha256: str, conv: Converters) -> dict:
     return {
-        "schema": "yh-local-knowledge.normalization-cache.v1",
+        "schema": "yh-local-knowledge.normalization-cache.v2",
         "source_sha256": source_sha256,
-        "converter": {"markitdown": conv.markitdown is not None, "pandoc": conv.pandoc, "pdftotext": conv.pdftotext},
+        "converter": {"markitdown": conv.markitdown is not None, "markitdown_version": conv.markitdown_version, "pandoc": conv.pandoc, "pdftotext": conv.pdftotext},
     }
 
 
@@ -124,6 +133,17 @@ def _cache_is_valid(out: Path, cache: Path, expected: dict) -> bool:
         return json.loads(cache.read_text(encoding="utf-8")) == expected
     except (OSError, json.JSONDecodeError):
         return False
+
+
+def _converter_version_drift(out: Path, cache: Path, expected: dict) -> bool:
+    """True when source is unchanged but the reviewed converter environment changed."""
+    if not out.is_file() or not cache.is_file():
+        return False
+    try:
+        current = json.loads(cache.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return current.get("source_sha256") == expected.get("source_sha256") and current.get("converter") != expected.get("converter")
 
 
 def _tier1_markitdown(conv: Converters, src: Path, out: Path) -> tuple[str, str | None]:
@@ -180,7 +200,7 @@ def _tier2_system(src: Path, out: Path, pdftotext: bool, pandoc: bool) -> tuple[
         tmp.unlink(missing_ok=True)
 
 
-def convert_one(conv: Converters, workspace: Path, src: Path) -> dict:
+def convert_one(conv: Converters, workspace: Path, src: Path, *, force_renormalize: bool = False) -> dict:
     """Convert a single source file. Returns a manifest entry fragment."""
     ext = src.suffix.lower()
     record = {
@@ -204,6 +224,14 @@ def convert_one(conv: Converters, workspace: Path, src: Path) -> dict:
     if _cache_is_valid(out, cache, expected_cache):
         record["normalized_path"] = str(out.relative_to(workspace))
         record["normalization_status"] = "normalized_cached"
+        return record
+    if not force_renormalize and _converter_version_drift(out, cache, expected_cache):
+        record["normalized_path"] = str(out.relative_to(workspace))
+        record["normalization_status"] = "renormalization_review_required"
+        record["normalization_error"] = (
+            "converter version changed; reviewed normalized asset was preserved. "
+            "Run again with --force-renormalize after review."
+        )
         return record
 
     status, err = "fallback_metadata_only", "no converter available"
@@ -243,6 +271,7 @@ def main() -> int:
     p.add_argument("--file", help="normalize a single file instead of a root")
     p.add_argument("--status", action="store_true", help="print converter status and exit")
     p.add_argument("--untrusted", action="store_true", help="reject unsafe external inputs before conversion")
+    p.add_argument("--force-renormalize", action="store_true", help="replace reviewed normalized output after converter-version review")
     args = p.parse_args()
 
     workspace = Path(args.workspace).resolve()
@@ -251,6 +280,7 @@ def main() -> int:
     if args.status:
         print(json.dumps({
             "markitdown": conv.markitdown is not None,
+            "markitdown_version": conv.markitdown_version,
             "pandoc": conv.pandoc,
             "pdftotext": conv.pdftotext,
             "normalized_dir": str(workspace / NORMALIZED_DIR),
@@ -295,7 +325,7 @@ def main() -> int:
             })
             continue
         if target.is_file():
-            results.append(convert_one(conv, workspace, target))
+            results.append(convert_one(conv, workspace, target, force_renormalize=args.force_renormalize))
 
     # Ensure normalized dir exists even if nothing converted (for structure).
     (workspace / NORMALIZED_DIR).mkdir(parents=True, exist_ok=True)
@@ -304,6 +334,7 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "converter": {
             "markitdown": conv.markitdown is not None,
+            "markitdown_version": conv.markitdown_version,
             "pandoc": conv.pandoc,
             "pdftotext": conv.pdftotext,
         },

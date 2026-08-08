@@ -72,7 +72,7 @@ When this skill starts in a folder, follow the guided engagement protocol in `re
 2. Detect whether the current folder contains `.knowledge/state.json`.
 3. If not initialized, infer the topic name from the folder name and create the default structure.
 4. Ensure `workspace.md`, `manifest.json`, `state.json`, `source-map.md`, and `extraction-menu.md` exist.
-5. **Normalize formats**: run `scripts/normalize.py .` to convert binary sources (PDF/Word/Excel/etc.) into read-only markdown under `.knowledge/normalized/`. For downloaded, received, or origin-unknown files, first run `scripts/scan_input_policy.py <source-root>`, then normalize with `--untrusted`. If markitdown is not installed, the script degrades gracefully (system tools → metadata-only) and the briefing must tell the user honestly what could not be extracted. See `references/format-handlers/normalization.md` and `references/security/untrusted-inputs.md`.
+5. **Normalize formats**: run `scripts/normalize.py .` to convert binary sources (PDF/Word/Excel/etc.) into read-only markdown under `.knowledge/normalized/`. For downloaded, received, or origin-unknown files, first run `scripts/scan_input_policy.py <source-root>`, then normalize with `--untrusted`. The supported optional converter range is `markitdown>=0.1.7,<0.2`; install it only in an isolated/project environment when validating an upgrade. If it is unavailable, the script degrades gracefully (system tools → metadata-only) and the briefing must tell the user honestly what could not be extracted. See `references/format-handlers/normalization.md` and `references/security/untrusted-inputs.md`.
 6. **Scan normalized content when trust is uncertain**: run `scripts/scan_content_safety.py .knowledge/normalized`. Findings are advisory but block automatic promotion or skill-pack activation until reviewed.
 7. Scan `原始资料/` and any configured source roots, reading from `.knowledge/normalized/` for converted files and from the originals for text files.
 8. Compare file hashes and timestamps against `manifest.json`.
@@ -128,7 +128,7 @@ Use `references/schemas/manifest.schema.json` as the canonical schema. Minimum s
 
 Use stable `source_id` values. When a file changes, keep the same `source_id` if the path is the same, update hash/mtime/status, and record impact in `state.json`.
 
-`normalized_path` and `normalization_status` are written by `scripts/normalize.py` (merged into the manifest by the agent or a later sync step). They are optional and forward-compatible — old workspaces without them still work. `normalization_status` values: `not_required` (text format), `normalized`, `normalized_cached` (incremental hit), `fallback_metadata_only` (no converter or conversion failed), `failed` (error recorded in `normalization_error`), `skipped`.
+`normalized_path` and `normalization_status` are written by `scripts/normalize.py` (merged into the manifest by the agent or a later sync step). They are optional and forward-compatible — old workspaces without them still work. `normalization_status` values: `not_required` (text format), `normalized`, `normalized_cached` (incremental hit), `renormalization_review_required` (converter version changed; reviewed output preserved until `--force-renormalize` is explicitly approved), `fallback_metadata_only` (no converter or conversion failed), `failed` (error recorded in `normalization_error`), `skipped`.
 
 ## State Schema
 

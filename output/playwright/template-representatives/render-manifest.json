@@ -1,0 +1,48 @@
+{
+  "schema": "skill-portfolio.representative-renders.v1",
+  "network": false,
+  "cases": [
+    {
+      "name": "presentation-4x3",
+      "source": "yh-slides/templates/upstream/ppt-master/layouts/presentation_core_43/templates/01_title_slide.svg",
+      "width": 1024,
+      "height": 768,
+      "output": "output/playwright/template-representatives/presentation-4x3.png"
+    },
+    {
+      "name": "formal-report-16x9",
+      "source": "yh-slides/templates/upstream/ppt-master/layouts/report_core/templates/01_cover.svg",
+      "width": 1280,
+      "height": 720,
+      "output": "output/playwright/template-representatives/formal-report-16x9.png"
+    },
+    {
+      "name": "editorial-full-bleed-16x9",
+      "source": "yh-slides/templates/upstream/ppt-master/layouts/editorial_bleed/templates/01_hero_full.svg",
+      "width": 1280,
+      "height": 720,
+      "output": "output/playwright/template-representatives/editorial-full-bleed-16x9.png"
+    },
+    {
+      "name": "xiaohongshu-3x4",
+      "source": "yh-social-visual/assets/upstream/ppt-master/layouts/xiaohongshu_post/templates/01_cover.svg",
+      "width": 1242,
+      "height": 1660,
+      "output": "output/playwright/template-representatives/xiaohongshu-3x4.png"
+    },
+    {
+      "name": "story-9x16",
+      "source": "yh-social-visual/assets/upstream/ppt-master/layouts/story_vertical/templates/01_cover.svg",
+      "width": 1080,
+      "height": 1920,
+      "output": "output/playwright/template-representatives/story-9x16.png"
+    },
+    {
+      "name": "moments-1x1",
+      "source": "yh-social-visual/assets/upstream/ppt-master/layouts/moments_square/templates/01_cover.svg",
+      "width": 1080,
+      "height": 1080,
+      "output": "output/playwright/template-representatives/moments-1x1.png"
+    }
+  ]
+}

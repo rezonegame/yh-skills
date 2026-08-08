@@ -1,0 +1,15 @@
+{
+  "schema": "yh-social-visual.preset-adapter.v1",
+  "upstream_namespace": "assets/upstream/ppt-master",
+  "task_owner": "yh-social-visual",
+  "presets": {
+    "xiaohongshu_post": {"ratio": "3:4", "width": 1242, "height": 1660, "layout_count": 10},
+    "story_vertical": {"ratio": "9:16", "width": 1080, "height": 1920, "layout_count": 9},
+    "moments_square": {"ratio": "1:1", "width": 1080, "height": 1080, "layout_count": 8}
+  },
+  "rules": [
+    "These structures remain social-visual presets and never route a social task to yh-slides.",
+    "Local visual direction and project instructions override neutral upstream preview paint.",
+    "Do not add remote resources at render time."
+  ]
+}

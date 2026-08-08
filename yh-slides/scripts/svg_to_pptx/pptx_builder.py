@@ -15,6 +15,7 @@ from typing import Any
 
 from pptx import Presentation
 from pptx.util import Emu
+from export_contract import promote_export
 
 from .drawingml_converter import convert_svg_to_slide_shapes
 from .pptx_dimensions import (
@@ -397,7 +398,9 @@ def create_pptx_with_native_svg(
 
     animation_cli_overrides = animation_cli_overrides or {}
 
-    temp_dir = Path(tempfile.mkdtemp())
+    output_path = output_path.resolve()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_dir = Path(tempfile.mkdtemp(prefix=f'.{output_path.stem}.', dir=output_path.parent))
 
     try:
         # Create base PPTX with python-pptx
@@ -799,7 +802,8 @@ def create_pptx_with_native_svg(
                 if file_path.is_file():
                     arcname = file_path.relative_to(extract_dir)
                     zf.write(file_path, arcname)
-        shutil.move(str(temp_output_path), str(output_path))
+        # Same-directory validated atomic replacement keeps the last good deck on any failure.
+        promote_export(temp_output_path, output_path)
 
         if verbose:
             print()

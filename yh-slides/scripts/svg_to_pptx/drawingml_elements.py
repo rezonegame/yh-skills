@@ -28,6 +28,7 @@ from .drawingml_paths import (
     PathCommand, parse_svg_path, svg_path_to_absolute,
     normalize_path_commands, path_commands_to_drawingml,
 )
+from .text_contract import text_direction, text_flow_mode, validate_bcp47
 
 
 def _wrap_shape(
@@ -854,6 +855,18 @@ def _override_run_attrs(
         run_attrs['font_style'] = tspan.get('font-style')
     if tspan.get('text-decoration'):
         run_attrs['text_decoration'] = tspan.get('text-decoration')
+    lang = tspan.get('lang') or tspan.get('{http://www.w3.org/XML/1998/namespace}lang')
+    if lang:
+        run_attrs['lang'] = validate_bcp47(lang)
+    if tspan.get('dir'):
+        run_attrs['direction'] = text_direction(run_attrs.get('lang', 'zh-CN'), tspan.get('dir'))
+    for attr, key in (
+        ('data-pptx-font-latin', 'font_latin'),
+        ('data-pptx-font-ea', 'font_ea'),
+        ('data-pptx-font-cs', 'font_cs'),
+    ):
+        if tspan.get(attr):
+            run_attrs[key] = tspan.get(attr)
     return run_attrs
 
 
@@ -992,6 +1005,10 @@ def _build_run_xml(
     strike_attr = ' strike="sngStrike"' if 'line-through' in text_dec else ''
 
     fonts = parse_font_family(ff) if ff else default_fonts
+    latin = run.get('font_latin') or fonts['latin']
+    east_asian = run.get('font_ea') or fonts['ea']
+    complex_script = run.get('font_cs') or latin
+    lang = validate_bcp47(str(run.get('lang', 'zh-CN')))
 
     fill_xml = _build_text_fill_xml(fill, fill_raw, opacity, ctx)
     outline_xml = _build_text_outline_xml(run)
@@ -999,13 +1016,13 @@ def _build_run_xml(
     space_attr = ' xml:space="preserve"' if text != text.strip() or '  ' in text else ''
 
     return f'''<a:r>
-<a:rPr lang="zh-CN" sz="{sz}"{b_attr}{i_attr}{u_attr}{strike_attr} dirty="0">
+<a:rPr lang="{_xml_escape(lang)}" sz="{sz}"{b_attr}{i_attr}{u_attr}{strike_attr} dirty="0">
 {outline_xml}
 {fill_xml}
 {effect_xml}
-<a:latin typeface="{_xml_escape(fonts['latin'])}"/>
-<a:ea typeface="{_xml_escape(fonts['ea'])}"/>
-<a:cs typeface="{_xml_escape(fonts['latin'])}"/>
+<a:latin typeface="{_xml_escape(latin)}"/>
+<a:ea typeface="{_xml_escape(east_asian)}"/>
+<a:cs typeface="{_xml_escape(complex_script)}"/>
 </a:rPr>
 <a:t{space_attr}>{_xml_escape(text)}</a:t>
 </a:r>'''
@@ -1027,6 +1044,11 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     stroke_opacity = get_stroke_opacity(elem, ctx)
     font_style = _get_attr(elem, 'font-style', ctx) or ''
     text_decoration = _get_attr(elem, 'text-decoration', ctx) or ''
+    language = validate_bcp47(
+        elem.get('lang') or elem.get('{http://www.w3.org/XML/1998/namespace}lang') or 'zh-CN'
+    )
+    direction = text_direction(language, elem.get('dir'))
+    flow_mode = text_flow_mode(elem.get('data-pptx-text-flow'))
 
     fonts = parse_font_family(font_family_str)
 
@@ -1042,6 +1064,11 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
         'stroke_raw': stroke_raw,
         'stroke_width': stroke_width,
         'stroke_opacity': stroke_opacity,
+        'lang': language,
+        'direction': direction,
+        'font_latin': elem.get('data-pptx-font-latin'),
+        'font_ea': elem.get('data-pptx-font-ea'),
+        'font_cs': elem.get('data-pptx-font-cs'),
     }
     runs = _build_text_runs(elem, parent_attrs)
 
@@ -1110,6 +1137,8 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     # Alignment
     algn_map = {'start': 'l', 'middle': 'ctr', 'end': 'r'}
     algn = algn_map.get(text_anchor, 'l')
+    if direction == 'rtl' and text_anchor == 'start':
+        algn = 'r'
 
     # Shadow effect
     shape_effect_xml = ''
@@ -1146,12 +1175,12 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
 {shape_effect_xml}
 </p:spPr>
 <p:txBody>
-<a:bodyPr wrap="none" lIns="0" tIns="0" rIns="0" bIns="0" anchor="t" anchorCtr="0">
+<a:bodyPr wrap="{'square' if flow_mode == 'reflow' else 'none'}" lIns="0" tIns="0" rIns="0" bIns="0" anchor="t" anchorCtr="0">
 <a:spAutoFit/>
 </a:bodyPr>
 <a:lstStyle/>
 <a:p>
-<a:pPr algn="{algn}"/>
+<a:pPr algn="{algn}"{' rtl="1"' if direction == 'rtl' else ''}/>
 {runs_xml}
 </a:p>
 </p:txBody>

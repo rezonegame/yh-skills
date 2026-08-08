@@ -40,6 +40,25 @@ class NormalizeTests(unittest.TestCase):
             changed = normalize._cache_payload(source, normalize._file_sha256(source), converter)
             self.assertFalse(normalize._cache_is_valid(out, cache, changed))
 
+    def test_converter_version_drift_preserves_reviewed_asset(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            source = workspace / "source.docx"
+            source.write_bytes(b"same-source")
+            out = normalize._out_path(workspace, source)
+            cache = normalize._cache_path(out)
+            normalize._atomic_write_text(out, "reviewed output")
+            old = {"schema":"yh-local-knowledge.normalization-cache.v2","source_sha256":normalize._file_sha256(source),"converter":{"markitdown":True,"markitdown_version":"0.1.6","pandoc":False,"pdftotext":False}}
+            normalize._atomic_write_text(cache, json.dumps(old))
+            conv = normalize.Converters()
+            conv.markitdown = object()
+            conv.markitdown_version = "0.1.7"
+            conv.pandoc = False
+            conv.pdftotext = False
+            record = normalize.convert_one(conv, workspace, source)
+            self.assertEqual(record["normalization_status"], "renormalization_review_required")
+            self.assertEqual(out.read_text(encoding="utf-8"), "reviewed output")
+
     @patch("normalize.subprocess.run")
     def test_tier2_rejects_nonzero_exit(self, run) -> None:
         run.return_value.returncode = 7

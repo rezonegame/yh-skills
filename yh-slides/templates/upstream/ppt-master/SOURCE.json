@@ -1,0 +1,19 @@
+{
+  "schema": "yh.upstream-template-source.v1",
+  "source": "https://github.com/hugohe3/ppt-master.git",
+  "commit": "bbb323f0ebd6a6a230dd6063209326b53bfd2e1d",
+  "license": "MIT",
+  "license_file": "UPSTREAM_LICENSE",
+  "imported_at": "2026-08-08",
+  "imported": {
+    "layouts": {"presentation_core_43": 16, "report_core": 13, "editorial_bleed": 10},
+    "styles": ["academic-research", "consulting-decision", "creative-pitch", "incident-postmortem", "investor-pitch", "narrative-keynote", "operating-review", "product-launch", "science-explainer", "solution-proposal", "technical-deepdive", "workshop-teaching"],
+    "brands": ["accenture", "alibaba", "aws", "bain", "bcg", "deloitte", "huawei", "ibm", "jpmorgan", "mckinsey", "microsoft", "nvidia", "pwc", "tencent", "xiaomi"]
+  },
+  "brand_evidence": {
+    "fact_primary_values": ["ibm", "nvidia"],
+    "approximate_reference_only": ["accenture", "alibaba", "aws", "bain", "bcg", "deloitte", "huawei", "jpmorgan", "mckinsey", "microsoft", "pwc", "tencent", "xiaomi"]
+  },
+  "excluded": ["logos", "brand images", "Quick Generate", "browser editor", "cloud export", "audio providers", "examples", "runtime code"],
+  "local_adapter": "../../../adapters/ppt-master.json"
+}

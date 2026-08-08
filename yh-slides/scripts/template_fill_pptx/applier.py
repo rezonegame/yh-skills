@@ -7,6 +7,7 @@ and rebuilds the presentation slide list, relationships, and content types.
 from __future__ import annotations
 
 import zipfile
+import uuid
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
@@ -37,6 +38,7 @@ from .transitions import (
     _resolve_slide_transition,
     _set_slide_transition,
 )
+from export_contract import promote_export
 
 
 def apply_plan(
@@ -173,6 +175,11 @@ def apply_plan(
     entries["[Content_Types].xml"] = _xml_bytes(content_root)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(output_path, "w", compression=zipfile.ZIP_DEFLATED) as out:
-        for name, data in entries.items():
-            out.writestr(name, data)
+    candidate = output_path.with_name(f".{output_path.stem}.{uuid.uuid4().hex}.candidate.pptx")
+    try:
+        with zipfile.ZipFile(candidate, "w", compression=zipfile.ZIP_DEFLATED) as out:
+            for name, data in entries.items():
+                out.writestr(name, data)
+        promote_export(candidate, output_path)
+    finally:
+        candidate.unlink(missing_ok=True)

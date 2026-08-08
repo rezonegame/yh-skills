@@ -1,0 +1,30 @@
+{
+  "schema": "yh-skills.method-adoption.v1",
+  "reviewed_at": "2026-08-05",
+  "source": {
+    "name": "book-to-skill",
+    "url": "https://github.com/virgiliojr94/book-to-skill",
+    "commit": "c18b0fb2db8b3f3aeb0900ea97db2189764f642c",
+    "license": "MIT"
+  },
+  "adopted_methods": [
+    "separate deterministic preprocessing from agent-authored synthesis",
+    "compile source structure once and load topic-specific references on demand",
+    "front-load the core skill while keeping detailed knowledge in references",
+    "maintain a topic index and a decision-oriented quick-reference layer",
+    "fold new sources in without silently replacing existing workflow contracts",
+    "scan generated knowledge skills before they become executable guidance"
+  ],
+  "deliberately_excluded": [
+    "the upstream Bash-only installation and cleanup workflow",
+    "fixed shared temporary directories",
+    "automatic dependency installation into the active Python environment",
+    "treating regex prompt-injection scans as a complete trust decision",
+    "overwriting existing operational skills with chapter-shaped knowledge"
+  ],
+  "local_targets": [
+    "shared-skill-router",
+    "yh-local-knowledge",
+    "huashu-speech-coach"
+  ]
+}

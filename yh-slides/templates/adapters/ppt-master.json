@@ -1,0 +1,18 @@
+{
+  "schema": "yh-slides.template-adapter.v1",
+  "upstream_namespace": "templates/upstream/ppt-master",
+  "task_owner": "yh-slides",
+  "families": {
+    "presentation_core_43": {"canvas": "4:3", "use_for": ["general presentation", "teaching deck"]},
+    "report_core": {"canvas": "16:9", "use_for": ["formal report", "operating review"]},
+    "editorial_bleed": {"canvas": "16:9", "use_for": ["editorial presentation", "full-bleed keynote"]}
+  },
+  "spec_precedence_low_to_high": ["upstream-default", "style", "layout", "brand", "project-explicit"],
+  "rules": [
+    "Never merge installed specs destructively.",
+    "Project-explicit instructions and user-supplied brand materials override upstream defaults.",
+    "Brand specs are references; IBM and NVIDIA primary values are facts, all other imported brand values are approximate.",
+    "No imported brand preset may be represented as an official brand manual.",
+    "Social layouts are owned by yh-social-visual and are not routed here."
+  ]
+}

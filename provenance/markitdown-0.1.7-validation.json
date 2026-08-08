@@ -1,0 +1,14 @@
+{
+  "schema": "yh-skills.upstream-validation.v1",
+  "source": "https://github.com/microsoft/markitdown",
+  "tag": "v0.1.7",
+  "commit": "fd239d5d2be43d9b68329730206b9312c7d5a388",
+  "package_version": "0.1.7",
+  "validated_at": "2026-08-08",
+  "environment": "temporary Python 3.11 venv with --system-site-packages; global MarkItDown 0.1.5 unchanged",
+  "command": "python -m unittest yh-local-knowledge/scripts/tests/test_markitdown_017.py",
+  "fixtures": ["plain DOCX generated in test", "DOCX containing OMML equation generated in test"],
+  "assertions": ["heading preserved", "body preserved", "table preserved", "OMML formula terms preserved"],
+  "result": "passed: 2 tests",
+  "rollback": "Remove the optional isolated environment; local normalization still degrades to system tools or metadata-only."
+}

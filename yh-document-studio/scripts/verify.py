@@ -12,6 +12,8 @@ import re
 import subprocess
 from pathlib import Path
 
+from artifact_contract import candidate_path, discard_candidate, promote_candidate
+
 from highlight import highlight_code_blocks
 from optional_deps import (
     MissingDepError,
@@ -112,6 +114,7 @@ def verify_target(
 
     EXAMPLES.mkdir(parents=True, exist_ok=True)
     out = EXAMPLES / f"{name}.pdf"
+    candidate = candidate_path(out)
 
     # Warn about missing local font files before rendering
     missing_fonts = _check_font_sources(src)
@@ -123,13 +126,16 @@ def verify_target(
 
     html_text = src.read_text(encoding="utf-8")
     html_text = highlight_code_blocks(html_text)
-    HTML(string=html_text, base_url=str(src.parent)).write_pdf(str(out))
-
-    # Set PDF metadata (only replaces placeholders, preserves filled values)
-    set_pdf_metadata_fn(out, author=infer_author_fn())
-
-    # page count check
-    n = len(PdfReader(str(out)).pages)
+    try:
+        HTML(string=html_text, base_url=str(src.parent)).write_pdf(str(candidate))
+        # Set PDF metadata (only replaces placeholders, preserves filled values)
+        set_pdf_metadata_fn(candidate, author=infer_author_fn())
+        # page count check
+        n = len(PdfReader(str(candidate)).pages)
+    except Exception as exc:
+        discard_candidate(candidate)
+        issues.append(f"render failed; last successful artifact preserved: {exc}")
+        return issues
     if max_pages and n > max_pages:
         over = n - max_pages
         hint = ""
@@ -138,7 +144,7 @@ def verify_target(
         issues.append(f"page overflow: {n} pages (limit {max_pages}){hint}")
 
     # font check
-    embedded = _pdf_font_names(out)
+    embedded = _pdf_font_names(candidate)
     fallback_present = any(
         kw in font for font in embedded
         for kw in ("Georgia", "Palatino", "TsangerJinKai", "YuMincho", "Hiragino",
@@ -151,6 +157,10 @@ def verify_target(
     if is_diagram:
         if not fallback_present:
             issues.append(f"no recognizable font embedded in {out.name}")
+        if issues:
+            discard_candidate(candidate)
+        else:
+            promote_candidate(candidate, out)
         return issues
 
     is_en = name.endswith("-en")
@@ -167,6 +177,10 @@ def verify_target(
         else:
             issues.append(f"primary font ({primary}) not embedded; using fallback")
 
+    if issues:
+        discard_candidate(candidate)
+    else:
+        promote_candidate(candidate, out)
     return issues
 
 
