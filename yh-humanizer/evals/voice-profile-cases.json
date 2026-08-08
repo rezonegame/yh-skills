@@ -1,0 +1,1 @@
+{"schema":"yh-humanizer.voice-profile-cases.v1","cases":[{"profile":"plain-technical","required_literals":["张三","62%","2024 年"],"candidate":"张三在 2024 年将召回率提升到 62%。"},{"profile":"quiet-editorial","required_literals":["项目延期两周"],"candidate":"项目延期两周，记录中的原因仍需逐项说明。"}]}

@@ -1,0 +1,5 @@
+{
+  "mode": "generate",
+  "consumer": "web",
+  "destination": "../../../etc/passwd"
+}

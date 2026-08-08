@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 import sys
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import normalize
@@ -38,6 +39,26 @@ class NormalizeTests(unittest.TestCase):
             source.write_bytes(b"v2")
             changed = normalize._cache_payload(source, normalize._file_sha256(source), converter)
             self.assertFalse(normalize._cache_is_valid(out, cache, changed))
+
+    @patch("normalize.subprocess.run")
+    def test_tier2_rejects_nonzero_exit(self, run) -> None:
+        run.return_value.returncode = 7
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "report.docx"
+            source.write_bytes(b"not-a-real-docx")
+            status, error = normalize._tier2_system(source, Path(tmp) / "out.md", False, True)
+        self.assertEqual(status, "fallback_metadata_only")
+        self.assertIn("exit 7", error or "")
+        run.assert_called_once()
+
+    @patch("normalize.subprocess.run", side_effect=normalize.subprocess.TimeoutExpired("pandoc", 120))
+    def test_tier2_handles_timeout(self, _run) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "report.docx"
+            source.write_bytes(b"not-a-real-docx")
+            status, error = normalize._tier2_system(source, Path(tmp) / "out.md", False, True)
+        self.assertEqual(status, "fallback_metadata_only")
+        self.assertIn("timed out", error or "")
 
 
 if __name__ == "__main__":

@@ -61,9 +61,9 @@ def generate_image(prompt, style="minimalist"):
     """使用 Gemini 生成图像"""
     api_key = os.environ["GEMINI_API_KEY"]
     base_url = os.environ.get("GEMINI_API_BASE_URL", "GEMINI_API_BASE_URL")
-    url = f"{base_url}/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key={api_key}"
+    url = f"{base_url}/v1beta/models/gemini-3.1-flash-image-preview:generateContent"
 
-    headers = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
 
     data = {
         "contents": [{

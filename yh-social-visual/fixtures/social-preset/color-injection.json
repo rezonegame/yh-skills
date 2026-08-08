@@ -1,0 +1,17 @@
+{
+  "preset": "square-generic",
+  "target_ratio": "1:1",
+  "colors": ["#ffffff", "#000000", "#ff5733", "#33ff57", "#3357ff", "#ff33a8"],
+  "text_blocks": [
+    {
+      "id": "title",
+      "x": 0.10,
+      "y": 0.10,
+      "w": 0.80,
+      "h": 0.12,
+      "color": "#000000",
+      "background": "#ffffff"
+    }
+  ],
+  "media_refs": []
+}

@@ -24,6 +24,7 @@ import { chromium } from 'playwright';
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs/promises';
 import path from 'path';
+import { localFileUrl, restrictContextToLocalRoots } from './browser_safety.mjs';
 
 function parseArgs() {
   const args = { width: 1920, height: 1080 };
@@ -57,12 +58,13 @@ async function main() {
 
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width, height } });
+  await restrictContextToLocalRoots(ctx, [slidesDir]);
 
   // 1) Render each HTML to its own PDF buffer
   const pageBuffers = [];
   for (const f of files) {
     const page = await ctx.newPage();
-    const url = 'file://' + path.join(slidesDir, f);
+    const url = localFileUrl(path.join(slidesDir, f));
     await page.goto(url, { waitUntil: 'networkidle' }).catch(() => page.goto(url));
     await page.waitForTimeout(1200);  // web-font paint
     // emulate "screen" so CSS colors/backgrounds render the same as browser

@@ -11,8 +11,7 @@ yh-slides 内置图片工具集（v2 — 增强稳定性版）。
 API Key 来源:
 1. --api-key 参数
 2. GEMINI_API_KEY 环境变量
-3. {skills-dir}/.yh-skills/.env 共享配置
-4. 当前工作目录及父目录的 .env 文件
+3. YH_SKILLS_ENV_FILE 指向的明确配置文件
 
 稳定性设计:
 - 所有 API 调用均带指数退避 + 抖动的统一重试引擎
@@ -57,28 +56,18 @@ def find_api_key() -> Optional[str]:
     优先级（从高到低）：
     1. 环境变量 GEMINI_API_KEY
     2. --api-key 参数（由调用方在 _require_api_key 中处理）
-    3. {skills-dir}/.yh-skills/.env（共享配置，与技能平级，迁移时自动携带）
-    4. 当前工作目录及父目录的 .env
+    3. YH_SKILLS_ENV_FILE 指向的明确配置文件
     """
     # 1. 环境变量
     api_key = os.environ.get("GEMINI_API_KEY")
     if api_key:
         return api_key
 
-    # 2. 共享配置目录 {skills-dir}/.yh-skills/.env（最优先，迁移时随技能目录携带）
-    skill_dir = Path(__file__).resolve().parent.parent
-    skills_dir = skill_dir.parent
-    shared_env = skills_dir / ".yh-skills" / ".env"
-    if shared_env.exists():
-        api_key = _read_env_key(shared_env)
-        if api_key:
-            return api_key
-
-    # 3. 当前工作目录及父目录（最低优先级）
-    current_dir = Path.cwd()
-    for parent in [current_dir] + list(current_dir.parents):
-        env_file = parent / ".env"
-        if env_file.exists():
+    # 2. An explicit path is allowed; never search the workspace or parents.
+    configured = os.environ.get("YH_SKILLS_ENV_FILE")
+    if configured:
+        env_file = Path(configured).expanduser().resolve()
+        if env_file.is_file():
             api_key = _read_env_key(env_file)
             if api_key:
                 return api_key
@@ -104,7 +93,7 @@ def _require_api_key(api_key: Optional[str]) -> str:
         print("请通过以下方式之一配置:")
         print("  1. 传递 --api-key 参数")
         print("  2. 设置 GEMINI_API_KEY 环境变量")
-        print("  3. 在 {skills-dir}/.yh-skills/.env 中配置")
+        print("  3. 设置 YH_SKILLS_ENV_FILE 指向包含 GEMINI_API_KEY 的配置文件")
         print("  4. 获取 API Key: Google AI Studio API key page")
         sys.exit(1)
     return api_key
@@ -229,7 +218,7 @@ def generate_with_gemini(
 
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/"
-        f"models/gemini-3.1-flash-image-preview:generateContent?key={api_key}"
+        "models/gemini-3.1-flash-image-preview:generateContent"
     )
 
     payload = {
@@ -246,7 +235,7 @@ def generate_with_gemini(
     def _attempt(attempt_num):
         # 每次重试增加 timeout，防止大图生成超时
         timeout = 180 + (attempt_num - 1) * 60
-        response = requests.post(url, json=payload, timeout=timeout)
+        response = requests.post(url, json=payload, headers={"x-goog-api-key": api_key}, timeout=timeout)
         result = _handle_http_status(response, "Gemini 生成")
 
         # 检查安全过滤
@@ -286,7 +275,7 @@ def generate_with_imagen(
 
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/"
-        f"models/imagen-4.0-generate-001:predict?key={api_key}"
+        "models/imagen-4.0-generate-001:predict"
     )
 
     payload = {
@@ -300,7 +289,7 @@ def generate_with_imagen(
 
     def _attempt(attempt_num):
         timeout = 60 + (attempt_num - 1) * 30
-        response = requests.post(url, json=payload, timeout=timeout)
+        response = requests.post(url, json=payload, headers={"x-goog-api-key": api_key}, timeout=timeout)
         result = _handle_http_status(response, "Imagen 生成")
 
         if "images" in result and len(result["images"]) > 0:
@@ -384,7 +373,7 @@ def edit_image(
 
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/"
-        f"models/gemini-3.1-flash-image-preview:generateContent?key={api_key}"
+        "models/gemini-3.1-flash-image-preview:generateContent"
     )
 
     payload = {
@@ -403,7 +392,7 @@ def edit_image(
 
     def _attempt(attempt_num):
         timeout = 120 + (attempt_num - 1) * 60
-        response = requests.post(url, json=payload, timeout=timeout)
+        response = requests.post(url, json=payload, headers={"x-goog-api-key": api_key}, timeout=timeout)
         result = _handle_http_status(response, "图片编辑")
 
         if "candidates" in result and len(result["candidates"]) > 0:
@@ -458,7 +447,7 @@ def extract_style(
 
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/"
-        f"models/gemini-2.5-flash:generateContent?key={api_key}"
+        "models/gemini-2.5-flash:generateContent"
     )
 
     payload = {
@@ -474,7 +463,7 @@ def extract_style(
 
     def _attempt(attempt_num):
         timeout = 60 + (attempt_num - 1) * 30
-        response = requests.post(url, json=payload, timeout=timeout)
+        response = requests.post(url, json=payload, headers={"x-goog-api-key": api_key}, timeout=timeout)
         result = _handle_http_status(response, "风格提取")
 
         if "candidates" in result and len(result["candidates"]) > 0:

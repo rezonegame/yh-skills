@@ -23,8 +23,15 @@ REQUIRED_FILES = [
     "references/integrations/figedit-reconstruction.md",
     "references/integrations/template-fill-pptx.md",
     "references/integrations/presenter-mode.md",
+    "references/integrations/bento-deck-adapter.md",
+    "references/contracts/bento-deck.md",
+    "references/meta/bento-integration.md",
     "references/aesthetics/screenshot-framing.md",
     "references/aesthetics/ian-handdrawn-technical.md",
+    "references/aesthetics/content-layout-candidates.md",
+    "references/getting-started/academic-presentation-workflow.md",
+    "references/contracts/academic-deck.md",
+    "references/meta/academic-and-dashi-integration.md",
     "references/aesthetics/swiss/swiss-map-component.md",
     "references/constraints/quality-checklist.md",
     "assets/seeds/path-a-seed.html",
@@ -32,6 +39,7 @@ REQUIRED_FILES = [
     "assets/seeds/path-c-swiss-seed.html",
     "assets/seeds/path-c-minimal-seed.html",
     "assets/seeds/path-d-animated-seed.html",
+    "assets/seeds/path-bento-seed.json",
     "assets/vendor/google-fonts-local.css",
     "assets/vendor/js/lucide.min.js",
     "assets/vendor/js/motion.min.js",
@@ -39,6 +47,7 @@ REQUIRED_FILES = [
     "templates/html-decks/html-ppt/full-decks/presenter-mode-reveal/index.html",
     "templates/html-decks/guizang/template.html",
     "templates/html-decks/guizang/template-swiss.html",
+    "templates/html-decks/bento/Bento_Slides.bento.html",
     "scripts/build_asset_registry.py",
     "scripts/check_offline_ready.py",
     "scripts/check_yh_slides_integrity.py",
@@ -46,11 +55,18 @@ REQUIRED_FILES = [
     "scripts/create_contact_sheet.py",
     "scripts/figedit_batch.py",
     "scripts/skill_creator_self_audit.py",
+    "scripts/validate_academic_deck.py",
+    "scripts/validate_bento_deck.py",
+    "scripts/create_bento_deck.py",
+    "scripts/extract_bento_comments.py",
     "scripts/template_fill_pptx.py",
     "provenance/upstream-locks/ppt-master.source.json",
     "provenance/upstream-locks/guizang-ppt-skill.source.json",
     "provenance/upstream-locks/html-ppt-skill.source.json",
     "provenance/upstream-locks/ian-handdrawn-ppt.source.json",
+    "provenance/upstream-locks/academic-pptx-skill.source.json",
+    "provenance/upstream-locks/dashi-ppt-skill.source.json",
+    "provenance/upstream-locks/bento.source.json",
     "assets/style-samples/ian-handdrawn-technical-anchor.png",
 ]
 
@@ -71,6 +87,9 @@ LICENSES = [
     "assets/external-licenses/guizang-ppt-skill-AGPL-3.0.txt",
     "assets/external-licenses/ian-handdrawn-ppt-MIT.txt",
     "assets/external-licenses/ian-handdrawn-ppt-NOTICE.md",
+    "assets/external-licenses/academic-pptx-skill-MIT.txt",
+    "assets/external-licenses/dashi-ppt-skill-AGPL-3.0-method-only.md",
+    "assets/external-licenses/bento-MIT.txt",
     "assets/external-licenses/chartjs-MIT.txt",
     "assets/external-licenses/highlightjs-BSD-3-Clause.txt",
 ]
@@ -85,6 +104,10 @@ SKILL_REQUIRED_TERMS = [
     "FigEdit Reconstruction",
     "asset-registry",
     "Step 0",
+    "academic-deck.json",
+    "content-layout-candidates",
+    "2D-B",
+    "Bento",
 ]
 
 
@@ -109,7 +132,7 @@ def main() -> int:
             if registry.get("asset_count", 0) <= 0:
                 errors.append("asset registry has no assets")
             origins = {item.get("source", {}).get("origin") for item in registry.get("assets", [])}
-            for source in ("ppt-master", "guizang-ppt-skill", "html-ppt-skill", "ian-handdrawn-ppt", "yh-slides"):
+            for source in ("ppt-master", "guizang-ppt-skill", "html-ppt-skill", "ian-handdrawn-ppt", "bento", "yh-slides"):
                 if source not in origins:
                     errors.append(f"asset registry missing origin: {source}")
         except json.JSONDecodeError as exc:

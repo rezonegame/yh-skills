@@ -1,6 +1,6 @@
 # 分级质量检查清单（Quality Checklist）
 
-> **适用路径**：2A/2B/2C/2B-R/Path C/Path D/Path E（各路径有独立的 P0-P3 规则）  
+> **适用路径**：2A/2B/2C/2B-R/Path C/Path D/Path E/2D-B（各路径有独立的 P0-P3 规则）
 > **使用时机**：SKILL.md Step 7 生成后
 
 本文档按 P0 / P1 / P2 / P3 四个等级组织质量检查项。**P0 是硬门槛，必须全过；P1 强烈建议；P2/P3 按需抛光**。
@@ -12,7 +12,7 @@
 1. 生成完 deck / PPTX 后，先找到你走的路径章节
 2. 逐项 P0 检查 — **任何一条不过 → 必须修复后重新生成**
 3. 检查 P1 — 强烈建议修复
-4. Path C/D/E 必须执行 [visual-qa.md](./visual-qa.md)
+4. Path C/D/E/2D-B 必须执行 [visual-qa.md](./visual-qa.md)
 5. 检查 P2/P3 — 按项目时间/预算决定是否抛光
 6. 不接受"差不多就行"
 
@@ -371,6 +371,52 @@
 - E-P3-3: 辅助功能（`alt`、焦点状态、键盘可访问）
 
 ---
+
+## 2D-B / Bento Deck（本地可编辑单文件）
+
+### 🔴 P0 — 必须通过
+
+| # | 检查项 | 检查方法 |
+|---|---|---|
+| Bn-P0-1 | `bento-deck.json` 通过结构、边界、稳定 ID、notes 和离线媒体校验 | `python scripts/validate_bento_deck.py bento-deck.json --deck-plan deck-plan.json` |
+| Bn-P0-2 | 仅使用固定本地 shell，无远程 runtime、分析或 CDN | `python scripts/check_offline_ready.py` |
+| Bn-P0-3 | `.bento.html` 可本地打开，文字、形状和媒体按需求可编辑 | 打开文件并抽查编辑 |
+| Bn-P0-4 | 每页 notes 存在；morph/state 页的对象 ID/链接正确 | 本地播放并逐页手测 |
+| Bn-P0-5 | `#bento-doc` 之外未被生成器改写；交付无协作 key 或敏感评论 | 比较 shell / 检查交付文件 |
+| Bn-P0-6 | 视觉截图 QA 通过 | 按 [visual-qa.md](./visual-qa.md) 生成截图、hash 和 contact sheet |
+
+### 🟡 P1 — 强烈建议
+
+- Bn-P1-1: 只有叙事需要时才使用 state/morph，转场不抢读者注意力。
+- Bn-P1-2: 评论通过 `extract_bento_comments.py` 回流到作者的修订清单，并记录已解决/待确认状态。
+- Bn-P1-3: 每页至少有一个明确的阅读行动；不把编辑器的组件能力当作内容本身。
+- Bn-P1-4: 交付文件在目标浏览器离线打开，字体、媒体和图表完整。
+
+### 🟢 P2 — 视觉抛光
+
+- Bn-P2-1: 状态页与父页共享足够的视觉锚点，morph 有可理解的因果关系。
+- Bn-P2-2: 编辑态和播放态的层级、对比度、留白一致。
+- Bn-P2-3: notes 是可扫读的演讲提示，不把逐字稿塞入可见页面。
+
+## 学术演讲叠加检查（所有产物路径可选）
+
+仅在 `academic-deck.json` v2 启用：
+
+### 🔴 P0 — 必须通过
+
+- [ ] 行动标题串联后形成一个完整论证；结构化模式的研究问题出现在前三个实质页面
+- [ ] 每个结果页只有一个主 exhibit，并同时给出 insight 与 so-what annotation
+- [ ] 所有非原创 claim / data / figure 在出现页有 citation；references 位于 appendix 之前
+- [ ] conclusions 是最后一个论证页；结尾不是空白、泛化 Thank You 或泛化 Q&A
+- [ ] 正文不低于 20 pt，不只靠颜色传达意义；缩写已定义
+- [ ] live pages 不超过一分钟一页，估算讲述总时长不超过演讲时长
+- [ ] `python scripts/validate_academic_deck.py academic-deck.json --deck-plan deck-plan.json` 通过
+
+### 🟡 P1 — 强烈建议
+
+- [ ] 方法页只保留听众评估结论所需的信息
+- [ ] 论文原图已为演讲重构，标签可读且只保留会讲到的元素
+- [ ] 已标记可跳过页，并准备 3–5 页可能问答的 appendix
 
 ## 自动化自检脚本模板
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "YH Style Profiler"
+  short_description: "从授权中文样本提取风格画像，按个人文风改写并检查偏差"
+  default_prompt: "Use $yh-style-profiler to analyze my samples and rewrite this text in my own style without changing facts."

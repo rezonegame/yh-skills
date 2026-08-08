@@ -1,0 +1,17 @@
+{
+  "schema": "yh-humanizer.factuality-cases.v1",
+  "cases": [
+    {
+      "id": "preserve-names-numbers-citation",
+      "required_literals": ["张三", "2024 年", "62%", "《测试报告》"],
+      "forbidden_literals": ["我亲眼见过", "作为当事人"],
+      "candidate": "张三在 2024 年的召回率为 62%，详见《测试报告》。"
+    },
+    {
+      "id": "do-not-invent-first-person",
+      "required_literals": ["项目延期两周"],
+      "forbidden_literals": ["我当时很焦虑", "我亲历了", "作为项目负责人"],
+      "candidate": "项目延期两周，原因仍需根据已提供的记录说明。"
+    }
+  ]
+}

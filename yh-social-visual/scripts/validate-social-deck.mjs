@@ -24,6 +24,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
 import { browserLaunchOptions } from "./lib/browser-options.mjs";
+import { restrictContextToLocalRoots } from "./lib/browser-safety.mjs";
 
 const args = process.argv.slice(2);
 const { chromium } = loadPlaywright();
@@ -55,6 +56,7 @@ const ctx = await browser.newContext({
   viewport: { width: 1400, height: 1700 },
   deviceScaleFactor: 1,
 });
+await restrictContextToLocalRoots(ctx, [path.dirname(htmlPath)]);
 const page = await ctx.newPage();
 await page.goto(url, { waitUntil: "networkidle" });
 await page.waitForTimeout(1200);

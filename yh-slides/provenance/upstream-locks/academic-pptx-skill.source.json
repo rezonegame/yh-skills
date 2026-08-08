@@ -1,0 +1,7 @@
+{
+  "name": "academic-pptx-skill",
+  "url": "https://github.com/Gabberflast/academic-pptx-skill.git",
+  "commit": "9f2b703ffe8d1449851617665ab1ffb3516d54ac",
+  "vendored_at": "2026-07-31T00:00:00+08:00",
+  "update_policy": "Pinned method source; review argument, evidence, timing and license metadata before refreshing the lock. No upstream code or PDF is vendored."
+}

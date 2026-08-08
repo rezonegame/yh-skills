@@ -36,6 +36,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from input_policy import reject_reason
+from content_safety import sanitize_extracted_text
+
 # --- format classification -------------------------------------------------
 
 BINARY_EXTS = {
@@ -72,10 +75,55 @@ class Converters:
 
 
 def _out_path(workspace: Path, src: Path) -> Path:
-    rel = src.with_suffix(".md").name
-    # namespace by source root folder to avoid collisions across roots
-    parent = src.parent.name
-    return workspace / NORMALIZED_DIR / parent / rel
+    # A parent-name namespace alone collides for e.g. a/report.pdf and b/a/report.pdf.
+    namespace = hashlib.sha256(str(src.parent.resolve()).encode("utf-8")).hexdigest()[:12]
+    return workspace / NORMALIZED_DIR / namespace / src.with_suffix(".md").name
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _cache_path(out: Path) -> Path:
+    return out.with_suffix(out.suffix + ".cache.json")
+
+
+def _cache_payload(src: Path, source_sha256: str, conv: Converters) -> dict:
+    return {
+        "schema": "yh-local-knowledge.normalization-cache.v1",
+        "source_sha256": source_sha256,
+        "converter": {"markitdown": conv.markitdown is not None, "pandoc": conv.pandoc, "pdftotext": conv.pdftotext},
+    }
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(text, encoding="utf-8")
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _write_normalized_text(path: Path, text: str, source_name: str) -> None:
+    cleaned, removed = sanitize_extracted_text(text)
+    if removed:
+        print(f"[security] removed {removed} invisible Unicode control(s) from {source_name}", file=sys.stderr)
+    _atomic_write_text(path, cleaned)
+
+
+def _cache_is_valid(out: Path, cache: Path, expected: dict) -> bool:
+    if not out.is_file() or not cache.is_file():
+        return False
+    try:
+        return json.loads(cache.read_text(encoding="utf-8")) == expected
+    except (OSError, json.JSONDecodeError):
+        return False
 
 
 def _tier1_markitdown(conv: Converters, src: Path, out: Path) -> tuple[str, str | None]:
@@ -90,8 +138,7 @@ def _tier1_markitdown(conv: Converters, src: Path, out: Path) -> tuple[str, str 
         text = getattr(result, "text_content", None) or str(result)
         if not text or not text.strip():
             return "fallback_metadata_only", "empty conversion result"
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(text, encoding="utf-8")
+        _write_normalized_text(out, text, src.name)
         return "normalized", None
     except Exception as e:  # noqa: BLE001
         return "failed", f"markitdown: {e}"
@@ -100,25 +147,37 @@ def _tier1_markitdown(conv: Converters, src: Path, out: Path) -> tuple[str, str 
 def _tier2_system(src: Path, out: Path, pdftotext: bool, pandoc: bool) -> tuple[str, str | None]:
     """Fallback to system tools."""
     ext = src.suffix.lower()
+    tmp = out.with_name(f".{out.name}.tmp")
     try:
         out.parent.mkdir(parents=True, exist_ok=True)
         if ext == ".pdf" and pdftotext:
             # pdftotext writes to a file path (never stdout, per kb-retriever discipline).
-            tmp = out.with_suffix(".tmp.txt")
-            subprocess.call(["pdftotext", str(src), str(tmp)])
+            result = subprocess.run(
+                ["pdftotext", str(src), str(tmp)], capture_output=True, text=True, timeout=120, check=False
+            )
+            if result.returncode != 0:
+                return "fallback_metadata_only", f"pdftotext failed (exit {result.returncode})"
             if tmp.exists() and tmp.stat().st_size > 0:
-                out.write_text(tmp.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
-                tmp.unlink(missing_ok=True)
+                _write_normalized_text(out, tmp.read_text(encoding="utf-8", errors="replace"), src.name)
                 return "normalized", None
             return "fallback_metadata_only", "pdftotext produced empty output"
         if ext in {".doc", ".docx", ".rst", ".epub"} and pandoc:
-            subprocess.call(["pandoc", str(src), "-o", str(out)])
-            if out.exists() and out.stat().st_size > 0:
+            result = subprocess.run(
+                ["pandoc", str(src), "-o", str(tmp)], capture_output=True, text=True, timeout=120, check=False
+            )
+            if result.returncode != 0:
+                return "fallback_metadata_only", f"pandoc failed (exit {result.returncode})"
+            if tmp.exists() and tmp.stat().st_size > 0:
+                _write_normalized_text(out, tmp.read_text(encoding="utf-8", errors="replace"), src.name)
                 return "normalized", None
             return "fallback_metadata_only", "pandoc produced empty output"
         return "fallback_metadata_only", "no system tool for this format"
+    except subprocess.TimeoutExpired:
+        return "fallback_metadata_only", "system tool timed out after 120 seconds"
     except Exception as e:  # noqa: BLE001
         return "failed", f"system tool: {e}"
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def convert_one(conv: Converters, workspace: Path, src: Path) -> dict:
@@ -139,8 +198,10 @@ def convert_one(conv: Converters, workspace: Path, src: Path) -> dict:
     # Unknown/binary extensions still attempted via markitdown if present.
 
     out = _out_path(workspace, src)
-    # Skip if output already exists and source unchanged (incremental).
-    if out.exists():
+    cache = _cache_path(out)
+    expected_cache = _cache_payload(src, _file_sha256(src), conv)
+    # Skip only when the source and converter environment both match.
+    if _cache_is_valid(out, cache, expected_cache):
         record["normalized_path"] = str(out.relative_to(workspace))
         record["normalization_status"] = "normalized_cached"
         return record
@@ -158,6 +219,7 @@ def convert_one(conv: Converters, workspace: Path, src: Path) -> dict:
 
     if status == "normalized":
         record["normalized_path"] = str(out.relative_to(workspace))
+        _atomic_write_text(cache, json.dumps(expected_cache, ensure_ascii=False, sort_keys=True))
     record["normalization_status"] = status
     record["normalization_error"] = err
     return record
@@ -180,6 +242,7 @@ def main() -> int:
     p.add_argument("--source-root", default="原始资料", help="source root name or path")
     p.add_argument("--file", help="normalize a single file instead of a root")
     p.add_argument("--status", action="store_true", help="print converter status and exit")
+    p.add_argument("--untrusted", action="store_true", help="reject unsafe external inputs before conversion")
     args = p.parse_args()
 
     workspace = Path(args.workspace).resolve()
@@ -204,6 +267,9 @@ def main() -> int:
 
     if args.file:
         targets = [Path(args.file).resolve()]
+        policy_root = (workspace / args.source_root).resolve()
+        if not policy_root.exists():
+            policy_root = Path(args.source_root).resolve()
     else:
         src_root = (workspace / args.source_root).resolve()
         if not src_root.is_absolute() or not src_root.exists():
@@ -212,8 +278,24 @@ def main() -> int:
             print(f"source root not found: {src_root}", file=sys.stderr)
             return 2
         targets = scan_source_root(src_root)
+        policy_root = src_root
 
-    results = [convert_one(conv, workspace, t) for t in targets if t.is_file()]
+    results = []
+    for target in targets:
+        if not (target.is_file() or target.is_symlink()):
+            continue
+        reason = reject_reason(target, policy_root) if args.untrusted else None
+        if reason:
+            results.append({
+                "path": str(target),
+                "type": target.suffix.lower(),
+                "normalized_path": None,
+                "normalization_status": "rejected_untrusted_input",
+                "normalization_error": reason,
+            })
+            continue
+        if target.is_file():
+            results.append(convert_one(conv, workspace, target))
 
     # Ensure normalized dir exists even if nothing converted (for structure).
     (workspace / NORMALIZED_DIR).mkdir(parents=True, exist_ok=True)

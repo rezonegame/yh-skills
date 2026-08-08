@@ -3,6 +3,23 @@
 > 用途：承接 `SKILL.md` 中下沉的 Path A/B/H/C/D/E 构建细节与组装命令。先在 `SKILL.md` 完成路径选择、内容结构化、设计确认和预检，再按本文件执行具体路径。
 > 命令约定：除非特别说明，先 `cd` 到 `yh-slides` 技能根目录；所有脚本都用 `scripts/...` 相对路径，避免写死某个 CLI 的 home 目录。
 
+## Bento Adapter / 2D-B: Offline Editable Single-file Deck
+
+仅当用户明确需要浏览器编辑、单文件离线交付、评论回流或有意义的
+state/morph 时使用。它不是 PPTX 路径，也不替代 Path C/D/E 的 bespoke
+网页制作。先完成 `deck-plan.json`，再写 `bento-deck.json`；生成器只写入
+固定本地 shell 的 `#bento-doc`，不会创建协作链接或联网下载资源。
+
+```bash
+python scripts/validate_bento_deck.py bento-deck.json --deck-plan deck-plan.json
+python scripts/create_bento_deck.py bento-deck.json output/{项目名}.bento.html --deck-plan deck-plan.json
+python scripts/extract_bento_comments.py output/{项目名}.bento.html --output review-comments.json
+python scripts/check_offline_ready.py
+```
+
+详细契约与安全边界见 `references/contracts/bento-deck.md` 和
+`references/integrations/bento-deck-adapter.md`。
+
 ## Path A / 2A: Simple HTML -> Editable PPTX
 
 Path A 服务于 `2A 通用可编辑 PPTX（简易 HTML 转换）`。这里的 HTML 是 PPTX 中间稿，不是网页最终作品；生成关键页插画，制作受限 HTML 幻灯片，用 `html2pptx` 转成可编辑 PPTX。

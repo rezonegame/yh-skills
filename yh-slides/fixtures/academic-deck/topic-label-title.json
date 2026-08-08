@@ -1,0 +1,30 @@
+{
+  "title": "社交媒体虚假信息检测技术综述",
+  "slides": [
+    {
+      "title": "研究背景",
+      "body": "社交媒体上虚假信息传播速度是真实信息的 6 倍（Vosoughi et al., 2018）。现有检测方法可分为基于内容、基于传播网络和基于用户行为三类。",
+      "visual": "概念图：虚假信息传播路径"
+    },
+    {
+      "title": "实验设计",
+      "body": "使用 FakeNewsNet 和 PHEME 两个公开基准数据集。评估指标包括准确率、F1 和 AUC-ROC。",
+      "visual": "表格：数据集统计信息"
+    },
+    {
+      "title": "实验结果",
+      "body": "图表：五种方法在两个数据集上的 F1 和 AUC-ROC 对比。基于 BERT 的方法在 FakeNewsNet 上取得最优 F1=0.92。",
+      "visual": "柱状图：方法对比"
+    },
+    {
+      "title": "局限性与未来方向",
+      "body": "当前方法对多模态虚假信息的处理能力有限，且缺乏跨平台泛化验证。未来需探索视觉-语言联合理解模型。",
+      "visual": "示意图：多模态检测框架"
+    },
+    {
+      "title": "参考文献",
+      "body": "Vosoughi, S., et al. (2018). The spread of true and false news online. Science 2018.\nShu, K., et al. (2020). FakeNewsNet: A Data Repository for Fake News Detection. IEEE Access 2020.",
+      "visual": "无"
+    }
+  ]
+}

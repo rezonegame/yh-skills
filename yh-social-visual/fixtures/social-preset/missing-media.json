@@ -1,0 +1,17 @@
+{
+  "preset": "landscape-generic",
+  "target_ratio": "16:9",
+  "colors": ["#ffffff", "#000000"],
+  "text_blocks": [
+    {
+      "id": "title",
+      "x": 0.10,
+      "y": 0.10,
+      "w": 0.80,
+      "h": 0.20,
+      "color": "#000000",
+      "background": "#ffffff"
+    }
+  ],
+  "media_refs": ["assets/missing-hero.png", "icons/nonexistent.svg"]
+}

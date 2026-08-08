@@ -1,6 +1,6 @@
 # Upstream Sources
 
-`yh-slides` has absorbed selected upstream slide-skill assets for offline use. These sources are now local `yh-slides` assets; they do not replace Step 0 intent discovery, route recommendation, checkpoints, or QA gates.
+`yh-slides` has absorbed selected upstream slide-skill assets and independently restated selected methods for offline use. Asset sources are local `yh-slides` files; method-only sources add no external runtime. Neither replaces Step 0 intent discovery, route recommendation, checkpoints, or QA gates.
 
 | Source | Pinned commit | License | Local path | Primary use |
 |---|---|---|---|---|
@@ -8,6 +8,9 @@
 | `op7418/guizang-ppt-skill` | `82fe5ae129e8c2a12e1155fcabed6703342749d6` | AGPL-3.0 | `templates/html-decks/guizang`, `assets/screenshot-backgrounds/guizang`, `references/provenance/` | Magazine and Swiss HTML deck seeds, layouts, themes, screenshot framing, Swiss validator |
 | `lewislulu/html-ppt-skill` | `f3a8435d3901697d5ac5e64d356c933637e43107` | MIT | `templates/html-decks/html-ppt`, `references/provenance/` | Static HTML themes, layouts, full-deck templates, runtime, animations, presenter mode |
 | `helloianneo/ian-handdrawn-ppt` | `b2cc5f303337e5470fd6ac2870d261a43b218439` | MIT | `assets/style-samples/ian-handdrawn-technical-anchor.png`, `references/aesthetics/ian-handdrawn-technical.md` | Ian 中文手绘技术解释的视觉锚点、语义页型、2B/2C prompt 与 QA 方法 |
+| `Gabberflast/academic-pptx-skill` | `9f2b703ffe8d1449851617665ab1ffb3516d54ac` | MIT root license; metadata conflict noted | `references/contracts/academic-deck.md` | Academic argument, evidence, timing and Q&A methods; no code/PDF copied |
+| `chuspeeism/dashi-ppt-skill` | `7cb23347f91cda1a5519eafc8c040704e389535a` | AGPL-3.0; proprietary export exception | `references/aesthetics/content-layout-candidates.md` | Method-only content/layout discipline; no code, themes, assets or runtime copied |
+| `nyblnet/bento` | `f51795b8e71496b11e13e53ce3f4c8a97a72a699` | MIT | `templates/html-decks/bento/`, `scripts/*bento*`, `references/contracts/bento-deck.md` | Optional `2D-B` local editable single-file deck adapter; shell is pinned and telemetry-stripped |
 
 ## Provenance Rules
 
@@ -20,6 +23,9 @@
 - Keep license files in `assets/external-licenses/`.
 - Keep Ian's MIT license and NOTICE attribution with the renamed style anchor; the image is a visual calibration asset, not local original artwork or deck content.
 - AGPL assets from `guizang-ppt-skill` must remain clearly attributed. Do not paste AGPL code into unmarked local files.
+- `academic-pptx-skill` is method-level because its root MIT license conflicts with proprietary wording in its skill metadata; do not copy its code snippets or PDF guide.
+- `dashi-ppt-skill` is method-only. Do not copy its AGPL themes/runtime or proprietary export component into `yh-slides`.
+- `bento` is a vendored release shell, not a default runtime: retain its notices, do not update it automatically, and do not reintroduce analytics, CDN dependencies or collaboration keys.
 
 ## Local Runtime Notes
 

@@ -4,7 +4,7 @@
 
 ## 两层命名
 
-`2A/2B/2C/2D` 是用户侧的产物选项，回答“我要交付什么”。`2A-S`、`2A-T`、`2D-P` 是在原产物体系下新增的高级/专项分支：只在复杂原生 PPTX、已有 PPTX 模板复用、演讲者模式等明确需求中推荐。
+`2A/2B/2C/2D` 是用户侧的产物选项，回答“我要交付什么”。`2A-S`、`2A-T`、`2D-P`、`2D-B` 是在原产物体系下新增的高级/专项分支：只在复杂原生 PPTX、已有 PPTX 模板复用、演讲者模式、本地可编辑单文件等明确需求中推荐。
 
 `Path A/B/H/C/D/E` 是内部执行路径，回答“我用什么制作工艺完成它”。
 
@@ -21,6 +21,7 @@
 | `2C 视觉底图 + 可编辑文字 PPTX` | `Path H（混合型 PPTX）` | AI 生成无正文文字整页底图，PPT 原生文本框承担标题、正文、题目和答案 | `.pptx` |
 | `2B-R 可编辑重建` | `FigEdit Reconstruction` | 已有位图经 OCR/CV 测量、Agent 语义拆解、SVG 与 DrawingML 重建 | `.pptx` + SVG + Manifest + 质量报告 |
 | `2D 多功能 HTML 演示` | `Path C / D / E` | HTML 是最终作品，可做单文件网页、动画配音或 React 交互 | `.html` / 静态网页 |
+| `2D-B Bento Deck` | `Bento Adapter` | 固定本地 shell + 结构化文档，浏览器内可编辑，含 notes、评论、状态/morph | `.bento.html` |
 | `2D-P HTML 演讲者模式` | `Presenter Mode` | HTML 最终作品 + hidden notes + S 键 presenter window | `.html` / 静态网页 |
 
 ## 2A 和 2D 的边界
@@ -45,6 +46,7 @@
 - `Path D`: 动画 + 配音 HTML，适合自动播放、课堂导览、视频化演示。
 - `Path E`: 本地 React/TSX 演示工程，适合长期维护、复杂交互、组件复用和静态部署。
 - `Presenter Mode / 2D-P`: HTML 演讲者模式，适合现场演讲、技术分享、培训和需要逐字稿/提词器的场景；它可基于 Path C/D/E 的 HTML 资产，但必须额外满足 notes 和 presenter QA。
+- `Bento Adapter / 2D-B`: 固定的本地单文件可编辑 deck；仅在需要浏览器编辑、评论回流或状态/morph 时使用，不替代 Path C/D/E，也不承诺 PPTX。
 
 ## 2A 高级分支
 

@@ -31,6 +31,7 @@
 import { chromium } from 'playwright';
 import fs from 'fs/promises';
 import path from 'path';
+import { localFileUrl, restrictContextToLocalRoots } from './browser_safety.mjs';
 
 function parseArgs() {
   const args = { width: 1920, height: 1080 };
@@ -62,9 +63,10 @@ async function main() {
 
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width, height } });
+  await restrictContextToLocalRoots(ctx, [path.dirname(htmlAbs)]);
   const page = await ctx.newPage();
 
-  await page.goto('file://' + htmlAbs, { waitUntil: 'networkidle' });
+  await page.goto(localFileUrl(htmlAbs), { waitUntil: 'networkidle' });
   await page.waitForTimeout(2500);  // 等 Google Fonts + deck-stage init
 
   // 核心修复：把 section 从 shadow DOM slot 拔出来摊平

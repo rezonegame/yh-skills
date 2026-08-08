@@ -1,0 +1,45 @@
+{
+  "schema": "yh-skills.provenance.v1",
+  "reviewed_at": "2026-08-07",
+  "skills": {
+    "yh-document-studio": [
+      {"name": "kami", "url": "https://github.com/tw93/kami.git", "license": "MIT", "role": "absorbed", "absorbed_commit": null, "reviewed_commit": "8fb9f26dc7a88a9f3c7daad65db93d17a2f89362", "baseline_commit_status": "historic import commit was not recorded; reconstruct before public redistribution", "distribution": "private-only"},
+      {"name": "anthropics/skills frontend-design", "url": "https://github.com/anthropics/skills.git", "license": "Apache-2.0", "role": "method-only", "absorbed_commit": null, "reviewed_commit": "b29e7cf65e5cb78a5ac33d582270551bc74a14eb", "distribution": "reviewed"},
+      {"name": "anthropics/skills theme-factory", "url": "https://github.com/anthropics/skills.git", "license": "Apache-2.0", "role": "method-and-colour-reference", "absorbed_commit": null, "reviewed_commit": "b29e7cf65e5cb78a5ac33d582270551bc74a14eb", "distribution": "reviewed"}
+    ],
+    "yh-humanizer": [
+      {"name": "blader/humanizer", "url": "https://github.com/blader/humanizer.git", "license": "unknown", "role": "method-reference", "absorbed_commit": null, "reviewed_commit": "523374dee72d67c7b2b5f858ea0094ffda49c3ac", "distribution": "reviewed"},
+      {"name": "ai-zixun/humanizer-zh", "url": "https://github.com/ai-zixun/humanizer-zh.git", "license": "unknown", "role": "method-reference", "absorbed_commit": null, "reviewed_commit": "f75f1ac9735c4f10da1bba0148e0ea7228c5c3b3", "distribution": "reviewed"},
+      {"name": "hardikpandya/stop-slop", "url": "https://github.com/hardikpandya/stop-slop.git", "license": "unknown", "role": "method-reference", "absorbed_commit": null, "reviewed_commit": "8da1f030185bdfe8471220585162991eaeb970e9", "distribution": "reviewed"},
+      {"name": "Aboudjem/humanizer-skill", "url": "https://github.com/Aboudjem/humanizer-skill", "license": "MIT", "role": "local-only", "absorbed_commit": null, "reviewed_commit": null, "distribution": "private-only pending release review"}
+    ],
+    "yh-image-inspirer": [
+      {"name": "freestylefly/awesome-gpt-image-2", "url": "https://github.com/freestylefly/awesome-gpt-image-2.git", "license": "MIT", "role": "selective templates-and-cases", "absorbed_commit": null, "reviewed_commit": "76fcd0e6b3961ef2b041547aac654f1efd1ef270", "distribution": "private-only pending asset review"},
+      {"name": "buluslan/gpt-image2-ecommerce", "url": "https://github.com/buluslan/gpt-image2-ecommerce.git", "license": "unknown", "role": "selective templates-and-method", "absorbed_commit": null, "reviewed_commit": "4422c530b4fa873f5c398190fc8071a518bdd17e", "distribution": "reviewed"},
+      {"name": "yinyo-image2-prompt", "url": "https://github.com/xiaoshiyilangzhao1996-droid/yinyo-image2-prompt.git", "license": "unknown", "role": "method-reference", "absorbed_commit": null, "reviewed_commit": "d29cbe39a848f1c6cc37068a4e2130719d1b732d", "distribution": "reviewed"},
+      {"name": "nexu-io/open-design", "url": "https://github.com/nexu-io/open-design.git", "license": "Apache-2.0", "role": "selective patterns-and-reference-images", "absorbed_commit": null, "reviewed_commit": "e0d91046dd8dfe7ab9b8f17d0de127c6f5183e4e", "distribution": "private-only pending asset review"},
+      {"name": "nevertoday/100-layout-compositions", "url": "https://github.com/nevertoday/100-layout-compositions.git", "license": "CC-BY-4.0", "role": "layout vocabulary-and-reference-images", "absorbed_commit": null, "reviewed_commit": "deea732fb0834c12a8c638e169ed0604a87f9b21", "distribution": "private-only pending asset review"},
+      {"name": "gc-minimal-zine-poster", "url": "https://github.com/LiamGvchi/gc-minimal-zine-poster", "license": "MIT", "role": "local-only", "absorbed_commit": null, "reviewed_commit": null, "distribution": "private-only pending release review"}
+    ],
+    "yh-local-knowledge": [
+      {"name": "book-to-skill", "url": "https://github.com/virgiliojr94/book-to-skill.git", "license": "MIT", "role": "method-only reference", "absorbed_commit": null, "reviewed_commit": "c18b0fb2db8b3f3aeb0900ea97db2189764f642c", "distribution": "no code-or-content absorption"}
+    ],
+    "yh-slides": [
+      {"name": "ppt-master", "url": "https://github.com/hugohe3/ppt-master.git", "license": "MIT", "role": "selectively absorbed", "absorbed_commit": "328388d4e76778535676056f49be8f28a08e79b2", "reviewed_commit": "a7ee83c75f60016c8a09f257d06424fed49b1c00", "distribution": "attributed"},
+      {"name": "guizang-ppt-skill", "url": "https://github.com/op7418/guizang-ppt-skill.git", "license": "AGPL-3.0", "role": "selectively absorbed", "absorbed_commit": "82fe5ae129e8c2a12e1155fcabed6703342749d6", "reviewed_commit": "929c2ecb63a22b54d400c4911ed70bf96c2b355d", "distribution": "attribution-and-copyleft-review-required"},
+      {"name": "html-ppt-skill", "url": "https://github.com/lewislulu/html-ppt-skill.git", "license": "MIT", "role": "selectively absorbed", "absorbed_commit": "f3a8435d3901697d5ac5e64d356c933637e43107", "reviewed_commit": "f3a8435d3901697d5ac5e64d356c933637e43107", "distribution": "attributed"},
+      {"name": "ian-handdrawn-ppt", "url": "https://github.com/helloianneo/ian-handdrawn-ppt.git", "license": "MIT", "role": "selectively absorbed", "absorbed_commit": "b2cc5f303337e5470fd6ac2870d261a43b218439", "reviewed_commit": "b2cc5f303337e5470fd6ac2870d261a43b218439", "distribution": "attributed"},
+      {"name": "dashi-ppt-skill", "url": "https://github.com/chuspeeism/dashi-ppt-skill.git", "license": "AGPL-3.0 with proprietary export engine", "role": "method-only reference", "absorbed_commit": null, "reviewed_commit": "ff3a7330e4967147a40310669703b911fb1f708a", "distribution": "no code-or-asset absorption"},
+      {"name": "Tosea.ai template preview library", "url": "https://tosea.ai/", "license": "mixed/unknown", "role": "local-only", "absorbed_commit": null, "reviewed_commit": null, "distribution": "private-only pending asset review"},
+      {"name": "tjxj/z-skills wanghong handwritten PPT", "url": "https://github.com/tjxj/z-skills", "license": "MIT", "role": "local-only", "absorbed_commit": null, "reviewed_commit": null, "distribution": "private-only pending commit verification"}
+    ],
+    "yh-social-visual": [
+      {"name": "guizang-social-card-skill", "url": "https://github.com/op7418/guizang-social-card-skill.git", "license": "AGPL-3.0", "role": "selectively derived subsystem", "absorbed_commit": "032782ff67e0a20416bae8159f67000c1e4e7ae2", "reviewed_commit": "cf4b810fac1c73fb65a2bb31d8c9278d82cbc4c5", "distribution": "attribution-and-copyleft-review-required"},
+      {"name": "ian-xiaohei-illustrations", "url": "https://github.com/helloianneo/ian-xiaohei-illustrations.git", "license": "MIT", "role": "method-only reference", "absorbed_commit": null, "reviewed_commit": "91b560849e8f883922cc2fa8a358a668caa94105", "distribution": "attributed"},
+      {"name": "ian-xiaohei-scenes", "url": "https://github.com/helloianneo/ian-xiaohei-scenes.git", "license": "MIT", "role": "method-only reference", "absorbed_commit": null, "reviewed_commit": "3555bcb9ecaba284aec77ee492fdfd21c52faae3", "distribution": "attributed"}
+    ],
+    "yh-style-profiler": [
+      {"name": "user-supplied yh-skills archive / Hermes workflow #11", "url": "local://C:/Users/wudao/Downloads/yh-skills.tar.gz", "license": "unknown", "role": "local-only", "absorbed_commit": null, "reviewed_commit": null, "distribution": "private-only"}
+    ]
+  }
+}

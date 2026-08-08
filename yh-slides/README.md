@@ -2,7 +2,7 @@
 
 演示文稿端到端制作技能。支持意图驱动入口、PPTX/HTML/React 多产物路径、多种视觉风格与 AI 图片生成。
 
-当前版本增加了完整本地资产库模式：`ppt-master`、`guizang-ppt-skill`、`html-ppt-skill` 的模板、主题、布局、运行时、校验器和必要脚本已吸收到 `templates/`、`assets/`、`scripts/` 和 `references/provenance/`，并通过 `references/meta/asset-registry.json` 按需发现。模板库只增强 Step 4 的推荐，不替代 `yh-slides` 原有 Step 0 强引导入口。
+当前版本增加了完整本地资产库模式：`ppt-master`、`guizang-ppt-skill`、`html-ppt-skill` 和可选 `bento` 适配器的本地模板、主题、布局、运行时、校验器和必要脚本已吸收到 `templates/`、`assets/`、`scripts/` 和 `references/provenance/`，并通过 `references/meta/asset-registry.json` 按需发现。模板库只增强 Step 4 的推荐，不替代 `yh-slides` 原有 Step 0 强引导入口。
 
 底层协作精神吸收自 `huashu-slides` 的启发式共创方法。
 
@@ -15,13 +15,15 @@
 
 这些项目只作为已吸收的方法来源记录；除明确声明的独立 FigEdit 技能联动外，`yh-slides` 的运行流程、模板方法和质量检查必须在本技能目录内离线可用，不依赖外部仓库、外部索引资产或远程 slide runtime。
 
+学术演讲现提供 `academic-deck.json` v2：加入论证模式、研究问题、证据引用、单 exhibit 结果页、时间预算、结论与 Q&A 附录校验。版式选择同时支持“内容先冻结、按容量和结构家族比较候选”的方法层。两项增强分别参考 `academic-pptx-skill` 与 `dashi-ppt-skill`；后者仅方法级吸收，不含其 AGPL 主题、编辑器、runtime 或专有导出组件。
+
 说明：前端运行资源与文档引用已本地化；图片生成、图片搜索等 API 后端仍然需要各自的网络 API 端点，这属于功能调用而不是静态引用资产。
 
 命令约定：除非单独说明，先进入 `yh-slides` 技能根目录再运行命令，所有脚本都使用 `scripts/...` 相对路径。复制到其他 CLI 时保持 `scripts/`、`references/`、`assets/` 三个目录结构即可。
 
 依赖约定：Path A 的 `html2pptx.js` 依赖 `pptxgenjs` 与 `cheerio`，已通过技能根目录的 `package.json` 本地化。首次使用或迁移到新机器时，在技能根目录运行 `npm install`；若 `node_modules/` 已随技能存在，则可离线直接运行。
 
-配置约定：真实 API key 不放在本技能目录。把 fallback API 配置放到 skills 根目录的 `.yh-skills/.env`，或通过运行环境变量提供；本技能只保留 `.env.example` 作为占位说明。生图默认优先使用当前对话模型 / agent runtime 的原生工具；只有用户指定 API、原生工具不可用、无法稳定落盘或明确失败时，才退到 `.yh-skills/.env` 的 API 后端。
+配置约定：真实 API key 不放在本技能目录。通过运行环境变量提供，或显式设置 `YH_SKILLS_ENV_FILE` 指向私有 env 文件；本技能只保留 `.env.example` 作为占位说明，脚本不会搜索父目录。生图默认优先使用当前对话模型 / agent runtime 的原生工具；只有用户指定 API、原生工具不可用、无法稳定落盘或明确失败时，才退到显式配置的 API 后端。
 
 ---
 
@@ -37,6 +39,7 @@
 | **2B 整图视觉 PPTX** | Path B | 图片型 `.pptx` | 每页完整 AI 图片，文字也可在图里；最强视觉冲击、快速成稿 | — |
 | **2C 视觉底图 + 可编辑文字 PPTX** | Path H | 可编辑 `.pptx` | 无正文文字视觉底图 + PPT 原生文本框；好看且能改字 | — |
 | **2D 多功能 HTML 演示** | Path C / D / E | `.html` / 静态网页 | HTML 是最终作品；单文件网页、动画配音或 React 交互 | `assets/seeds/path-c-*.html` / `path-d-animated-seed.html` |
+| **2D-B Bento Deck** | Bento Adapter | `.bento.html` | 本地单文件、浏览器可编辑、notes/评论/状态/morph；默认离线 | `assets/seeds/path-bento-seed.json` |
 | **2D-P HTML 演讲者模式** | Presenter Mode | `.html` | 本地 HTML + hidden notes + S 键 presenter window，支持当前/下一页/讲稿/计时器 | `templates/html-decks/html-ppt/` |
 | **2B-R 可编辑重建** | FigEdit Reconstruction | 可编辑 `.pptx` + SVG/Manifest/报告 | 已有位图经语义拆解重建为可编辑文字、结构、公式和可替换图片资产 | `scripts/figedit_batch.py` |
 
@@ -49,6 +52,8 @@
 **不知道从哪开始？** → [references/getting-started/quick-start.md](references/getting-started/quick-start.md)
 
 **不知道选哪条路径？** → [references/getting-started/path-selection.md](references/getting-started/path-selection.md)
+
+**做学术答辩 / 论文汇报？** → [references/getting-started/academic-presentation-workflow.md](references/getting-started/academic-presentation-workflow.md)
 
 **出错了？** → [references/constraints/failure-modes.md](references/constraints/failure-modes.md)
 
@@ -183,10 +188,13 @@ Step 8:   评论迭代循环（按文案/视觉/结构/事实/页序归类）
 | `scripts/check_yh_slides_integrity.py` | 检查入口、资产、许可证、索引和关键文档是否完整 |
 | `scripts/check_offline_ready.py` | 扫描 HTML/CSS/JS 是否残留 CDN/远程运行依赖 |
 | `scripts/check_upstream_locks.py` | 审计吸收来源的 upstream lock 是否仍固定在记录的 commit |
+| `scripts/validate_academic_deck.py` | 校验学术 v2 的论证、结果、引用、结论、时间与可访问性契约 |
+| `scripts/validate_bento_deck.py` / `create_bento_deck.py` / `extract_bento_comments.py` | 校验、生成与评论回流 `2D-B` 本地 Bento deck |
 | `references/integrations/diagram-chart-routing.md` | 数据 / 流程 / 架构 / 时间线转图规则 |
 | `references/integrations/local-react-deck-path.md` | 2D / Path E 本地 React Deck |
 | `references/integrations/template-fill-pptx.md` | 2A-T 原生 PPTX 模板填充 |
 | `references/integrations/presenter-mode.md` | 2D-P HTML 演讲者模式 |
+| `references/integrations/bento-deck-adapter.md` | 2D-B 路由、离线边界和工作流 |
 | `references/constraints/visual-qa.md` | 2D / Path C/D/E 视觉截图 QA |
 
 ---
@@ -224,7 +232,7 @@ A: 先走 Step 0 意图启动面板，按目标/产物/素材/协作档位给默
 
 
 **Q: 2A、2B、2C、2D、2B-R 怎么区分？**
-A: 2A 是“简易 HTML 转换成可编辑 PPTX”，最稳最好改；2B 是“整页 AI 图 PPTX”，最好看但基本不可编辑；2C 是“整页无正文文字视觉底图 + PPT 原生文本框”，好看且文字能改；2D 是“多功能 HTML 演示”，HTML 是最终作品；2B-R 是“已有位图经 FigEdit 重建为可编辑 SVG 与原生 PPTX”。
+A: 2A 是“简易 HTML 转换成可编辑 PPTX”，最稳最好改；2B 是“整页 AI 图 PPTX”，最好看但基本不可编辑；2C 是“整页无正文文字视觉底图 + PPT 原生文本框”，好看且文字能改；2D 是“多功能 HTML 演示”，HTML 是最终作品；2D-B 是“本地可编辑的单文件 Bento deck”；2B-R 是“已有位图经 FigEdit 重建为可编辑 SVG 与原生 PPTX”。
 
 **Q: Path C 生成后样式全塌，怎么回事？**
 A: 99% 是发明了种子里没有的 class。运行 [class-preflight.md](references/constraints/class-preflight.md) 的 diff 命令检查。

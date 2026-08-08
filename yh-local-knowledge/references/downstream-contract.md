@@ -143,6 +143,7 @@ sources: [src_001, src_003]
 | 思维导图/图谱包 | 可视化 / 演示 | mermaid 渲染、嵌入演示 |
 | 矛盾专题包 | 深度研究 | 聚焦矛盾点深挖 |
 | 播客脚本包 | 音频制作 / 传播 | TTS 合成或人录 |
+| 知识技能包 | shared-skill-router / domain skills | 先读 topic index，再按主题加载最小参考模块 |
 
 ## 六、不要做的事
 

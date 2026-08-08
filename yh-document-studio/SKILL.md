@@ -21,9 +21,9 @@ description: '基于 kami 的文档排版技能，新增 5 套可切换美学包
 
 > 升级/溯源时查 `SOURCES.md`；kami 原件已备份在 `C:\Users\wudao\SkillsBackup\20260621\kami\`。
 
-**Update check (non-blocking).** At the start of a task, run `bash scripts/check-update.sh`. It does a read-only version check at most once per day and prints one line when a newer kami is available; relay that line to the user, then continue. It sends no data, and fails silently when offline, sandboxed, or without `curl`. Never let it block the work.
+**Maintenance update check.** Do not perform network version checks during user work. Maintainers review the pinned source record in `../../provenance/yh-source-locks.json` on the scheduled upgrade cadence.
 
-**Update check (non-blocking).** At the start of a task, run `bash scripts/check-update.sh`. It does a read-only version check at most once per day and prints one line when a newer kami is available; relay that line to the user, then continue. It sends no data, and fails silently when offline, sandboxed, or without `curl`. Never let it block the work.
+**Environment check.** Before a first PDF/PPTX build on a new machine, run `python scripts/diagnose_environment.py`. It reports missing optional Python packages and the separate native WeasyPrint runtime condition without changing the environment.
 
 ## Step 0 · Load brand profile (if exists)
 
@@ -49,77 +49,16 @@ Skip and fall back to the brand profile defaults if the referenced path does not
 
 ---
 
-## Step 1 · Decide the language
+## Step 1 · Language, intent, and aesthetic
 
-**Match the user's language.** Chinese -> `*.html` / `slides-weasy.html`. English -> `*-en.html` / `slides-weasy-en.html`. Japanese -> CJK path (`.html` / `slides-weasy.html`) as best-effort, JP Mincho first, visual QA before shipping. Korean -> dedicated `*-ko.html` / `slides-weasy-ko.html` family as best-effort, visual QA before shipping. Reference docs are shared English specs.
+Read `references/language-and-intent.md` for language-to-template routing, the silent purpose/audience/constraint/success check, and the five aesthetic packs. Keep these invariants:
 
-When ambiguous (e.g. a one-word command like "resume"), ask a one-liner rather than guess.
+- Match the user's language and verify unsupported languages visually.
+- Default to WeasyPrint HTML/PDF; use PPTX only when editability is required.
+- Ask at most one compact question only when missing information materially changes the deliverable.
+- Apply themes through `scripts/inject-override.py`; do not modify the base templates.
 
-| User language | HTML templates | Slides (PDF default) | Slides (PPTX fallback) |
-|---|---|---|---|
-| Chinese (primary) | `*.html` | `slides-weasy.html` | `slides.py` |
-| English | `*-en.html` | `slides-weasy-en.html` | `slides-en.py` |
-| Japanese (best-effort) | `*.html` | `slides-weasy.html` | `slides.py` |
-| Korean (best-effort) | `*-ko.html` | `slides-weasy-ko.html` | n/a (use `slides-en.py` only if PPTX is required) |
-| Other languages (best-effort) | choose CJK or EN path by script coverage, then verify manually | choose `slides-weasy.html` or `slides-weasy-en.html`, then verify manually | use `slides.py` / `slides-en.py` only if PPTX is required |
-
-> Default to the WeasyPrint HTML path; fall back to PPTX (`slides*.py`) only when the user explicitly needs an editable deck.
-
-Always use `CHEATSHEET.md` and `references/*.md` for design, writing, production, and diagram guidance.
-
-Code blocks with `class="language-*"` are highlighted only when optional `Pygments` is installed in the build environment. Without it, PDFs still render and code blocks stay monochrome.
-
-## Step 1.5 · Intent extraction (silent checklist)
-
-Before choosing a template, verify these four dimensions are clear. Do not ask unless 2+ are missing and cannot be inferred from context.
-
-| Dimension | What to extract | Example |
-|---|---|---|
-| **Purpose** | Why this document exists | Persuade investor vs. align internal team vs. close a candidate |
-| **Audience** | Who reads it, what they already know | Technical CTO (skip basics) vs. non-technical board (explain terms) |
-| **Constraint** | Hard limits on length, format, tone, or delivery | "One page max", "formal English", "print-ready A4" |
-| **Success** | What outcome counts as success | They schedule a meeting / they approve the budget / they understand the architecture |
-
-Rules:
-- If the conversation already answered a dimension, skip it silently.
-- If a dimension can be inferred from the document type (e.g. resume purpose is always "get an interview"), skip it.
-- If 2+ dimensions are genuinely unclear, ask in a single compact question (max 2 sub-questions).
-- Never ask all four as a checklist. This is a background verification, not a form.
-
-## Step 1.6 · Pick the aesthetic (yh-document-studio 新增)
-
-在意图抽取后、选模板前，确定美学包。这是 yh-document-studio 相对 kami 的核心新增能力。
-
-### 5 套美学包
-
-| # | 名称 | 调性 | 适用 | 色源 |
-|---|------|------|------|------|
-| 1 | `parchment-ink` | 温暖纸面 + 墨蓝 + 衬线（**默认 = 原 kami**） | 编辑/出版/正式文档 | kami 原 tokens |
-| 2 | `minimal-mono` | 极简黑白灰（"简单版/裸文"） | 内部备忘、纯文本感、屏幕阅读 | theme-factory modern-minimalist |
-| 3 | `business-cool` | 灰蓝商务冷调 | 报表、研报、估值、商业文档 | theme-factory ocean-depths 调整 |
-| 4 | `editorial-warm` | 赭石棕暖调社论 | 随笔、杂志调、品牌叙事、年度总结 | theme-factory golden-hour |
-| 5 | `natural-essay` | 森林绿鼠尾草自然调 | 可持续/健康/环保/教育类长文 | theme-factory forest-canopy |
-
-> 所有美学包共用 kami 同级字体（CN: TsangerJinKai02，EN: Charter，JA: YuMincho），不用 theme-factory 的廉价系统字体。
-
-### 选择规则
-
-- **用户明确指定** → 直接用（如"用商务风""换个简单版""极简黑白"）。
-- **未指定但内容调性明显** → 推荐最匹配的一套并说明理由，等用户确认：
-  - "商业报告/研报/估值/财务" → 推荐 `business-cool`
-  - "随笔/杂志/品牌故事/年度总结" → 推荐 `editorial-warm`
-  - "环保/健康/可持续/教育" → 推荐 `natural-essay`
-  - "简单版/裸文/纯文本感/内部备忘" → 推荐 `minimal-mono`
-  - 正式编辑/出版/无特殊调性 → `parchment-ink`（默认）
-- **完全无信号** → 默认 `parchment-ink`（= 原 kami），不问。
-
-### 避免 AI slop（借鉴 frontend-design）
-
-选/调美学时避开：Inter/Roboto/Arial 等通用字体、紫色渐变白底、千篇一律的圆角和居中布局、霓虹饱和色（如 `tech-innovation` 风的纯青）。美学要有调性、有意图。
-
-### 如何应用美学
-
-美学切换通过 `scripts/inject-override.py` 在产物 HTML 的 `</head>` 前注入对应 `assets/themes/<name>.css` 实现（覆盖 `:root` + `@page` 背景），**不修改 kami 模板原文件**。具体在 Step 4.x 导出档位时一并执行。
+Always use `CHEATSHEET.md` and the task-relevant references for design, writing, production, and diagrams. Read `references/diagram-selection.md` and run `python scripts/check_diagram_contract.py` before delivering a diagram. Code highlighting is optional and degrades to monochrome when `Pygments` is unavailable.
 
 ## Execution contract
 
@@ -140,7 +79,7 @@ If a change touches `SKILL.md`, templates, scripts, references, or package input
 | "formal letter / 信件 / 辞职信 / 推荐信 / memo" | Letter | `letter.html` | `letter-en.html` | `letter-ko.html` |
 | "portfolio / 作品集 / case studies" | Portfolio | `portfolio.html` | `portfolio-en.html` | `portfolio-ko.html` |
 | "resume / CV / 简历 / 履歴書" | Resume | `resume.html` | `resume-en.html` | `resume-ko.html` |
-| "slides / PPT / deck / 演示" | Slides | `slides-weasy.html` | `slides-weasy-en.html` | `slides-weasy-ko.html` |
+| "slides / PPT / deck / 演示" | Slides | `slides-weasy.html` | `slides-weasy-en.html` | `slides-weasy.html` |
 | "个股研报 / equity report / 估值分析 / investment memo / 股票分析" | Equity Report | `equity-report.html` | `equity-report-en.html` | `equity-report-ko.html` |
 | "更新日志 / changelog / release notes / 版本记录" | Changelog | `changelog.html` | `changelog-en.html` | `changelog-ko.html` |
 | "landing page / 落地页 / 官网 / product page / 产品页" | Landing Page | `landing-page.html` | `landing-page-en.html` | `landing-page-ko.html` |
@@ -155,7 +94,7 @@ If a change touches `SKILL.md`, templates, scripts, references, or package input
 
 > **Documentation pages**: When a landing page grows into a docs or help site, use the doc shell in `references/design.md` Section 11 «Documentation site»: a sticky sidebar nav with a 2px brand rail (not a dark underline), an on-this-page TOC hidden below the tablet breakpoint, a constrained prose measure, and a quiet borderless prev/next pager (text links, not bordered cards). Highlight code at build time with zero runtime JS on a dark code surface; plain code stays the source of truth.
 
-> Slides: default to `slides-weasy.html` / `slides-weasy-en.html` / `slides-weasy-ko.html` (WeasyPrint HTML → PDF). Use `slides.py` / `slides-en.py` only when the user explicitly requires an editable PPTX file. Use `assets/templates/marp/slides-marp(.md|.css)` only when the user explicitly asks for Marp / markdown slides / a deck that lives in a `.md` file.
+> Slides: default to `slides-weasy.html` / `slides-weasy-en.html` (WeasyPrint HTML → PDF). Use `slides.py` / `slides-en.py` only when the user explicitly requires an editable PPTX file. Use `assets/templates/marp/slides-marp(.md|.css)` only when the user explicitly asks for Marp / markdown slides / a deck that lives in a `.md` file.
 
 > Deck recipe: read design.md Section 8 before drafting slides. Sketch title sequence, evidence shape, and image slot before generating or cropping visuals. Keep audience copy separate from visual briefs. Marp-specific constraints live in design.md §8 «Marp variant».
 
@@ -205,6 +144,8 @@ When the user asks for **a diagram inside** a long-doc / portfolio / slide (not 
 | "瀑布图 / waterfall / 收入桥 / revenue bridge / decomposition" | Waterfall | `assets/diagrams/waterfall.html` |
 
 Read `references/diagrams.md` before drawing - it has the selection guide, kami token map, and the AI-slop anti-pattern table. Extract the `<svg>` block from the template and drop it into a `<figure>` inside long-doc / portfolio.
+
+For lightweight inline figures, the self-authored `timeline.svg`, `comparison.svg`, and `process.svg` primitives are also available. Validate bundled or modified primitives with `python scripts/check_diagram_contract.py`.
 
 Before drawing, always ask: **would a well-written paragraph teach the reader less than this diagram?** If no, don't draw.
 
@@ -314,7 +255,7 @@ Default to the WeasyPrint HTML path. Switch to pptx only if the user explicitly 
 
 | Path | Template | When |
 |---|---|---|
-| WeasyPrint HTML → PDF (default) | `slides-weasy.html` / `slides-weasy-en.html` / `slides-weasy-ko.html` | All cases unless PPTX or Marp is required |
+| WeasyPrint HTML → PDF (default) | `slides-weasy.html` / `slides-weasy-en.html` | All cases unless PPTX or Marp is required |
 | python-pptx → PPTX (fallback) | `slides.py` / `slides-en.py` | User explicitly requires editable PPTX |
 | Marp Markdown (variant) | `assets/templates/marp/slides-marp.md` (+ `slides-marp.css`) / `slides-marp-en.md` (+ `slides-marp-en.css`) | User explicitly asks for Marp, "markdown slides", or a `.md` deck. Shipped `.md` is a working demo of Kami Marp itself; copy it, swap content, keep the structure. Renders via local `marp` CLI; not bundled. |
 
@@ -485,60 +426,9 @@ python3 scripts/build.py --check-density   # flags >25% (WARN) / >50% (SPARSE) t
 
 If a body page (not cover, not last page) gets a SPARSE warning, treat it as a draft defect and re-author with the merge rule.
 
-## Step 4.5 · Auto-select output format
+## Step 4.5–4.6 · Output format and export tier
 
-Do not ask the user which format to export. Decide from context:
-
-| Signal | Output | Why |
-|---|---|---|
-| Any document request | HTML + PDF | PDF is the default deliverable, HTML is the source |
-| Slides / PPT / deck | HTML + PDF + PPTX | Presentations need a projectable format |
-| "分享" / "发朋友圈" / "share" / "post" / "preview" | + PNG | Social platforms and messaging need images |
-| "嵌入" / "插图" / "embed in another doc" | PNG only | Used as material inside other documents |
-| User explicitly says a format | Follow the user | Explicit request overrides auto-selection |
-
-PDF always ships for document templates. Landing pages ship as a ready-to-serve static HTML file. PPTX follows slides. PNG follows sharing context. The user should never need to think about formats.
-
-## Step 4.6 · Pick the export tier (yh-document-studio 新增)
-
-build 前明确导出档位。这决定是否注入印刷档 override。详见 `references/print-spec.md`。
-
-### 三档定义
-
-| 档位 | 用途 | 行为 |
-|------|------|------|
-| **屏幕版**（默认） | 屏幕/邮件/网盘阅读的 PDF | 不注入 print override，= 原 kami 行为 |
-| **印刷版（本地）** | 本地/办公/快印店打印 | 注入 `assets/print/print-mode.css`：出血 + 安全区 + 裁切线 |
-| **印刷版（专业）** | 专业印厂（画册/大批量/专色） | 印刷版（本地）基础上，提示用户读 `references/print-spec.md` 第 4 节做 CMYK/PDF-X 后处理 |
-
-### 选择规则
-
-- 用户说"送印/印刷/打印/print-ready" → 问"本地打印还是专业印厂？"，分别走印刷版（本地）/印刷版（专业）。
-- 用户没提印刷 → 默认**屏幕版**，不问。
-- 浏览器打印路径**做不到** CMYK 和 PDF/X-4（只输出 RGB 普通 PDF）；专业印厂场景必须在 `print-spec.md` 第 4 节后处理。如实告知用户这一限制，不要隐瞒。
-
-### 注入命令（build 后、浏览器打印前）
-
-```bash
-# 仅美学包（屏幕版）
-python scripts/inject-override.py <产物.html> --theme <美学包名>
-
-# 美学包 + 印刷档
-python scripts/inject-override.py <产物.html> --theme <美学包名> --print
-
-# parchment-ink（默认美学，空覆盖，脚本自动跳过美学注入）
-python scripts/inject-override.py <产物.html> --print
-```
-
-### 浏览器打印手动步骤（印刷档必读）
-
-注入后用浏览器打开产物 HTML，Ctrl+P 打印对话框**必须**：
-1. 目标：另存为 PDF
-2. 边距：**无**（让 `@page margin:0` 生效）
-3. **取消勾选"页眉和页脚"**（否则破坏出血）
-4. **勾选"背景图形"**（否则 `@page`/body 背景色不打印）
-
-> 印刷档水印（屏幕顶部蓝色条）只在屏幕显示，打印时不出现——它就是来提醒你上面这 4 步的。
+Read `references/export-and-print.md` for automatic format selection and the screen, local-print, and professional-print tiers. Follow an explicit user format request; otherwise infer the deliverables. Be explicit that browser printing does not produce CMYK or PDF/X files.
 
 ## Step 5 · Build & verify
 
@@ -561,38 +451,7 @@ Visual anomalies (tag double rectangle, font fallback, page break issues) -> `pr
 
 ## Fonts
 
-**Chinese**
-- Main serif: TsangerJinKai02-W04.ttf (400 weight) + TsangerJinKai02-W05.ttf (500 weight, real bold)
-- Templates use dual @font-face declarations: W04 for body text, W05 for headings
-- Both files are commercial fonts. Keep them available in the repository for local preview and CDN fallback, but do not bundle them inside Claude Desktop skill ZIPs
-- Fallback chain baked into templates: Source Han Serif SC -> Noto Serif CJK SC -> Songti SC -> STSong -> Georgia
-
-**Japanese (best-effort)**
-- Uses CJK template path, no dedicated `-ja` templates yet
-- JP Mincho-first stack: YuMincho -> Hiragino Mincho ProN -> Noto Serif CJK JP -> Source Han Serif JP -> TsangerJinKai02 -> serif
-- Visually verify line breaks, punctuation rhythm, and emphasis weight before shipping
-
-**Korean (best-effort)**
-- Dedicated `-ko` templates use Source Han Serif K Regular / Medium, with the real OTF family name `Source Han Serif KR` kept in every fallback stack
-- Fallback: Noto Serif KR / Apple SD Gothic Neo / AppleMyungjo / Charter / Georgia
-- The OTFs are OFL-licensed and tracked for local preview / CDN fallback, but excluded from Claude Desktop skill ZIPs to keep the package small
-
-**English**
-- Single serif: Charter (system-bundled, macOS/iOS), used for both headlines and body
-- No separate sans: `--sans: var(--serif)`, one font per page
-- Fallback: Georgia (cross-platform) / Palatino / Times New Roman
-
-Font files next to HTML with relative `@font-face` paths is the most stable setup. `scripts/package-skill.sh` excludes large CJK font files from the Claude Desktop ZIP, so the uploaded package stays under the 6MB package ceiling. Always upload that `package-skill.sh` output, never a hand-zipped checkout (the tracked CJK fonts make it too large and Claude Desktop rejects the upload).
-
-**Font auto-recovery (Claude Desktop)**
-
-Before building Chinese or Korean documents, ensure fonts are present. The script tries multiple CDN sources with retry and size validation:
-
-```bash
-bash scripts/ensure-fonts.sh
-```
-
-It downloads to the XDG user font dir (`${XDG_DATA_HOME:-~/.local/share}/fonts/kami`, override with `KAMI_FONT_DIR`), **not** into the skill's `assets/fonts` -- that keeps the installed skill small so Claude Desktop never trips its size limit. fontconfig scans that dir by default, so WeasyPrint finds `TsangerJinKai02` and `Source Han Serif K` there; online renders fall back to the jsDelivr `@font-face` URL. Run once before building. If all sources fail, the script prints per-language alternatives.
+Read `references/fonts.md` for the CN/EN/JA/KO stacks, fallback rules, packaging constraints, and optional local recovery. Do not fetch fonts during ordinary user work unless the task requires them and the user has authorized network access.
 
 ## Feedback protocol
 

@@ -1,0 +1,26 @@
+{
+  "preset": "portrait-generic",
+  "target_ratio": "9:16",
+  "colors": ["#ffffff", "#000000", "#1a73e8"],
+  "text_blocks": [
+    {
+      "id": "title",
+      "x": 0.12,
+      "y": 0.15,
+      "w": 0.76,
+      "h": 0.10,
+      "color": "#000000",
+      "background": "#ffffff"
+    },
+    {
+      "id": "subtitle",
+      "x": 0.12,
+      "y": 0.30,
+      "w": 0.76,
+      "h": 0.08,
+      "color": "#ffffff",
+      "background": "#1a73e8"
+    }
+  ],
+  "media_refs": []
+}

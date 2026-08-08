@@ -18,6 +18,9 @@ This is the native asset discovery layer after absorbing upstream materials into
 | Native PPTX charts/icons/layouts | `templates/charts/`, `templates/icons/`, `templates/layouts/` | `2A-S / Path S` |
 | HTML themes/layouts/full decks | `templates/html-decks/html-ppt/` | `2D`, `2D-P` |
 | Magazine/Swiss HTML seeds | `templates/html-decks/guizang/` | `2D / Path C` |
+| Bento editable deck shell | `templates/html-decks/bento/` | `2D-B / Bento Deck` |
+| Tosea local template previews | `templates/tosea/` | Style discovery across presentation routes |
+| Wanghong handwritten HTML system | `assets/wanghong/` | Handwritten academic `2D / Path C-D` |
 | Template Fill package | `scripts/template_fill_pptx.py`, `scripts/template_fill_pptx/` | `2A-T` |
 
 ## Schema
@@ -31,7 +34,7 @@ Each asset entry includes:
 | `path` | Path relative to the `yh-slides` root |
 | `route_hint` | Suggested `yh-slides` route |
 | `tags` | Search/recommendation tags |
-| `source.origin` | Original source: `yh-slides`, `ppt-master`, `guizang-ppt-skill`, or `html-ppt-skill` |
+| `source.origin` | Original source: `yh-slides`, `ppt-master`, `guizang-ppt-skill`, `html-ppt-skill`, or `bento` |
 | `source.commit` | Upstream commit when applicable |
 | `source.license` | License/provenance class |
 

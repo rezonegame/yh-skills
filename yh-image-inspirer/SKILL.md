@@ -29,6 +29,12 @@ description: |
 | `db/<类型名>/prompt.md` | 内置本地案例库，按类型检索相似案例；优先用 `rg -n "<关键词>"` 定向读取 |
 | `db/桌游卡牌与版图/prompt.md` | 桌游卡牌、版图、盒面封面、玩家面板、资源板、组件与规则视觉专题案例库 |
 | `references/structured-templates.md` | awesome-gpt-image-2 风格的结构化模板库（29 个模板条目，含 useWhen/guidance/pitfalls） |
+| `references/style-library.json` | 可机器读取的风格族与参数注册表；需要结构化选择时读取 |
+| `references/variation-engine.md` | 系列图或多方案探索的 5 轴变量设计，避免只换颜色的伪变体 |
+| `references/color-engine.md` | 角色化配色、锚色面积和对比度规则 |
+| `references/prompt-compiler.md` | 把 brief 编译为可渲染 prompt 的字段与四段式结构 |
+| `references/style-avoids.md` | 按风格族选择 Hard Avoids，避免通用负面词堆砌 |
+| `references/template-negative-prompts.md` | 模板专项负面约束；只在对应模板命中时读取 |
 | `references/ecommerce-scene-templates.md` | 电商全场景结构化 prompt 模板库（25 个场景模板，含触发词、变量槽位、风格变体、品类适配） |
 | `references/ecommerce-prompt-methodology.md` | 电商 Prompt 写法五原则、Anti-AI 防坑规则、桌游与文创业品类适配、通用组装公式 |
 | `references/awesome-boardgame-cases.md` | 从 awesome-gpt-image-2 精选出的桌游可迁移案例结构 |
@@ -56,6 +62,7 @@ description: |
 | `recipes/ecommerce-poster.md` | 电商展示海报、商品主图、详情页流程 |
 | `recipes/series-generation.md` | 同风格批量生成流程 |
 | `recipes/infographic.md` | 信息图、科普图、拆解图流程 |
+| `recipes/retro-print.md` | 复古版画、图章、旧报纸质感流程；后处理脚本为 `scripts/retro_print.py` |
 | `references/poster-design-fundamentals.md` | 海报设计底层原理：视觉层级（3秒法则）、网格系统、排版规范、色彩策略（60-30-10）、印刷制作规范（DPI/CMYK/出血/纸张）|
 | `references/poster-artist-styles.md` | 20 位海报设计大师风格指南，含完整 Prompt Modifiers |
 | `references/poster-composition-patterns.md` | Mondo 构图模式库（负空间/居中对称/几何框架/层次景深等）|
@@ -63,6 +70,7 @@ description: |
 | `references/layout-composition-patterns.md` | 100 种排版构图文字化模式库（分法/九宫格/黄金分割/框架/网格/透视/动线/对比等），用于把参考图转成 Agent 可调用的版式骨架 |
 | `references/layout-composition-images/` | `nevertoday/100-layout-compositions` 的完整本地参考图：100 张高清原图、100 张缩略图、索引和总览图，CC BY 4.0 |
 | `references/awesome-images/` | 精选离线参考图（61 张），按模板分类：travel/guochao/luxury/food-bev/beauty/breakdown/history + open-design（22 张：game-screenshot/exploded-view/choreography/social-media/cultural/anime），含 INDEX.md 索引 |
+| `references/adoption-decisions.md` | 维护时审查外部方法吸收、测试和回滚边界 |
 
 
 ## 升级前体检与来源治理
@@ -77,6 +85,18 @@ description: |
 如果只是上游已有知识的本地重复表达，优先更新台账、索引和 gap 状态，而不是重复新增文档。
 
 涉及 GPT-Image-2 专项任务时，优先补读 `references/gpt-image2-decision-rules.md`；涉及参考图改造时，优先补读 `references/edit-workflows.md`。
+
+## 导演阶段：从 brief 到 prompt
+
+在真正生成或编辑图片前，按需完成以下编译链；简单任务可以合并步骤，但不能丢掉约束：
+
+1. 读取 `references/contracts/asset-intent.md`，锁定 generate/edit 模式、目标路径、保留项与覆盖权限。
+2. 多方案或系列任务读取 `references/variation-engine.md`，明确哪些轴锁定、哪些轴允许变化。
+3. 需要精确配色时读取 `references/color-engine.md`，为颜色分配功能角色和面积，而不是只写“高级感配色”。
+4. 使用 `references/prompt-compiler.md` 把画布、注意力结构、主体锚点、排版、色彩、质感、情绪和 Hard Avoids 编译成连续的画面描述。
+5. 从 `references/style-avoids.md` 选择对应风格族的避免项；不要把所有负面词一次性塞进 prompt。
+
+不要复制压缩包中的原始上游图片集：本地 `db/` 已按语义分类且包含大量同源素材。新增案例只有完成来源、用途和分类登记后才进入本地库。
 
 
 ## 库级 Metadata 与多库交叉规则

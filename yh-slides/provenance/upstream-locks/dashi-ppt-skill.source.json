@@ -1,0 +1,7 @@
+{
+  "name": "dashi-ppt-skill",
+  "url": "https://github.com/chuspeeism/dashi-ppt-skill.git",
+  "commit": "7cb23347f91cda1a5519eafc8c040704e389535a",
+  "vendored_at": "2026-07-31T00:00:00+08:00",
+  "update_policy": "Pinned method-only audit source; do not copy AGPL themes, code, assets, runtime or the proprietary export component."
+}

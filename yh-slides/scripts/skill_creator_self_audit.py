@@ -51,7 +51,7 @@ def main() -> int:
     )
     check(
         "new paths exposed without replacing originals",
-        all(term in skill for term in ["2A-S", "2A-T", "2D-P", "2A 通用可编辑", "2B 整图", "2C 视觉底图", "2D 多功能"]),
+        all(term in skill for term in ["2A-S", "2A-T", "2D-P", "2D-B", "2A 通用可编辑", "2B 整图", "2C 视觉底图", "2D 多功能"]),
         "old and new path labels coexist",
         failures,
     )
@@ -67,7 +67,7 @@ def main() -> int:
         check(
             "asset registry covers local and absorbed sources",
             registry.get("asset_count", 0) > 1000
-            and all(src in origins for src in ["ppt-master", "guizang-ppt-skill", "html-ppt-skill", "yh-slides"]),
+            and all(src in origins for src in ["ppt-master", "guizang-ppt-skill", "html-ppt-skill", "bento", "yh-slides"]),
             f"asset_count={registry.get('asset_count')}, origins={sorted(origins)}",
             failures,
         )
@@ -81,11 +81,17 @@ def main() -> int:
                 "provenance/upstream-locks/html-ppt-skill.source.json",
                 "provenance/upstream-locks/guizang-ppt-skill.source.json",
                 "provenance/upstream-locks/ian-handdrawn-ppt.source.json",
+                "provenance/upstream-locks/academic-pptx-skill.source.json",
+                "provenance/upstream-locks/dashi-ppt-skill.source.json",
+                "provenance/upstream-locks/bento.source.json",
                 "assets/external-licenses/ppt-master-MIT.txt",
                 "assets/external-licenses/html-ppt-skill-MIT.txt",
                 "assets/external-licenses/guizang-ppt-skill-AGPL-3.0.txt",
                 "assets/external-licenses/ian-handdrawn-ppt-MIT.txt",
                 "assets/external-licenses/ian-handdrawn-ppt-NOTICE.md",
+                "assets/external-licenses/academic-pptx-skill-MIT.txt",
+                "assets/external-licenses/dashi-ppt-skill-AGPL-3.0-method-only.md",
+                "assets/external-licenses/bento-MIT.txt",
             ]
         ),
         "upstream locks and required licenses present",
@@ -109,14 +115,14 @@ def main() -> int:
     q = read("references/constraints/quality-checklist.md")
     check(
         "quality checklist covers new paths",
-        all(term in q for term in ["2A-S / Path S", "2A-T / Template Fill", "2D-P / Presenter Mode"]),
-        "quality-checklist has dedicated sections for 2A-S, 2A-T, 2D-P",
+        all(term in q for term in ["2A-S / Path S", "2A-T / Template Fill", "2D-P / Presenter Mode", "2D-B / Bento Deck"]),
+        "quality-checklist has dedicated sections for 2A-S, 2A-T, 2D-P, 2D-B",
         failures,
     )
     workflows = read("references/paths/path-workflows.md")
     check(
         "workflow docs cover new execution paths",
-        all(term in workflows for term in ["Path S / 2A-S", "Template Fill / 2A-T", "Presenter Mode / 2D-P"]),
+        all(term in workflows for term in ["Path S / 2A-S", "Template Fill / 2A-T", "Presenter Mode / 2D-P", "Bento Adapter / 2D-B"]),
         "path-workflows includes new execution chains",
         failures,
     )
@@ -165,6 +171,26 @@ def main() -> int:
         all(term in ian_reference for term in ["2B / Path B", "2C / Path H", "Required text only", "不新增模式或路径"])
         and exists("assets/style-samples/ian-handdrawn-technical-anchor.png"),
         "Ian style contract and attributed visual anchor are present",
+        failures,
+    )
+    academic_reference = read("references/contracts/academic-deck.md")
+    candidate_reference = read("references/aesthetics/content-layout-candidates.md")
+    check(
+        "academic and layout-method integrations stay path-neutral",
+        all(term in academic_reference for term in ["structured_argument", "visual_narrative", "references", "appendix"])
+        and all(term in candidate_reference for term in ["canonical content", "capacity", "composition family"])
+        and exists("references/meta/academic-and-dashi-integration.md"),
+        "academic v2 and Dashi-derived method layer are documented without a new runtime path",
+        failures,
+    )
+    bento_reference = read("references/contracts/bento-deck.md")
+    bento_shell = ROOT / "templates/html-decks/bento/Bento_Slides.bento.html"
+    check(
+        "Bento adapter remains local and explicitly scoped",
+        all(term in bento_reference for term in ["yh_slides_bento_deck.v1", "allow_external_media", "collaboration"])
+        and exists("references/integrations/bento-deck-adapter.md")
+        and bento_shell.exists(),
+        "Bento contract, adapter guide and pinned local shell present",
         failures,
     )
     remote_runtime = re.compile(

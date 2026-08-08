@@ -8,7 +8,7 @@
 
 - **运行时原生图片能力不是 API key**。Codex Image2 等 agent-native backend 属于当前 runtime 暴露的工具能力，不能被 `scripts/generate_image.py` 当作普通 HTTP API 调用。
 - **Gemini / Imagen 是脚本后端**。只要配置 `GEMINI_API_KEY`，就可以在任意 CLI、容器、自动化任务中通过 `generate_image.py` 批量生成、重试、断点续传。
-- **默认推荐：原生优先，API 兜底**。在任何 CLI / agent 环境中，只要存在可用的原生生图工具，就优先使用原生工具；只有用户明确指定 API、原生工具不可用、无法稳定落盘或原生工具明确失败时，才使用 `.yh-skills/.env` 中的 API key 调用 Gemini / Imagen。
+- **默认推荐：原生优先，API 兜底**。在任何 CLI / agent 环境中，只要存在可用的原生生图工具，就优先使用原生工具；只有用户明确指定 API、原生工具不可用、无法稳定落盘或原生工具明确失败时，才使用运行环境变量或显式 `YH_SKILLS_ENV_FILE` 中的 API key 调用 Gemini / Imagen。
 
 ---
 

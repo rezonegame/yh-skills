@@ -1,0 +1,13 @@
+{
+  "name": "bento",
+  "url": "https://github.com/nyblnet/bento.git",
+  "commit": "f51795b8e71496b11e13e53ce3f4c8a97a72a699",
+  "license": "MIT",
+  "vendored_at": "2026-08-01T00:00:00+08:00",
+  "release_artifact": "https://bento.page/releases/slides/Bento_Slides.bento.html",
+  "original_sha256": "B35BC345496ED3ABDBD040DC65F4BC776E55CE515CC973AACDC569A3D486790A",
+  "patched_sha256": "A417D7D242EDEB35B1AF483D506DFFBEA71C848FF9B5754A70B7ACFA603734AB",
+  "local_artifact": "templates/html-decks/bento/Bento_Slides.bento.html",
+  "local_patch": "Removed the Cloudflare Insights module beacon so the vendored shell satisfies yh-slides offline-runtime policy; retained embedded third-party notices.",
+  "update_policy": "Manual review only: compare source/release/format/license notices, scan for telemetry or remote runtime, record original and patched hashes, then run the Bento and full yh-slides checks."
+}
