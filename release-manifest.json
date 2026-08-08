@@ -1,0 +1,33 @@
+{
+  "schema": "yh-skills.release-manifest.v1",
+  "version": "2026.08.07-local-private",
+  "release_track": "private-only",
+  "generated_at": "2026-08-07",
+  "scope": [
+    "yh-document-studio",
+    "yh-humanizer",
+    "yh-image-inspirer",
+    "yh-local-knowledge",
+    "yh-slides",
+    "yh-social-visual",
+    "yh-style-profiler"
+  ],
+  "required_checks": [
+    "python scripts/validate_yh_skills.py --provenance",
+    "python -m unittest yh-slides/scripts/tests/test_validate_design_brief.py yh-slides/scripts/tests/test_validate_deck_plan.py yh-slides/scripts/tests/test_svg_path_safety.py yh-local-knowledge/scripts/tests/test_normalize.py yh-local-knowledge/scripts/tests/test_input_policy.py yh-local-knowledge/scripts/tests/test_content_safety.py",
+    "python yh-slides/scripts/check_upstream_locks.py",
+    "python yh-slides/scripts/check_yh_slides_integrity.py",
+    "node yh-social-visual/scripts/check-skill.mjs",
+    "python yh-humanizer/scripts/validate_factuality_cases.py",
+    "python -m py_compile yh-style-profiler/scripts/analyze-samples.py yh-style-profiler/scripts/self-check.py",
+    "python scripts/validate_github_upgrade_contracts.py"
+  ],
+  "public_release_blockers": [
+    "yh-image-inspirer has 700 nonredistributable or unverified image assets",
+    "historic kami import commit is not yet reconstructed",
+    "repository working tree must be recreated from a trusted Git baseline before deterministic public packaging",
+    "Tosea preview assets and yh-style-profiler source provenance remain private-only pending release review"
+  ],
+  "provenance": "provenance/yh-source-locks.json",
+  "asset_audit": "yh-image-inspirer/scripts/audit_assets.py --strict"
+}

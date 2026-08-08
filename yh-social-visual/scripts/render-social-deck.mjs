@@ -4,6 +4,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { loadPlaywright } from "./lib/playwright-loader.mjs";
 import { browserLaunchOptions } from "./lib/browser-options.mjs";
+import { restrictContextToLocalRoots } from "./lib/browser-safety.mjs";
 
 const taskDir = process.argv[2];
 if (!taskDir) {
@@ -27,7 +28,9 @@ try {
 const { chromium } = loadPlaywright();
 await fs.mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch(browserLaunchOptions());
-const page = await browser.newPage({ viewport: { width: 2400, height: 1920 }, deviceScaleFactor: 1 });
+const context = await browser.newContext({ viewport: { width: 2400, height: 1920 }, deviceScaleFactor: 1 });
+await restrictContextToLocalRoots(context, [root]);
+const page = await context.newPage();
 
 try {
   await page.goto(pathToFileURL(indexPath).href, { waitUntil: "networkidle" });

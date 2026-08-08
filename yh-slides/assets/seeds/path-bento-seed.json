@@ -1,0 +1,31 @@
+{
+  "schema": "yh_slides_bento_deck.v1",
+  "title": "Bento 适配器样稿",
+  "size": {"width": 1280, "height": 720},
+  "theme": {"background": "#F7F3EB", "color": "#17212B", "accent": "#C75B39"},
+  "slides": [
+    {
+      "id": "cover",
+      "name": "封面",
+      "background": "#F7F3EB",
+      "transition": "none",
+      "notes": "开场：先给出本次演示的核心承诺。",
+      "elements": [
+        {"id": "title", "type": "text", "x": 96, "y": 144, "w": 900, "h": 140, "html": "<b>让编辑与叙事留在同一份文件里</b>"},
+        {"id": "rule", "type": "shape", "x": 96, "y": 322, "w": 220, "h": 8, "shape": "rect", "fill": "#C75B39"}
+      ]
+    },
+    {
+      "id": "promise",
+      "name": "核心承诺",
+      "background": "#F7F3EB",
+      "transition": "morph",
+      "notes": "过渡：解释为什么选择这条适配路径。",
+      "elements": [
+        {"id": "title", "type": "text", "x": 96, "y": 96, "w": 960, "h": 116, "html": "<b>本地、可编辑、可审阅</b>"},
+        {"id": "rule", "type": "shape", "x": 96, "y": 242, "w": 540, "h": 8, "shape": "rect", "fill": "#C75B39"},
+        {"id": "body", "type": "text", "x": 96, "y": 316, "w": 880, "h": 152, "html": "用稳定对象 ID 支持有意义的 morph；用 notes 和评论完成修订闭环。"}
+      ]
+    }
+  ]
+}

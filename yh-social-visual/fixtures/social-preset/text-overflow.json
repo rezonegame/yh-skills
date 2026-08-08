@@ -1,0 +1,17 @@
+{
+  "preset": "square-generic",
+  "target_ratio": "1:1",
+  "colors": ["#ffffff", "#000000"],
+  "text_blocks": [
+    {
+      "id": "overflow-title",
+      "x": 0.02,
+      "y": 0.02,
+      "w": 0.96,
+      "h": 0.10,
+      "color": "#000000",
+      "background": "#ffffff"
+    }
+  ],
+  "media_refs": []
+}

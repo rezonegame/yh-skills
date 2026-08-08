@@ -34,6 +34,10 @@ Use Node.js 20+ for bundled scripts. Resolve Playwright from a local installatio
 
 Default to `package` when a platform is named but a mode is not.
 
+## Preset Contract
+
+Every rendered asset must use a registered style preset and platform geometry preset. Read `references/contracts/social-preset.md` and run `node scripts/validate_social_preset.mjs <manifest-or-fixture.json>` before rendering. Keep `scripts/lib/browser-safety.mjs` enabled so local HTML cannot fetch remote resources.
+
 ## Rendering Strategies
 
 | Strategy | Choose when |

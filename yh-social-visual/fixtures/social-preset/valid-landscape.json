@@ -1,0 +1,17 @@
+{
+  "preset": "landscape-generic",
+  "target_ratio": "16:9",
+  "colors": ["#ffffff", "#000000", "#2d7d46"],
+  "text_blocks": [
+    {
+      "id": "title",
+      "x": 0.08,
+      "y": 0.08,
+      "w": 0.84,
+      "h": 0.20,
+      "color": "#000000",
+      "background": "#ffffff"
+    }
+  ],
+  "media_refs": []
+}

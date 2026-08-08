@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img" aria-labelledby="timeline-title timeline-desc">
+  <title id="timeline-title">Horizontal Timeline</title>
+  <desc id="timeline-desc">A clean horizontal timeline with five milestone markers showing progression from left to right.</desc>
+
+  <style>
+    text { font-family: Charter, Georgia, 'Times New Roman', serif; }
+  </style>
+
+  <!-- Background -->
+  <rect width="720" height="180" fill="#F8F6F1" rx="4"/>
+
+  <!-- Timeline axis -->
+  <line x1="80" y1="100" x2="640" y2="100" stroke="#1B365D" stroke-width="2.5"/>
+
+  <!-- Milestone 1 -->
+  <circle cx="80" cy="100" r="8" fill="#1B365D"/>
+  <line x1="80" y1="92" x2="80" y2="68" stroke="#1B365D" stroke-width="1.5"/>
+  <text x="80" y="58" text-anchor="middle" fill="#1B365D" font-size="12" font-weight="bold">Q1</text>
+  <text x="80" y="42" text-anchor="middle" fill="#4A5568" font-size="10">Discovery</text>
+
+  <!-- Milestone 2 -->
+  <circle cx="220" cy="100" r="8" fill="#1B365D"/>
+  <line x1="220" y1="92" x2="220" y2="68" stroke="#1B365D" stroke-width="1.5"/>
+  <text x="220" y="58" text-anchor="middle" fill="#1B365D" font-size="12" font-weight="bold">Q2</text>
+  <text x="220" y="42" text-anchor="middle" fill="#4A5568" font-size="10">Design</text>
+
+  <!-- Milestone 3 -->
+  <circle cx="360" cy="100" r="8" fill="#1B365D"/>
+  <line x1="360" y1="92" x2="360" y2="68" stroke="#1B365D" stroke-width="1.5"/>
+  <text x="360" y="58" text-anchor="middle" fill="#1B365D" font-size="12" font-weight="bold">Q3</text>
+  <text x="360" y="42" text-anchor="middle" fill="#4A5568" font-size="10">Build</text>
+
+  <!-- Milestone 4 -->
+  <circle cx="500" cy="100" r="8" fill="#1B365D"/>
+  <line x1="500" y1="92" x2="500" y2="68" stroke="#1B365D" stroke-width="1.5"/>
+  <text x="500" y="58" text-anchor="middle" fill="#1B365D" font-size="12" font-weight="bold">Q4</text>
+  <text x="500" y="42" text-anchor="middle" fill="#4A5568" font-size="10">Test</text>
+
+  <!-- Milestone 5 -->
+  <circle cx="640" cy="100" r="8" fill="#1B365D"/>
+  <line x1="640" y1="92" x2="640" y2="68" stroke="#1B365D" stroke-width="1.5"/>
+  <text x="640" y="58" text-anchor="middle" fill="#1B365D" font-size="12" font-weight="bold">Q5</text>
+  <text x="640" y="42" text-anchor="middle" fill="#4A5568" font-size="10">Launch</text>
+
+  <!-- Caption -->
+  <text x="360" y="145" text-anchor="middle" fill="#4A5568" font-size="11" font-style="italic">Project phases from discovery through launch</text>
+
+  <!-- Directional arrow -->
+  <polygon points="652,100 642,94 642,106" fill="#1B365D"/>
+</svg>

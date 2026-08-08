@@ -21,7 +21,6 @@ export function browserLaunchOptions() {
   return {
     headless: true,
     ...(executablePath ? { executablePath } : {}),
-    args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
+    args: [],
   };
 }
-

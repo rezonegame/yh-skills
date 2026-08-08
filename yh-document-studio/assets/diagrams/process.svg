@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 160" role="img" aria-labelledby="process-title process-desc">
+  <title id="process-title">Linear Process Flow</title>
+  <desc id="process-desc">A four-step linear process flow with arrows connecting each step from left to right: Plan, Execute, Review, and Deliver.</desc>
+
+  <style>
+    text { font-family: Charter, Georgia, 'Times New Roman', serif; }
+  </style>
+
+  <!-- Background -->
+  <rect width="700" height="160" fill="#F8F6F1" rx="4"/>
+
+  <!-- Step 1: Plan -->
+  <rect x="30" y="40" width="130" height="60" fill="#1B365D" rx="6"/>
+  <text x="95" y="65" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="bold">Plan</text>
+  <text x="95" y="82" text-anchor="middle" fill="#C5BFA8" font-size="10">Define scope</text>
+
+  <!-- Arrow 1 -->
+  <line x1="168" y1="70" x2="195" y2="70" stroke="#1B365D" stroke-width="2"/>
+  <polygon points="195,70 188,64 188,76" fill="#1B365D"/>
+
+  <!-- Step 2: Execute -->
+  <rect x="203" y="40" width="130" height="60" fill="#1B365D" rx="6"/>
+  <text x="268" y="65" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="bold">Execute</text>
+  <text x="268" y="82" text-anchor="middle" fill="#C5BFA8" font-size="10">Build &amp; iterate</text>
+
+  <!-- Arrow 2 -->
+  <line x1="341" y1="70" x2="368" y2="70" stroke="#1B365D" stroke-width="2"/>
+  <polygon points="368,70 361,64 361,76" fill="#1B365D"/>
+
+  <!-- Step 3: Review -->
+  <rect x="376" y="40" width="130" height="60" fill="#1B365D" rx="6"/>
+  <text x="441" y="65" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="bold">Review</text>
+  <text x="441" y="82" text-anchor="middle" fill="#C5BFA8" font-size="10">QA &amp; refine</text>
+
+  <!-- Arrow 3 -->
+  <line x1="514" y1="70" x2="541" y2="70" stroke="#1B365D" stroke-width="2"/>
+  <polygon points="541,70 534,64 534,76" fill="#1B365D"/>
+
+  <!-- Step 4: Deliver -->
+  <rect x="549" y="40" width="130" height="60" fill="#1B365D" rx="6"/>
+  <text x="614" y="65" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="bold">Deliver</text>
+  <text x="614" y="82" text-anchor="middle" fill="#C5BFA8" font-size="10">Ship &amp; monitor</text>
+
+  <!-- Caption -->
+  <text x="350" y="135" text-anchor="middle" fill="#4A5568" font-size="11" font-style="italic">End-to-end delivery pipeline</text>
+</svg>

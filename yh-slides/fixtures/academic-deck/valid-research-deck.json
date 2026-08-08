@@ -1,0 +1,31 @@
+{
+  "title": "基于对抗训练的中文情感分析鲁棒性提升研究",
+  "slides": [
+    {
+      "title": "中文情感分析在对抗扰动下的准确率下降 12-18 个百分点",
+      "body": "现有 BERT-based 情感分类器在面对同义词替换、否定插入和语序调整三类对抗扰动时，F1 分数从 0.91 降至 0.73。本研究提出一种结合梯度对抗训练与数据增强的两阶段防御方案。",
+      "visual": "概念图：扰动类型与准确率衰减曲线"
+    },
+    {
+      "title": "梯度对抗训练通过扰动词嵌入空间提升模型决策边界稳定性",
+      "body": "第一阶段：对输入词嵌入添加 FGSM 梯度方向扰动，扰动幅度 ε=0.03。训练 30 epoch 后，模型对未见扰动类型的泛化防御提升 5.2 个百分点。\n第二阶段：使用回译和 GPT 改写生成 2 倍增强数据，进一步提升 3.1 个百分点。",
+      "visual": "流程图：两阶段训练方案"
+    },
+    {
+      "title": "对抗训练模型在三类扰动下 F1 恢复至 0.87，接近干净数据基线",
+      "body": "图表：三类扰动（同义词替换/否定插入/语序调整）×三种方法（Baseline/Augmentation/Ours）的 F1 对比柱状图。\n\n该结果表明梯度对抗训练能有效缩小模型在干净数据与对抗数据上的性能差距。注意：增强数据单独使用仅带来 2.1 个百分点提升，与对抗训练结合后效果显著叠加。",
+      "visual": "柱状图：三类扰动下 F1 对比",
+      "notes": "数据来源：自建 CnSentAdv 基准集，3000 条对抗样本。图表改编自 Liu et al. (2024) ACL 论文的评估框架。"
+    },
+    {
+      "title": "该方案在保持干净数据性能的同时降低了对抗场景下的部署风险",
+      "body": "我们验证了对抗训练不会显著损害模型在干净数据上的性能（F1 仅下降 0.8 个百分点），这意味着该方案可直接用于生产环境的情感分析系统。",
+      "visual": "对比表格：干净数据 vs 对抗数据性能矩阵"
+    },
+    {
+      "title": "参考文献",
+      "body": "Liu, X., et al. (2024). Adversarial Robustness of Sentiment Classifiers in Chinese. ACL 2024.\nZhang, W., et al. (2023). Gradient-based Defense for NLP Models. EMNLP 2023.\nDevlin, J., et al. (2019). BERT: Pre-training of Deep Bidirectional Transformers. NAACL 2019.\nWang, Y., et al. (2023). Data Augmentation for Chinese NLP: A Survey. TALLIP 2023.",
+      "visual": "无"
+    }
+  ]
+}

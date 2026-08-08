@@ -12,6 +12,7 @@ This repository only publishes my personal-use skills.
 | `yh-local-knowledge` | Local knowledge workspace management: initialize folders, index sources, generate source maps, review candidates, and export trusted assets. |
 | `yh-slides` | End-to-end presentation production for PPTX, HTML decks, visual decks, template fill, presenter mode, media import, and editable reconstruction. |
 | `yh-social-visual` | Content-first social visual packages for articles, covers, carousels, WeChat, Xiaohongshu, Zhihu, Weibo, Douyin, and cross-platform adaptations. |
+| `yh-style-profiler` | Builds a reusable Chinese writing-style profile from authorized samples, rewrites to that profile, and flags style drift without changing facts. |
 
 ## Install
 
@@ -35,6 +36,7 @@ Some skills include local reference assets. Runtime dependencies such as `node_m
 | `yh-local-knowledge` | 本地知识工作区管理：初始化文件夹、索引资料、生成来源地图、审查候选知识，并导出可信资产。 |
 | `yh-slides` | 端到端演示文稿制作，支持 PPTX、HTML 演示、视觉型幻灯片、模板填充、演讲者模式、媒体导入和可编辑重建。 |
 | `yh-social-visual` | 内容优先的社交媒体视觉包，适用于文章、封面、轮播图、微信公众号、小红书、知乎、微博、抖音和跨平台适配。 |
+| `yh-style-profiler` | 从用户授权的中文样本建立个人文风画像，按画像改写并标注风格偏差，同时保持事实不变。 |
 
 ## 安装
 

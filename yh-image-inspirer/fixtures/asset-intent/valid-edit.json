@@ -1,0 +1,9 @@
+{
+  "mode": "edit",
+  "consumer": "slide",
+  "source_asset": "fixtures/asset-intent/dummy_source.png",
+  "destination": "images/dummy_source_edit_1.png",
+  "edit_constraints": {
+    "preserve_text": ["标题区域"]
+  }
+}

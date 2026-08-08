@@ -2,6 +2,14 @@
 
 > 这是所有 references/ 文件的导航入口。遇到问题时，先查这里找对应文档。
 
+## 2026-08 本地新增入口
+
+- `evidence-driven-methodology.md` — 文档转演示的来源盘点、证据映射、slide-to-source register 与残留检查。
+- `aesthetics/wanghong-handwritten.md` — 中文手写学术 HTML 风格；资产与运行时位于 `../assets/wanghong/`。
+- `path-definitions.md`、`quickstart-panel.md` — 路径定义和启动面板的维护者速查。
+- `../templates/tosea/metadata.json` — 从实际目录生成的本地模板预览目录；先查元数据，再打开少量候选图。用 `../scripts/build_tosea_metadata.py` 重建。
+- `provenance/README.md`、`adoption-decisions.md` — 吸收来源、许可、测试和回滚记录。
+
 ---
 
 ## 快速诊断入口
@@ -16,10 +24,12 @@
 | 网页演示截图 QA / contact sheet | [constraints/visual-qa.md](constraints/visual-qa.md) |
 | 哪些做法是绝对禁止的 | [constraints/anti-patterns.md](constraints/anti-patterns.md) |
 | 不知道选哪条路径 | [getting-started/path-selection.md](getting-started/path-selection.md) |
+| 学术答辩 / 论文汇报 / 证据演讲 | [getting-started/academic-presentation-workflow.md](getting-started/academic-presentation-workflow.md) |
 | 第一次用，想快速上手 | [getting-started/quick-start.md](getting-started/quick-start.md) |
 | 数据 / 流程 / 架构不知道该用什么图 | [integrations/diagram-chart-routing.md](integrations/diagram-chart-routing.md) |
 | 质量基线 / 页型 archetype / 模板矿化 | [aesthetics/template-methods.md](aesthetics/template-methods.md) |
 | Path E 本地 React Deck | [integrations/local-react-deck-path.md](integrations/local-react-deck-path.md) |
+| 2D-B 本地可编辑 Bento Deck | [integrations/bento-deck-adapter.md](integrations/bento-deck-adapter.md) |
 | Path S 原生可编辑 PPTX | [integrations/path-s-svg-native-pptx.md](integrations/path-s-svg-native-pptx.md) |
 | PPTX 模板填充 | [integrations/template-fill-pptx.md](integrations/template-fill-pptx.md) |
 | HTML 演讲者模式 / 逐字稿 | [integrations/presenter-mode.md](integrations/presenter-mode.md) |
@@ -46,6 +56,11 @@
 | [comment-iteration-loop.md](constraints/comment-iteration-loop.md) | 成稿后评论归类与轻量迭代闭环 |
 | [failure-modes.md](constraints/failure-modes.md) | 20+ 种失败模式 + 症状/根因/修复/预防 |
 | [offline-runtime.md](constraints/offline-runtime.md) | 离线核心、线上增强、fallback 和 CDN 扫描规则 |
+| [contracts/deck-plan.md](contracts/deck-plan.md) | 项目级页面契约、文案/媒体/图表完整性校验 |
+| [contracts/design-brief.md](contracts/design-brief.md) | 视觉与叙事规格、受众行动和 review-first 页序交叉校验 |
+| [contracts/academic-deck.md](contracts/academic-deck.md) | 学术 v2 的论证、结果、引用、时间、结论与附录契约 |
+| [contracts/bento-deck.md](contracts/bento-deck.md) | 2D-B 单文件、对象 ID、morph/state、离线媒体和评论回流契约 |
+| [contracts/style-profile.md](contracts/style-profile.md) | 显式个人风格配置的安全边界 |
 
 ---
 
@@ -100,6 +115,7 @@
 | [meta/asset-registry.md](meta/asset-registry.md) | `asset-registry.json` 的结构和使用规则 |
 | [meta/asset-registry.json](meta/asset-registry.json) | 由 `scripts/build_asset_registry.py` 生成的本地资产索引 |
 | [meta/second-pass-upstream-audit.md](meta/second-pass-upstream-audit.md) | 对三个上游素材的二次覆盖审查与结论 |
+| [meta/academic-and-dashi-integration.md](meta/academic-and-dashi-integration.md) | academic-pptx 与 Dashi 的差异矩阵、吸收项和许可证边界 |
 
 ### 通用设计原则
 
@@ -109,6 +125,7 @@
 | [aesthetics/design-system-workflow.md](aesthetics/design-system-workflow.md) | 品牌 `DESIGN.md` 生成、提取与映射流程 |
 | [aesthetics/design-movements.md](aesthetics/design-movements.md) | 设计运动与风格参考库（Bauhaus / Swiss 等） |
 | [aesthetics/template-methods.md](aesthetics/template-methods.md) | 质量基线、页型 archetype、模板矿化规则 |
+| [aesthetics/content-layout-candidates.md](aesthetics/content-layout-candidates.md) | 内容先冻结、按容量与结构家族比较版式候选 |
 
 ---
 
@@ -122,6 +139,7 @@
 | [path-c-magazine-seed.html](../assets/seeds/path-c-magazine-seed.html) | 2D / Path C | guizang 精品模板（WebGL + 5 主题 + 10 布局） |
 | [path-c-minimal-seed.html](../assets/seeds/path-c-minimal-seed.html) | 2D / Path C | 极简模板（轻量，无 WebGL，7 页示例） |
 | [path-d-animated-seed.html](../assets/seeds/path-d-animated-seed.html) | 2D / Path D | GSAP + TTS 骨架（data-anim 系统 + 进度条） |
+| [path-bento-seed.json](../assets/seeds/path-bento-seed.json) | 2D-B / Bento Adapter | 两页离线可编辑 Bento 样稿，含稳定 ID 和 morph 示例 |
 
 ---
 
@@ -131,6 +149,7 @@
 |------|------|
 | [getting-started/quick-start.md](getting-started/quick-start.md) | 5 分钟快速上手（3 个最常见场景的完整命令） |
 | [getting-started/path-selection.md](getting-started/path-selection.md) | 路径选择决策树（协作模式 + 需求字段 → 推荐路径） |
+| [getting-started/academic-presentation-workflow.md](getting-started/academic-presentation-workflow.md) | 学术论证模式、叙事 spine、证据、时间与 Q&A 工作流 |
 
 ---
 
@@ -153,6 +172,7 @@
 | [integrations/import-guide.md](integrations/import-guide.md) | 网页/视频/音频导入指南 | 全部 |
 | [integrations/ppt-conversion-guide.md](integrations/ppt-conversion-guide.md) | PPT/PPTX 转换指南 | 全部 |
 | [integrations/local-react-deck-path.md](integrations/local-react-deck-path.md) | 本地 React/TSX 网页演示路径 | 2D / Path E |
+| [integrations/bento-deck-adapter.md](integrations/bento-deck-adapter.md) | 本地可编辑 Bento 单文件路径 | 2D-B |
 
 ---
 
@@ -180,9 +200,9 @@
 
 ---
 
-## 共享配置（../.yh-skills/）
+## API 配置
 
-真实 API key 不放在 `yh-slides` 技能目录。复制到其他 CLI 时，可在 skills 根目录创建 `.yh-skills/.env`；当前技能目录只保留 `.env.example`。
+真实 API key 不放在 `yh-slides` 技能目录。通过运行环境变量提供，或显式设置 `YH_SKILLS_ENV_FILE` 指向私有 env 文件；当前技能目录只保留 `.env.example`。脚本不会搜索父目录。
 
 ---
 

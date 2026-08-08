@@ -1,0 +1,6 @@
+{
+  "mode": "edit",
+  "consumer": "web",
+  "source_asset": "fixtures/asset-intent/dummy_source.png",
+  "destination": "images/dummy_source_edit_1.png"
+}

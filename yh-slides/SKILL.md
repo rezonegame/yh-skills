@@ -8,7 +8,7 @@ description: >
 ---
 # AI Presentation Workflow
 用于从主题、文档、网页或媒体素材生成演示文稿。默认先理解用户意图，再映射到用户侧产物选项和内部执行路径；路线码仍可作为快捷输入和内部记录。
-除非另有说明，所有脚本命令都假设当前工作目录是 `yh-slides` 技能根目录；复制到其他 CLI 时保持 `scripts/`、`references/`、`assets/` 的相对结构即可。API fallback 配置放在 skills 根目录的 `.yh-skills/.env`，不要把真实 `.env` 放进本技能目录。
+除非另有说明，所有脚本命令都假设当前工作目录是 `yh-slides` 技能根目录；复制到其他 CLI 时保持 `scripts/`、`references/`、`assets/` 的相对结构即可。API fallback 配置仅从运行环境变量或显式指定的 `YH_SKILLS_ENV_FILE` 读取；不要把真实 `.env` 放进本技能目录，也不要依赖父目录扫描。
 命名层级：`2A/2B/2C/2D` 是用户侧产物选项；`Path A/B/H/C/D/E` 是内部执行路径。详细映射见 `references/getting-started/product-path-taxonomy.md`。
 | 用户侧产物选项 | 内部执行路径 | 工作方式 | 适用场景 |
 |---|---|---|---|
@@ -18,6 +18,7 @@ description: >
 | `2B 整图视觉 PPTX` | `Path B` | 每页一张完整 AI 图，文字也可在图里；最终组装为图片型 PPTX | 最强视觉冲击、接近样张、不需要改字 |
 | `2C 视觉底图 + 可编辑文字 PPTX` | `Path H` | AI 生成无正文文字的整页视觉底图，PPT 原生文本框叠加标题、正文、互动题和答案 | 想要好看，同时课堂/汇报文字可编辑 |
 | `2D 多功能 HTML 演示` | `Path C / D / E` | HTML 是最终作品：单文件网页、动画/TTS 或本地 React Deck | 网页分享、配音动画、长期维护或复杂交互 |
+| `2D-B Bento Deck` | `Bento Adapter` | 本地单文件、浏览器可编辑的 `.bento.html`，含 notes、评论、状态和 morph | 无安装编辑、离线审阅、对象状态/转场；不承诺 PPTX |
 | `2D-P HTML 演讲者模式` | `Presenter Mode` | 本地 HTML 演示 + hidden notes + S 键演讲者窗口，含当前页、下一页、逐字稿、计时器和双窗口同步 | 演讲、技术分享、培训、路演、需要提词器或 speaker notes |
 | `2B-R 可编辑重建` | `FigEdit Reconstruction` | 已有位图 → OCR/CV 测量 → Agent 语义拆解 → 可编辑 SVG → 原生 DrawingML PPTX | 位图幻灯片、截图、论文图、架构图需要恢复可编辑结构 |
 ---
@@ -29,7 +30,7 @@ description: >
 - 用户明确指定 `gemini` / `imagen` / `API` 时，按用户指定执行。
 - 用户未指定时，只要当前环境暴露原生生图工具，就优先使用原生工具，并把图片保存到项目目录。
 - 不要因为技能目录里有 `scripts/generate_image.py` 就默认调用 API；该脚本是 fallback，不是默认入口。
-- 只有当前环境没有原生生图工具、原生工具无法稳定落盘、或原生工具明确失败且任务仍需继续时，才使用 `.yh-skills/.env` 中的 API key 调用 `scripts/generate_image.py`。
+- 只有当前环境没有原生生图工具、原生工具无法稳定落盘、或原生工具明确失败且任务仍需继续时，才使用环境变量或显式 `YH_SKILLS_ENV_FILE` 中的 API key 调用 `scripts/generate_image.py`。
 - 详细规则见 `references/integrations/image-backend-policy.md`。
 
 ---
@@ -38,108 +39,7 @@ description: >
 
 **不要直接跳入生成。** `yh-slides` 默认先理解用户意图，再给出推荐产物和内部路径；`1B + 2A + 3B` 这类路线码仍可直接解析，但不再强迫普通用户第一步理解组合码。
 
-### Step 0-A: 轻量启动面板（优先展示）
-
-第一屏只解决四件事：**目标、产物、素材、协作档位**。如果用户已经在自然语言里给出答案，不要重复询问；直接记录推断，并给一次纠偏机会。
-
-```text
-我先按你的目标做一个启动判断，你也可以直接改选。
-
-【1. 目标】
-A 正式汇报 / 企业材料
-B 教学课件 / 培训
-C 演讲分享 / 观点传播
-D 网页分享 / 电子杂志
-E 动画配音 / 自动播放
-F 长期维护 / 复杂交互
-
-【2. 产物】
-2A 通用可编辑 PPTX（简易 HTML 转换）：用受限 HTML/CSS 做 PPTX 中间稿，再转成 PowerPoint 原生文本、形状、图片；可加入局部插画/照片，最稳、最好改。
-2A-S 高保真原生可编辑 PPTX：逐页 SVG 经本地 DrawingML 导出为原生可编辑 PPTX；适合复杂图表、咨询级版式、动画备注和避免 HTML 转换偏移，制作更重。
-2A-T 原生 PPTX 模板填充：复用你已有的 PPTX 模板，挑选/重排/复用原页面并替换内容；适合公司模板、品牌模板和旧 deck 复用。
-2B 整图视觉 PPTX：AI 生成每页完整图片，文字也在图里；最好看，但基本不可编辑。
-2C 视觉底图 + 可编辑文字 PPTX（推荐给“好看且要改字”）：AI 生成无正文文字的整页视觉底图，标题、正文、互动题和答案用 PPT 文本框叠加。
-2B-R 可编辑重建：已有位图幻灯片、截图、论文图或架构图，经 FigEdit 重建为可编辑 SVG 和原生 PPTX；不是从零设计路径。
-2D 多功能 HTML 演示：HTML 是最终作品，可做单文件网页、动画配音或 React 交互展示；不转 PPTX。
-2D-P HTML 演讲者模式：HTML 最终作品，额外提供逐字稿、当前/下一页预览和计时器；适合要上台讲、不想忘词的分享。
-
-【3. 素材】
-S1 只有主题 / 想法
-S2 已有文档 / 大纲
-S3 有旧 PPT
-S4 有网页 / 视频 / 音频
-S5 有品牌资料 / 参考图
-S6 只有位图幻灯片 / 截图 / 论文图
-
-【4. 协作档位】
-Q 快速草稿：少问，先出可看的初稿，做 P0 检查。
-N 标准制作（推荐）：大纲、风格、样稿、最终稿分段确认，做 P0/P1 检查；2A 样稿建议，2B/2C/2D 样稿强制。
-P 精品交付：样张、设计系统、主题节奏、截图 QA、5 维设计自评全部执行。
-
-我的默认推荐会写成：标准制作 + 2A/2C + 对应内容策略。
-你也可以直接回复路线码，比如：1B + 2C + 3B。
-```
-
-### Step 0-B: 路线码快捷输入（保留）
-
-- 接受大小写混用、空格、中文加号或自然语言混合输入；最终统一记录为大写组合码。
-- 用户只指定部分码时，未指定项按当前任务推荐值补齐，并明确说明补齐结果。例如“2A，其他你推荐”→ `1B + 2A + 3B`。
-- 用户说“按推荐来”时，采用当前任务的推荐组合码，而不是机械固定为 `1B + 2A + 3B`。
-- 用户明确说“直接做 / 不用问 / 全自动”时，可以跳过启动面板，但必须在回复中记录默认路线、关键风险和后续 checkpoint。
-- 用户要求“查看更多风格 / 打开风格库 / 有哪些风格”时，不要把它理解为路线选择；先完成或补齐产物路径，再进入 Step 4 的风格库入口。
-
-### Step 0-C: 路线码到工作流的映射
-
-| 选择码 | 含义 | 后续影响 |
-|---|---|---|
-| `1A` | 全自动 / 快速草稿 | 只问缺失且高影响的问题；直接推进，交付前至少做 P0 检查 |
-| `1B` | 引导式 / 标准制作 | 大纲 / 风格 / 样稿可选 / 最终稿分段确认 |
-| `1C` | 一步一步 / 精品交付 | 每阶段确认；必要时逐页确认；执行完整 QA |
-| `1D` | 自定义 | 按用户指定 checkpoint 执行 |
-| `2A` | 通用可编辑 PPTX（简易 HTML 转换） | 对应 `Path A`；受限 HTML 是 PPTX 中间稿，最终转成 PowerPoint 原生文字、形状、图片，可加入局部配图 |
-| `2A-S` | 高保真原生可编辑 PPTX | 对应 `Path S`；SVG → DrawingML，复杂图表和形状原生可编辑；流程更重，必须跑 SVG/PPTX 质量门 |
-| `2A-T` | 原生 PPTX 模板填充 | 对应 `Template Fill`；已有 PPTX 模板页库 → slide_library → fill_plan → 原生 PPTX 输出；只在用户明确要复用模板时触发 |
-| `2B` | 整图视觉 PPTX | 对应 `Path B`；视觉优先，文字可以在图里但基本不可编辑 |
-| `2C` | 视觉底图 + 可编辑文字 PPTX | 对应 `Path H`；AI 只生成无正文文字底图，PPT 文本框承担标题、正文、互动题和答案 |
-| `2B-R` | 位图可编辑重建 | 对应独立 `FigEdit Reconstruction`；用于已有位图幻灯片、截图、论文图或信息图的结构化重建 |
-| `2D` | 多功能 HTML 演示 | HTML 是最终交付物；根据需求映射到 `Path C`、`Path D` 或 `Path E` |
-| `2D-P` | HTML 演讲者模式 | 对应 `Presenter Mode`；本地 HTML + hidden notes + S 键 presenter window；用于演讲/分享/讲稿/逐字稿需求 |
-| `3A` | 忠实整理 | 尽量贴近原文结构，少改写 |
-| `3B` | 课程化重构 | 重排为讲授节奏、知识块、课堂互动 |
-| `3C` | 演讲叙事版 | 强化故事线、观点推进和演讲张力 |
-| `3D` | 任务互动版 | 优先设计提问、讨论、练习与答案揭示 |
-
-### Step 0-D: 默认推荐策略
-
-- 汇报 / 报告 / 企业材料 → 标准制作 + `2A`（Path A）
-- 复杂图表 / 原生形状 / 矢量可编辑 / 不要 HTML 偏移 / 咨询级图表 → `2A-S`（Path S）
-- 已有 PPTX 模板 / 保留原设计 / 填充新内容 / 公司模板复用 → `2A-T`（Template Fill）
-- 课件 / 培训且强调可改 → `2A` 或 `2C`；如果强调好看，默认 `2C`
-- 最好看 / 接近样张 / 不需要改字 → `2B`
-- 好看且文字能改 → `2C`
-- 已有位图，希望恢复文字、结构、连接线、公式和可替换资产 → `2B-R / FigEdit`
-- 网页分享 / 单文件网页 → `2D / Path C`
-- 演讲 / 分享 / 逐字稿 / speaker notes / 提词器 / 怕忘词 → `2D-P`
-- 动画配音 → `2D / Path D`
-- 长期维护或复杂交互 → `2D / Path E`
-
-### Step 0-E: 启发式选择规则（所有关键节点通用）
-
-任何关键选择点都不能只问开放问题，也不能只给默认值后直接推进。必须同时提供：
-
-- `推荐项`：给出你最建议的选择
-- `备选项`：给出 2-3 个清晰替代方案
-- `自定义入口`：允许用户混搭、上传参考、指定禁忌或改写方向
-- `推荐理由`：说明为什么适合当前材料和受众
-- `风险提示`：说明可能的代价，例如不可编辑、太暗、太营销、制作慢
-
-### Step 0-F: 协作档位裁剪
-
-| 档位 | 执行厚度 | 必做检查 |
-|---|---|---|
-| 快速草稿 | 基础需求、粗大纲、直接生成；默认不强制样稿，但 2B/2C 建议至少 1 页 | P0 |
-| 标准制作 | 大纲确认、风格确认、样稿校准、分段交付；2A 样稿建议，2B/2C/2D 样稿强制 | P0/P1 |
-| 精品交付 | 所有路径强制样稿；设计系统、主题节奏、截图 QA、5 维设计自评 | P0/P1 + 路径专项 QA |
+读取 `references/quickstart-panel.md` 获取用户侧启动面板、路线码映射、默认推荐、启发式选择规则和协作档位。执行时只保留这些不变量：已明确的信息不重复问；缺失项按任务推荐补齐并允许纠偏；“直接做”仍需记录路线与风险；关键选择给推荐、备选、自定义入口和代价；所有档位至少通过对应 P0/P1 门。
 
 ---
 
@@ -196,6 +96,8 @@ P 精品交付：样张、设计系统、主题节奏、截图 QA、5 维设计�
 - 如果用户要求快速草稿但材料缺失，在大纲顶部标注“待替换素材 / 待核查数据”，后续不得把占位内容当成事实。
 - 如果 logo 或关键资产暂时取不到，停下说明缺口并使用诚实 placeholder；不要用手画 SVG、CSS 剪影或通用图标假装官方资产。
 
+当输入是长 PDF、报告或多来源证据包时，读取 `references/evidence-driven-methodology.md`，先建立 Source Inventory 和 slide-to-source register，再写 storyline。可用 `scripts/pdf_evidence_pipeline.py` 生成可复核的中间材料；它只辅助提取与登记，不替代事实核查。
+
 **根据答案校准路线**：如果补充信息与 Step 0 路线冲突，要提醒用户并建议调整组合码，而不是静默覆盖。
 
 | 答案组合 | 推荐路径 |
@@ -228,8 +130,11 @@ Step 1 确认完毕后，按路线码对应路径只问必要的技术细节。�
 | `2D-P / Presenter Mode` | 演讲时长；每页 notes 粒度；是否需要逐字稿/提示信号/计时器；项目名；标准制作/精品交付强制先做 1-2 页 presenter 样稿 |
 | `2D / Path D` | 是否启用 TTS；动画风格；项目名；标准制作/精品交付强制先做 1-2 页动效样稿 |
 | `2D / Path E` | 是否需要复杂交互/复用组件；是否接受本地前端工程；标准制作/精品交付强制先做 2-3 页静态样稿并截图检查 |
+| `2D-B / Bento Adapter` | 是否必须单文件/离线；是否需要浏览器编辑、notes、评论、状态/morph；是否明确接受协作链接的访问风险；标准制作/精品交付强制先做 2 页样稿 |
 
 Path E 默认不依赖 `@open-slide/core`、Open-Slide CLI 或外部 runtime。它只吸收固定 1920×1080 画布、React/TSX 组件化、静态导出和截图 QA 的方法；如果未来用户明确要求兼容 Open-Slide，应作为单独适配决策，而不是默认路径。
+
+`2D-B` 使用固定的本地 Bento shell，不是 Path E 的替代品。只有用户明确需要“可编辑单文件 / 评论回流 / 状态或 morph”时才读取 `references/integrations/bento-deck-adapter.md` 与 `references/contracts/bento-deck.md`；不要在线更新 shell、引入 CDN/分析脚本或默认启用协作。
 
 Path S、Template Fill、Presenter Mode 的详细本地离线规范分别见：
 
@@ -298,6 +203,8 @@ Path E 可在项目目录下增加 `react-deck\` 或等价工程目录；不要�
 
 ### Step 3-B: 逐页大纲
 
+如果任务是研究答辩、论文、研讨会、基金简报、实验室汇报或其他证据驱动演讲，先读取 `references/getting-started/academic-presentation-workflow.md`，在普通逐页大纲之外确定 `structured_argument` / `visual_narrative`、叙事 spine、单一主张、研究问题、时间预算与引用策略。该层只约束学术沟通，不新增产物路径。
+
 每页都要有：
 
 - `Title`: 完整论断句 / 结论型标题（不是主题词）
@@ -323,6 +230,7 @@ Path E 可在项目目录下增加 `react-deck\` 或等价工程目录；不要�
 - 常用页型包括 Cover、Agenda、Problem / Context、Framework、Metrics / Data、Timeline / Roadmap、Diagram / Architecture、Quote / Key Insight、Comparison、Process / Workflow、Risks / Tradeoffs、FAQ / Appendix、Closing / CTA。
 - 如果连续多页都是“标题 + 3 条 bullet”，优先改为图表页、流程页、对比页、案例页、转场页或总结页。
 - 页型检查结果应写在大纲顶部或每页 `Visual type` 中，方便后续 Step 4/5 映射到设计与构建。
+- 重要页面存在多个模板候选时，读取 `references/aesthetics/content-layout-candidates.md`：先冻结本页事实、数字、引用和受众行动，再按容量与结构家族比较候选；不得让换版式改写事实，候选不足以容纳必需内容时直接淘汰。
 
 ✅ **Checkpoint 1**：大纲给用户确认后再进入 Step 4。
 
@@ -410,8 +318,11 @@ D. 打开风格库
 
 - 2A/2B/2C：读取 `references/aesthetics/proven-styles-gallery.md`、`references/aesthetics/style-samples.md`、`references/aesthetics/proven-styles-snoopy.md`、`references/aesthetics/design-movements.md`
 - 用户点名 Ian 手绘，或技术解释/教学内容需要克制的中文手绘语义图时：读取 `references/aesthetics/ian-handdrawn-technical.md`；只把它作为 2B/2C 候选，不自动选中
+- 用户点名王虹、Notability、数学学术报告或中文手写网页 PPT 时：读取 `references/aesthetics/wanghong-handwritten.md`，从 `assets/wanghong/deck-template.html` 起步；需要时间轴动画版时使用 `scripts/build_timeline.py`
+- 用户希望从大量本地版式中挑选时：读取 `templates/tosea/metadata.json`，按类别检索本地预览目录；只展示最匹配的 3 套，不一次加载整个库。维护时用 `scripts/build_tosea_metadata.py` 从实际目录重建索引
 - 2D / Path C-D：读取 `references/aesthetics/magazine/directions.md`、`references/aesthetics/web-styles-gallery.md`、`references/aesthetics/style-preview-mechanism.md`
 - 2D / Path E：读取 `references/integrations/local-react-deck-path.md` 和 `references/aesthetics/template-methods.md`
+- 2D-B / Bento Adapter：读取 `references/integrations/bento-deck-adapter.md` 和 `references/contracts/bento-deck.md`
 
 展开时仍遵守 Step 0-D：每个方向都要有推荐理由、风险提示和自定义入口。
 
@@ -421,6 +332,7 @@ D. 打开风格库
 
 - 快速草稿档：默认不强制样稿；但 2B/2C 建议至少先做 1 页。
 - 标准制作档：2A 样稿建议；2B、2C、2D（Path C magazine / Path D / Path E）强制先做样稿或首屏/动效原型。
+- `2D-B` 同样强制先做 2 页样稿；只在状态/morph 服务叙事时使用，保持单一作者的统一写作与视觉声音。
 - 精品交付档：所有路径强制样稿。
 - 用户提供参考图、品牌规范、旧 PPT 或项目视觉风险高时：强制样稿校准方向。
 
@@ -501,6 +413,7 @@ D. 打开风格库
 | `2D / Path C` | HTML deck / 单文件网页演示、magazine / minimal 种子、配图槽位、Motion One 离线资产；幻灯片场景默认多文件 HTML deck，不转 PPTX |
 | `2D / Path D` | 多文件 HTML、GSAP、TTS、`data-anim` 动效声明；幻灯片/动画 deck 默认先聚合为 HTML |
 | `2D / Path E` | Local React Deck、1920×1080 固定画布、组件化页型、静态导出、截图 QA；HTML/静态网页是最终作品 |
+| `2D-B / Bento Adapter` | 固定本地 `Bento_Slides.bento.html`、`bento-deck.json`、生成/校验/评论导出；最终交付为可编辑 `.bento.html` |
 
 ---
 
@@ -516,7 +429,11 @@ D. 打开风格库
 
 ### 检查流程
 
-进入 Step 7 后读取 `references/constraints/quality-checklist.md`，按当前 Path 执行完整 P0/P1；2D / Path C-D-E 还必须读取 `references/constraints/visual-qa.md` 做截图 QA。**P0 不通过 = 不能交付**，修复后重新进入对应 QA。
+进入 Step 7 后读取 `references/constraints/quality-checklist.md`，按当前 Path 执行完整 P0/P1；2D / Path C-D-E 与 2D-B 都必须读取 `references/constraints/visual-qa.md` 做截图 QA。对有多页内容、数据或本地媒体的项目，先创建并校验 `deck-plan.json`（见 `references/contracts/deck-plan.md`）；它检查模板文案泄漏、文案预算、媒体路径、重复版式和图表洞察。`2D-B` 还必须创建并通过 `bento-deck.json`（见 `references/contracts/bento-deck.md`），可用 `--deck-plan` 对齐页序；生成后必须本地打开验证编辑、notes、状态/morph 和评论回流。对需要先审阅视觉/叙事方案的重要 deck，再创建 `design-brief.json`（见 `references/contracts/design-brief.md`），并用 `--deck-plan` 交叉验证页序和受众行动；经用户确认后才开始构建。两者都不替代路径专项 QA。**P0 不通过 = 不能交付**，修复后重新进入对应 QA。
+
+研究答辩、论文、研讨会、基金简报或证据驱动技术演讲再额外使用 `academic-deck.json` v2（见 `references/contracts/academic-deck.md`）；仅在该模式检查学术论证 spine、早期研究问题、行动标题、单一结果 exhibit、非原创证据的页内引用、结论/参考文献/附录顺序、时间预算与可访问性。学术视觉值是可覆盖默认值，用户模板、品牌和已确认方向仍优先，但不得牺牲证据准确性和可读性。用户明确选择个人风格时，才通过绝对路径 `YH_SLIDES_STYLE_PROFILE` 读取 `references/contracts/style-profile.md` 定义的配置，且当前项目指令优先。
+
+文档转 PPT 或证据密集型 deck 还必须按 `references/evidence-driven-methodology.md` 检查论点—证据映射、行动标题、图表洞察、来源登记和输出残留。模板文案、占位符、空壳页或来源无法定位都按 P0 处理。
 
 通过标准：`100% P0` + `90%+ P1`。如果出错，查 `references/constraints/failure-modes.md` 快速定位根因。
 
@@ -541,6 +458,8 @@ P0/P1 通过后，按 Philosophy、Hierarchy、Execution、Specificity、Restrai
 - **优先 `2D / Path C magazine`**：个人分享 / 电子杂志 / 网页发布 / 追求精品质感；HTML 是最终作品
 - **优先 `2D / Path D`**：含配音 / 含动画 / 教学课件；HTML 是最终作品
 - **优先 `2D / Path E`**：网页演示需要长期维护、复杂交互、组件复用、静态部署或严格截图 QA
+- **优先 `2D-B / Bento Adapter`**：需要一个可离线本地打开、浏览器可编辑、可评论的单文件 deck，或叙事确实需要状态/morph
+- **优先王虹手写风**：用户明确要求中文手写、Notability 或数学学术讲解网页风格；资产与运行时全部走本地 `assets/wanghong/`
 - **品牌优先**：如果有 `DESIGN.md`，优先遵守品牌系统；如果没有品牌系统，`2D / Path C magazine` 优先使用 `directions.md` 的 5 个方向包
 - **独立技能原则**：外部项目只作为已吸收的方法来源；唯一例外是已注册的独立 FigEdit 技能，由 2B-R 薄适配层调用；其他路径不依赖外部仓库、外部索引资产、远程模板或远程 slide runtime
 - **不允许**：跳过 Step 0 意图启动 / 把 `2C` 当成 `2B-R` / 2B-R 使用背景擦除或图片叠字降级 / 2B-R 未通过全部逐页质量门就生成整套交付 / 默认用 API 生图绕过原生工具 / 跳过方向锁定（2D / Path C magazine）/ 跳过 Step 3-C 页型覆盖检查 / 跳过当前路径要求的构建预检 / 跳过 Step 7 P0 检查 / 精品交付档跳过 5 维自评
@@ -549,7 +468,9 @@ P0/P1 通过后，按 Philosophy、Hierarchy、Execution、Specificity、Restrai
 
 ## 内置能力与参考索引
 
-核心脚本位于 `scripts/`：`generate_image.py`、`create_slides.py`、`figedit_batch.py`、`html2pptx.js`、`export_deck_pdf.mjs`、`export_deck_stage_pdf.mjs`、`gen_deck_thumbs.mjs`、`create_contact_sheet.py`。Path A 的 Node 依赖随技能目录的 `package.json` 本地化，优先在技能根目录运行 `npm install` 后使用。2B-R 通过 `figedit_batch.py` 调用独立 FigEdit；不复制其 OCR/CV/重建内核。HTML deck 默认外壳是 `assets/deck_index.html`，幻灯片架构和导出规范见 `references/slide-decks.md`，品牌/logo 资产协议见 `references/brand-asset-protocol.md`。完整 reference、seed、模板、layout、scene 资产索引见 `references/_INDEX.md`；维护来源和演进原则见 `references/meta/evolution.md`，资产状态见 `references/meta/asset-inventory.md`。
+学术模式校验器为 `scripts/validate_academic_deck.py`；学术工作流与双来源整合边界见 `references/getting-started/academic-presentation-workflow.md` 和 `references/meta/academic-and-dashi-integration.md`。
+
+核心脚本位于 `scripts/`：`generate_image.py`、`create_slides.py`、`figedit_batch.py`、`html2pptx.js`、`export_deck_pdf.mjs`、`export_deck_stage_pdf.mjs`、`gen_deck_thumbs.mjs`、`create_contact_sheet.py`、`pdf_evidence_pipeline.py`、`build_timeline.py`、`prepare_render_html.py` 与 `build_tosea_metadata.py`。Path A 的 Node 依赖随技能目录的 `package.json` 本地化，优先在技能根目录运行 `npm install` 后使用。2B-R 通过 `figedit_batch.py` 调用独立 FigEdit；不复制其 OCR/CV/重建内核。HTML deck 默认外壳是 `assets/deck_index.html`，幻灯片架构和导出规范见 `references/slide-decks.md`，品牌/logo 资产协议见 `references/brand-asset-protocol.md`。本地 Tosea 预览库位于 `templates/tosea/`，王虹手写运行时位于 `assets/wanghong/`。完整 reference、seed、模板、layout、scene 资产索引见 `references/_INDEX.md`；维护来源和演进原则见 `references/meta/evolution.md`，资产状态见 `references/meta/asset-inventory.md`。
 
 ---
 
@@ -561,6 +482,7 @@ P0/P1 通过后，按 Philosophy、Hierarchy、Execution、Specificity、Restrai
 - native editable `.pptx` + per-page SVG/Manifest/quality reports for `2B-R / FigEdit Reconstruction`
 - HTML deck + derived `.pdf` for slide/deck tasks by default
 - `.html` for `2D / Path C`
+- `.bento.html` for `2D-B / Bento Adapter`
 - multi-file HTML for `2D / Path D`
 - static local React deck / HTML build for `2D / Path E`
 

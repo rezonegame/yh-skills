@@ -1,0 +1,6 @@
+{
+  "mode": "edit",
+  "consumer": "print",
+  "source_asset": "images/chart_original.png",
+  "destination": "images/chart_original.png"
+}

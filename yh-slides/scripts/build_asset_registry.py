@@ -22,6 +22,7 @@ ASSET_ROOTS = [
     ("assets/style-samples", "style-sample", "2A/2B/2C style selection"),
     ("assets/vendor", "runtime", "core"),
     ("assets/screenshot-backgrounds", "screenshot-background", "2D screenshot framing"),
+    ("assets/wanghong", "html-style-system", "2D Path C/D handwritten academic"),
     ("templates/charts", "chart-template", "2A-S Path S"),
     ("templates/icons", "icon", "2A-S Path S"),
     ("templates/layouts", "pptx-layout-template", "2A-S Path S"),
@@ -30,7 +31,9 @@ ASSET_ROOTS = [
     ("templates/html-decks/html-ppt/single-page", "html-page-template", "2D HTML"),
     ("templates/html-decks/html-ppt/full-decks", "html-full-deck", "2D HTML / 2D-P"),
     ("templates/html-decks/html-ppt", "html-runtime", "2D HTML"),
+    ("templates/html-decks/bento", "html-runtime", "2D-B Bento Deck"),
     ("templates/html-decks/guizang", "html-seed", "2D Path C magazine/swiss"),
+    ("templates/tosea", "template-preview", "style selection / local template discovery"),
     ("scripts/template_fill_pptx", "python-package", "2A-T Template Fill"),
     ("scripts/template_fill_pptx.py", "script", "2A-T Template Fill"),
 ]
@@ -73,6 +76,12 @@ def infer_origin(rel: str) -> str:
         return "ian-handdrawn-ppt"
     if rel.startswith("templates/html-decks/html-ppt/"):
         return "html-ppt-skill"
+    if rel.startswith("templates/html-decks/bento/"):
+        return "bento"
+    if rel.startswith("templates/tosea/"):
+        return "tosea"
+    if rel.startswith("assets/wanghong/"):
+        return "wanghong-handwritten"
     if rel.startswith("templates/html-decks/guizang/") or rel.startswith("assets/screenshot-backgrounds/guizang/"):
         return "guizang-ppt-skill"
     if rel.startswith("scripts/template_fill_pptx") or rel.startswith("templates/charts/") or rel.startswith("templates/icons/") or rel.startswith("templates/layouts/"):
@@ -130,6 +139,9 @@ def main() -> int:
                             "html-ppt-skill": "MIT",
                             "guizang-ppt-skill": "AGPL-3.0",
                             "ian-handdrawn-ppt": "MIT",
+                            "bento": "MIT",
+                            "tosea": "mixed-preview-library; private-only",
+                            "wanghong-handwritten": "MIT",
                             "yh-slides": "local",
                         }.get(origin, ""),
                     },

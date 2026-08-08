@@ -1,0 +1,21 @@
+{
+  "schema": "yh-skills.manifest.v1",
+  "generated_at": "2026-08-07",
+  "release_policy": {
+    "require_utf8": true,
+    "require_agents_metadata": true,
+    "network_disabled_for_local_rendering": true,
+    "asset_provenance_required_for_public_release": true,
+    "source_locks_required_for_release": true,
+    "release_manifest": "release-manifest.json"
+  },
+  "skills": [
+    {"name": "yh-document-studio", "path": "yh-document-studio", "kind": "document"},
+    {"name": "yh-humanizer", "path": "yh-humanizer", "kind": "writing"},
+    {"name": "yh-image-inspirer", "path": "yh-image-inspirer", "kind": "image"},
+    {"name": "yh-local-knowledge", "path": "yh-local-knowledge", "kind": "knowledge"},
+    {"name": "yh-slides", "path": "yh-slides", "kind": "presentation"},
+    {"name": "yh-social-visual", "path": "yh-social-visual", "kind": "social-visual"},
+    {"name": "yh-style-profiler", "path": "yh-style-profiler", "kind": "writing-style"}
+  ]
+}

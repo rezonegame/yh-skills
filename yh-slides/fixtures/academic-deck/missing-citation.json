@@ -1,0 +1,31 @@
+{
+  "title": "城市交通流量预测模型对比研究",
+  "slides": [
+    {
+      "title": "传统统计模型在高波动交通数据上的预测误差显著高于深度学习方法",
+      "body": "本研究对比 ARIMA、LSTM 和 Transformer 三种模型在北京三环路 12 个监测点的 15 分钟粒度流量预测任务中的表现。",
+      "visual": "示意图：北京三环监测点分布"
+    },
+    {
+      "title": "Transformer 模型在长时序依赖捕获上展现出明显优势",
+      "body": "模型架构和训练细节：输入窗口 96 步，预测窗口 12 步。使用 AdamW 优化器，学习率 1e-4。",
+      "visual": "架构图：Transformer encoder"
+    },
+    {
+      "title": "Transformer 在 MAE 和 RMSE 两项指标上均优于基线模型",
+      "body": "图表：三种模型在 12 个监测点的平均 MAE 和 RMSE 对比。\n\n数据引用自北京市交通委公开数据集。改编自 Huang et al. (2024) 的评估方法。",
+      "visual": "柱状图：MAE/RMSE 对比",
+      "notes": "图表改编自 Huang et al. (2024)"
+    },
+    {
+      "title": "该预测模型可为智能交通信号优化提供数据支撑",
+      "body": "我们验证了将预测结果接入信号控制仿真系统后，高峰期平均等待时间降低 8.3%。",
+      "visual": "流程图：预测-优化闭环"
+    },
+    {
+      "title": "参考文献",
+      "body": "Huang, R., et al. (2024). Spatiotemporal Transformer for Traffic Prediction. IEEE TITS 2024.\nLiu, J., et al. (2023). Graph Neural Networks for Urban Computing. KDD 2023.",
+      "visual": "无"
+    }
+  ]
+}

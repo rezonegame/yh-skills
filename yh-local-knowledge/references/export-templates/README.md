@@ -1,8 +1,8 @@
 # 导出包模板总览（Export Templates）
 
-本目录定义 yh-local-knowledge 的 10 类导出包的成品规范。每个导出包产出时，参照对应模板，并遵守 `references/downstream-contract.md` 的三件套要求（USAGE.md + INDEX.md + 可信标签）。
+本目录定义 yh-local-knowledge 的 11 类导出包成品规范。每个导出包产出时，参照对应模板，并遵守 `references/downstream-contract.md` 的三件套要求（USAGE.md + INDEX.md + 可信标签）。
 
-## 10 类导出包
+## 11 类导出包
 
 ### 现有 6 类（已强化，配模板）
 
@@ -15,7 +15,7 @@
 | 产品/Agent Spec 包 | `spec-pack.md` | 生成 spec/功能清单/数据模型 |
 | 争议观点包 | `debate-pack.md` | 不同流派/冲突观点 |
 
-### 新增 4 类
+### 扩展 5 类
 
 | 包 | 模板文件 | 用途 | 来源启发 |
 |----|---------|------|---------|
@@ -23,6 +23,7 @@
 | 互链 wiki 包 | `wiki-pack.md` | 双链浏览、MOC、Obsidian | LLM-wiki-system + llm-wiki |
 | 矛盾专题包 | `conflict-pack.md` | 聚焦矛盾点深挖 | karpathy |
 | 播客脚本包（可选） | `podcast-pack.md` | 双人对话脚本、TTS | notebookllama |
+| 知识技能包 | `skill-pack.md` | 按主题加载的 Agent Skill | book-to-skill 方法，经本地信任模型改造 |
 
 ## 通用规范（所有包共享）
 
@@ -64,9 +65,9 @@ concepts/
 ```
 拆分理由：让下游 agent 能选择性读取（只读 index 或某个子页），不用整篇加载。
 
-## 如何新增第 11 类包（可扩展性）
+## 如何新增下一类包（可扩展性）
 
-导出包不锁死 10 类。新增包时：
+导出包不锁死为 11 类。新增包时：
 1. 在本目录加一个 `[name]-pack.md` 模板。
 2. 在本 README 的表格里登记。
 3. 在 `references/engagement-protocol.md` 的"推荐方向"表里按需加入。

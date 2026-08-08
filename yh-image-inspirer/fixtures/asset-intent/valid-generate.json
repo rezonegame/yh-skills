@@ -1,0 +1,6 @@
+{
+  "mode": "generate",
+  "consumer": "standalone",
+  "destination": "images/hero_concept.png",
+  "references": []
+}

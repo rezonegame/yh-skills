@@ -1,0 +1,30 @@
+{
+  "title": "基于深度学习的医学影像分割精度评估",
+  "slides": [
+    {
+      "title": "U-Net 在肝脏 CT 分割任务中的 Dice 系数达到 0.94 但存在边界过分割问题",
+      "body": "本研究评估三种 U-Net 变体在 LiTS 数据集上的分割精度，并重点分析边界区域的误差来源。",
+      "visual": "示意图：肝脏 CT 切片与分割标注"
+    },
+    {
+      "title": "Attention U-Net 通过门控注意力机制抑制了 67% 的边界过分割",
+      "body": "注意力模块在 encoder-decoder skip connection 处引入空间权重，使模型聚焦于目标区域而非背景噪声。",
+      "visual": "架构图：Attention U-Net 结构"
+    },
+    {
+      "title": "Attention U-Net 在边界 IoU 上显著优于标准 U-Net",
+      "body": "图表：三种模型在整体 Dice、边界 IoU 和 Hausdorff 距离上的对比柱状图。",
+      "visual": "柱状图：三种模型指标对比"
+    },
+    {
+      "title": "该注意力机制可推广至其他器官的边界敏感分割任务",
+      "body": "我们在脾脏和肾脏数据集上的初步验证显示，边界 IoU 平均提升 4.2 个百分点。",
+      "visual": "表格：跨器官泛化结果"
+    },
+    {
+      "title": "参考文献",
+      "body": "Isensee, F., et al. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature Methods 2021.\nOktay, O., et al. (2018). Attention U-Net: Learning Where to Look for the Pancreas. MIDL 2018.",
+      "visual": "无"
+    }
+  ]
+}
